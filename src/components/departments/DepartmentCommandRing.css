@@ -1,0 +1,315 @@
+/* ── Radial Command Ring Container ─────────────────────────────── */
+
+.command-ring {
+  position: relative;
+  width: 100%;
+  /* Full viewport composition, accounting for minimal headers */
+  height: calc(100vh - 160px);
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Deep near-black background with subtle illumination and faint grid */
+  background-color: #050608;
+  background-image: 
+    radial-gradient(circle at center, rgba(0, 240, 255, 0.03) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-position: center center;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+@media (max-width: 1024px) {
+  .command-ring {
+    height: calc(100vh - 120px);
+    min-height: 500px;
+  }
+}
+
+/* ── SVG Layer for Lines & Orbits ──────────────────────────────── */
+
+.command-ring__svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Primary and secondary orbital rings */
+.command-ring__orbit {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1px;
+}
+
+.command-ring__orbit--secondary {
+  stroke: rgba(255, 255, 255, 0.03);
+  stroke-width: 1px;
+  stroke-dasharray: 2 8;
+}
+
+/* Connection lines */
+.command-ring__line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1px;
+  opacity: 0.1;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.command-ring__line--active {
+  opacity: 0.6;
+  stroke-width: 1.5px;
+  /* Very subtle glow, not excessive neon */
+  filter: drop-shadow(0 0 2px rgba(0, 240, 255, 0.3));
+}
+
+.command-ring__line--dimmed {
+  opacity: 0.02;
+}
+
+/* ── Central Intelligence Core ─────────────────────────────────── */
+
+.command-core {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  /* Deep graphite core, NOT pure black */
+  background: rgba(10, 12, 16, 0.9);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+/* Rotating SVG reticle overlay */
+.command-core__reticle {
+  position: absolute;
+  inset: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  pointer-events: none;
+  animation: slowSpin 60s linear infinite;
+  opacity: 0.4;
+}
+
+.command-core__reticle circle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1px;
+}
+
+/* Faint inner pulse */
+.command-core::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 40px rgba(0, 240, 255, 0.03);
+  animation: corePulse 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes slowSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes corePulse {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.command-core__title {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.command-core__subtitle {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* ── Orbital Department Nodes ──────────────────────────────────── */
+
+.command-node {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(5, 6, 8, 0.6);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  color: var(--text-muted);
+  border: none;
+  transition: all 0.2s ease;
+  
+  /* Technical bracket styling */
+  box-shadow: 
+    inset 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset -1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.command-node::before,
+.command-node::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.2s ease;
+}
+
+.command-node::before { top: 0; left: 0; box-shadow: calc(100% - 4px) 0 0 rgba(255, 255, 255, 0.2); width: 100%; background: transparent; border-left: 4px solid rgba(255, 255, 255, 0.2); border-right: 4px solid rgba(255, 255, 255, 0.2); }
+.command-node::after { bottom: 0; left: 0; box-shadow: calc(100% - 4px) 0 0 rgba(255, 255, 255, 0.2); width: 100%; background: transparent; border-left: 4px solid rgba(255, 255, 255, 0.2); border-right: 4px solid rgba(255, 255, 255, 0.2); }
+
+.command-node:hover,
+.command-node:focus-visible {
+  outline: none;
+  color: var(--text-primary);
+  background: rgba(10, 12, 16, 0.9);
+}
+
+.command-node--active {
+  color: var(--text-primary);
+  transform: translate(-50%, -50%) scale(1.02);
+  box-shadow: 
+    inset 1px 0 0 var(--accent),
+    inset -1px 0 0 var(--accent),
+    0 0 15px rgba(0, 240, 255, 0.05);
+  z-index: 4;
+}
+
+.command-node--active::before,
+.command-node--active::after {
+  border-color: var(--accent);
+}
+
+.command-node--dimmed {
+  opacity: 0.25;
+}
+
+/* Icon is secondary, small */
+.command-node__icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.command-node--active .command-node__icon {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.command-node__label {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Contextual Detail Panel (Hover state info) ────────────────── */
+
+/* It is now a compact technical block, NOT a large card */
+.command-panel {
+  position: absolute;
+  z-index: 5;
+  top: 32px;
+  left: 32px;
+  width: 260px;
+  pointer-events: none;
+  animation: technicalFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes technicalFadeIn {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.command-panel__title {
+  margin: 0 0 16px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.command-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.command-panel__stat {
+  display: flex;
+  justify-content: space-between;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.command-panel__stat-val {
+  color: var(--text-primary);
+}
+
+.command-panel__stat-val--accent {
+  color: var(--accent);
+}
+
+.command-panel__action {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.command-panel__action::before {
+  content: '[';
+  color: rgba(0, 240, 255, 0.5);
+}
+.command-panel__action::after {
+  content: ']';
+  color: rgba(0, 240, 255, 0.5);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .command-core__reticle { animation: none; }
+  .command-core::after { animation: none; }
+  .command-node, .command-ring__line { transition: none; }
+  .command-panel { animation: none; }
+}

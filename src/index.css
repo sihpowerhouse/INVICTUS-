@@ -1,0 +1,57 @@
+:root {
+  /* ── Typography ─────────────────────────────── */
+  font-family: Inter, Arial, sans-serif;
+  color: #f4f7fb;
+  background: #090b10;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* ── Design tokens ──────────────────────────── */
+  --bg-primary: #090b10;
+  --bg-surface: #0d1017;
+  --bg-elevated: #111620;
+  --bg-card: rgba(14, 18, 27, 0.85);
+  --bg-card-hover: rgba(20, 26, 38, 0.92);
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-accent: rgba(24, 200, 255, 0.18);
+
+  --text-primary: #f4f7fb;
+  --text-secondary: #8d98aa;
+  --text-muted: #5f697a;
+
+  --accent: #18c8ff;
+  --accent-dim: rgba(24, 200, 255, 0.08);
+  --accent-glow: rgba(24, 200, 255, 0.15);
+
+  --success: #35d49a;
+  --success-dim: rgba(53, 212, 154, 0.08);
+  --warning: #f5a623;
+  --warning-dim: rgba(245, 166, 35, 0.08);
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 280ms ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100%;
+  background: #090b10;
+}
+
+body {
+  min-height: 100vh;
+}
