@@ -2,19 +2,7 @@
   min-height: 100vh;
 }
 
-/* ── App layout ─────────────────────────────────── */
-
-.app-layout {
-  min-height: 100vh;
-  background: #090b10;
-}
-
-.main-content {
-  margin-left: 258px;
-  min-height: 100vh;
-  padding: 40px;
-  color: #f4f7fb;
-}
+/* App layout moved to AppShell.css */
 
 .page-tag {
   color: #18c8ff;
@@ -25,9 +13,8 @@
 }
 
 .sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
   width: 258px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   padding: 24px 16px 16px;

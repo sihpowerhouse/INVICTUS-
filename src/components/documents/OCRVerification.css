@@ -1,0 +1,140 @@
+.ocr-verification {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+}
+
+.ocr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ocr-title {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.ocr-metrics {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.ocr-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ocr-metric-label {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ocr-metric-value {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ocr-metric-value.warning {
+  color: var(--warning);
+}
+
+.ocr-metric-value.danger {
+  color: var(--danger);
+}
+
+.ocr-warning-box {
+  background: rgba(255, 171, 0, 0.1);
+  border: 1px solid rgba(255, 171, 0, 0.3);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+}
+
+.ocr-warning-title {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--warning);
+  letter-spacing: 0.1em;
+  margin: 0 0 4px 0;
+}
+
+.ocr-warning-text {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.ocr-text-view {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+}
+
+.ocr-text-highlight {
+  background: rgba(0, 240, 255, 0.2);
+  color: var(--text-primary);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.ocr-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-ocr {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all var(--transition-fast);
+}
+
+.btn-ocr-accept {
+  background: rgba(53, 212, 154, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(53, 212, 154, 0.3);
+}
+
+.btn-ocr-accept:hover {
+  background: rgba(53, 212, 154, 0.2);
+}
+
+.btn-ocr-edit {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-ocr-edit:hover {
+  border-color: var(--text-secondary);
+}

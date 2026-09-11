@@ -1,0 +1,19 @@
+.case-result-summary {
+  margin-bottom: 24px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.case-result-summary__count {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.case-result-summary__meta {
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}

@@ -1,0 +1,27 @@
+.access-requests-page {
+  padding: 32px 48px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.access-requests-page__header {
+  margin-bottom: 32px;
+}
+
+.access-requests-page__layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 16px;
+  gap: 24px;
+}
+
+.access-requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}

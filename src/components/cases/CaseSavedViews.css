@@ -1,0 +1,47 @@
+.case-saved-views {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px; /* For scrollbar */
+}
+
+/* Hide scrollbar visually but allow scroll */
+.case-saved-views::-webkit-scrollbar {
+  height: 4px;
+}
+.case-saved-views::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+.saved-view-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 10px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.saved-view-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.saved-view-btn.active {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.3);
+  color: var(--accent);
+}
+
+.saved-view-btn[data-critical="true"].active {
+  background: rgba(255, 86, 48, 0.1);
+  border-color: rgba(255, 86, 48, 0.3);
+  color: var(--danger);
+}

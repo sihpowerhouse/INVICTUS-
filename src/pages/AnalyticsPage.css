@@ -1,0 +1,101 @@
+.analytics-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.analytics-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
+}
+
+.analytics-page__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.analytics-page__title {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 4px;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.page-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-cyan);
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.analytics-page__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.analytics-time-period {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+  background: var(--color-bg-secondary);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+.analytics-grid > * {
+  grid-column: span 12;
+}
+
+/* Primary section - Case Activity */
+.analytics-primary {
+  grid-column: span 12;
+}
+
+/* Secondary section - 3 columns */
+.analytics-secondary {
+  grid-column: span 4;
+}
+
+/* Operational panels - 2 columns */
+.analytics-operational {
+  grid-column: span 6;
+}
+
+@media (max-width: 1200px) {
+  .analytics-secondary {
+    grid-column: span 6;
+  }
+  
+  .analytics-secondary:nth-child(3) {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-page {
+    padding: 1rem;
+  }
+  
+  .analytics-secondary,
+  .analytics-operational {
+    grid-column: span 12;
+  }
+}

@@ -1,0 +1,56 @@
+/* Reusing the .data-panel structural classes from PersonsPanel.css */
+
+.doc-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-type {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.doc-version {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.doc-status {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--success);
+  letter-spacing: 0.05em;
+}
+
+.doc-status[data-status="PENDING ANALYSIS"] {
+  color: var(--warning);
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr 2fr;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  align-items: center;
+}
+
+.docs-grid:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .docs-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

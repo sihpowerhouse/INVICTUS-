@@ -1,0 +1,133 @@
+.intel-timeline-page {
+  padding: 32px 48px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.intel-timeline-page__header {
+  margin-bottom: 32px;
+}
+
+.intel-timeline-page__layout {
+  display: flex;
+  flex: 1;
+  gap: 32px;
+  min-height: 0;
+}
+
+.intel-timeline-main {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 16px;
+}
+
+/* Timeline specific styles */
+.intel-timeline {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+}
+
+.intel-timeline__node {
+  display: flex;
+  min-height: 80px;
+}
+
+.intel-timeline__date-col {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 24px;
+  padding-top: 2px;
+}
+
+.intel-timeline__date {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.intel-timeline__time {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.intel-timeline__marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 32px;
+}
+
+.intel-timeline__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-default);
+  border: 2px solid var(--accent);
+  z-index: 1;
+}
+
+.intel-timeline__line {
+  width: 1px;
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.intel-timeline__content {
+  flex: 1;
+  padding-bottom: 32px;
+}
+
+.intel-timeline__event {
+  font-family: monospace;
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.intel-timeline__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.intel-timeline__source:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.intel-timeline__source-type {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  background: rgba(0,0,0,0.3);
+  border-radius: var(--radius-sm);
+}
+
+.intel-timeline__source-name {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.intel-timeline__source-case {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}

@@ -1,18 +1,14 @@
 import { BrowserRouter } from 'react-router-dom';
-import './App.css';
-import Sidebar from './layouts/Sidebar';
 import AppRoutes from './routes/AppRoutes';
+import AppShell from './layouts/AppShell';
+import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-layout">
-        <Sidebar />
-
-        <main className="main-content">
-          <AppRoutes />
-        </main>
-      </div>
+      <AppShell>
+        <AppRoutes />
+      </AppShell>
     </BrowserRouter>
   );
 }

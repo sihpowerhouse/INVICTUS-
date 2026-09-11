@@ -11,6 +11,7 @@ import {
     Shield,
     ScrollText,
     Settings,
+    PlaySquare,
     type LucideIcon,
 } from 'lucide-react';
 
@@ -33,6 +34,7 @@ const navigation: NavGroup[] = [
             { label: 'Cases', icon: FolderKanban, path: '/cases' },
             { label: 'Documents', icon: Files, path: '/documents' },
             { label: 'Evidence', icon: ShieldCheck, path: '/evidence' },
+            { label: 'Media', icon: PlaySquare, path: '/media' },
         ],
     },
     {

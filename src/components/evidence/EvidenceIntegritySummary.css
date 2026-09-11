@@ -1,0 +1,121 @@
+.evd-integrity {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+}
+
+.evd-integrity__header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.evd-integrity__title {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.evd-integrity__demo-tag {
+  font-family: monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+
+.evd-integrity__state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+}
+
+.evd-integrity__state--verified {
+  background: rgba(53,212,154,0.06);
+  border: 1px solid rgba(53,212,154,0.2);
+}
+
+.evd-integrity__state--pending {
+  background: rgba(255,171,0,0.06);
+  border: 1px solid rgba(255,171,0,0.2);
+}
+
+.evd-integrity__state--failed {
+  background: rgba(255,60,60,0.06);
+  border: 1px solid rgba(255,60,60,0.2);
+}
+
+.evd-integrity__state-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.evd-integrity__state--verified .evd-integrity__state-dot { background: var(--success); }
+.evd-integrity__state--pending  .evd-integrity__state-dot { background: var(--warning); }
+.evd-integrity__state--failed   .evd-integrity__state-dot { background: var(--danger); }
+
+.evd-integrity__state-text {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.evd-integrity__state--verified .evd-integrity__state-text { color: var(--success); }
+.evd-integrity__state--pending  .evd-integrity__state-text { color: var(--warning); }
+.evd-integrity__state--failed   .evd-integrity__state-text { color: var(--danger); }
+
+.evd-integrity__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.evd-integrity__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.evd-integrity__field-label {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.evd-integrity__field-value {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  background: rgba(0,0,0,0.15);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.evd-integrity__checked {
+  margin-top: 16px;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}

@@ -1,0 +1,48 @@
+.case-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+}
+
+.case-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.case-filter-label {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.case-filter-select,
+.case-filter-input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+  min-width: 160px;
+}
+
+.case-filter-select:focus,
+.case-filter-input:focus {
+  border-color: var(--accent);
+}
+
+.case-filter-input {
+  min-width: 240px;
+}
+
+.case-filter-input::placeholder {
+  color: var(--text-muted);
+}

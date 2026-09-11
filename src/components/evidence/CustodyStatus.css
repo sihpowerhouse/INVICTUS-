@@ -1,0 +1,71 @@
+.custody-status {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+}
+
+.custody-status__label {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.custody-status__state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.custody-status__indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.custody-status__indicator--in_custody       { background: var(--accent); }
+.custody-status__indicator--at_fsl           { background: var(--warning); }
+.custody-status__indicator--under_examination { background: var(--warning); }
+.custody-status__indicator--transferred      { background: var(--text-muted); }
+.custody-status__indicator--released         { background: var(--success); }
+.custody-status__indicator--archived         { background: var(--text-muted); opacity: 0.4; }
+
+.custody-status__state-text {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+}
+
+.custody-status__detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.custody-status__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.custody-status__detail-label {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.custody-status__detail-value {
+  font-size: 12px;
+  color: var(--text-secondary);
+}

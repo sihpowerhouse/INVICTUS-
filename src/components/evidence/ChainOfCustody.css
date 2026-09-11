@@ -1,0 +1,208 @@
+/* Chain of Custody — INVICTUS Signature Visual, Milestone 5 */
+
+.coc {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 28px;
+}
+
+.coc__header {
+  margin-bottom: 32px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coc__title {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.coc__count {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Timeline */
+.coc__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* Individual event */
+.coc__event {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+/* The left track column: dot + vertical line */
+.coc__track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.coc__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  background: var(--bg-card);
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: border-color var(--transition-fast);
+}
+
+/* Current event: filled accent dot */
+.coc__event--current .coc__dot {
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+  margin-top: 2px;
+}
+
+.coc__line {
+  flex: 1;
+  width: 2px;
+  background: var(--border-subtle);
+  min-height: 32px;
+  margin: 4px 0;
+}
+
+/* Content block */
+.coc__content {
+  flex: 1;
+  padding-bottom: 32px;
+}
+
+.coc__event:last-child .coc__content {
+  padding-bottom: 0;
+}
+
+.coc__event-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.coc__action {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+}
+
+/* Current is most dominant */
+.coc__event--current .coc__action {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.coc__current-tag {
+  font-family: monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.1em;
+}
+
+.coc__actor-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.coc__actor {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.coc__dept-sep {
+  color: var(--border-subtle);
+  font-size: 12px;
+}
+
+.coc__dept {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.coc__meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.coc__timestamp {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.coc__location {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.coc__note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--border-subtle);
+  padding: 6px 10px;
+  line-height: 1.5;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Older events get progressively subdued */
+.coc__event--past-1 .coc__action { color: var(--text-secondary); }
+.coc__event--past-1 .coc__dot   { border-color: rgba(255,255,255,0.2); }
+
+.coc__event--past-2 .coc__action { color: var(--text-muted); }
+.coc__event--past-2 .coc__dot   { border-color: rgba(255,255,255,0.12); }
+.coc__event--past-2 .coc__actor { color: var(--text-muted); }
+
+.coc__event--past-old .coc__action { color: rgba(255,255,255,0.25); }
+.coc__event--past-old .coc__dot   { border-color: rgba(255,255,255,0.08); }
+.coc__event--past-old .coc__actor { color: rgba(255,255,255,0.25); }
+.coc__event--past-old .coc__timestamp { color: rgba(255,255,255,0.18); }
+
+@media (max-width: 640px) {
+  .coc {
+    padding: 20px;
+  }
+  .coc__content {
+    padding-bottom: 24px;
+  }
+}
