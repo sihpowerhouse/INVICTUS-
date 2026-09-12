@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AuditPage.css';
 import { securityService } from '../services/securityService';
 import type { AuditEvent } from '../types/security';
 import AuditTimeline from '../components/security/AuditTimeline';
+import Dropdown from '../components/common/Dropdown';
 
 export default function AuditPage() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,9 +39,18 @@ export default function AuditPage() {
 
   return (
     <div className="audit-page">
-      <div className="audit-page__header">
-        <p className="page-tag">INVICTUS / SECURITY</p>
-        <h1 className="page-title">AUDIT TRAIL</h1>
+      <div className="audit-page__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <p className="page-tag">INVICTUS / SECURITY</p>
+          <h1 className="page-title">AUDIT TRAIL</h1>
+        </div>
+        <button 
+          className="intel-btn-outline" 
+          onClick={() => navigate('/analytics')}
+          style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+        >
+          [ VIEW OPERATIONAL ANALYTICS ]
+        </button>
       </div>
 
       <div className="audit-page__layout">
@@ -61,26 +73,19 @@ export default function AuditPage() {
                 fontSize: '12px'
               }}
             />
-            <select
-              value={actionFilter}
-              onChange={e => setActionFilter(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                background: 'rgba(0,0,0,0.5)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: 'var(--radius-sm)',
-                color: 'var(--text-primary)',
-                fontFamily: 'monospace',
-                fontSize: '12px'
-              }}
-            >
-              <option value="">ALL ACTIONS</option>
-              <option value="VIEWED">VIEWED</option>
-              <option value="MODIFIED">MODIFIED</option>
-              <option value="INTEGRITY_CHECK">INTEGRITY CHECK</option>
-              <option value="SIGNATURE_VERIFIED">SIGNATURE VERIFIED</option>
-            </select>
+            <div style={{ marginTop: '12px' }}>
+              <Dropdown
+                value={actionFilter}
+                onChange={val => setActionFilter(val)}
+                options={[
+                  { value: '', label: 'ALL ACTIONS' },
+                  { value: 'VIEWED', label: 'VIEWED' },
+                  { value: 'MODIFIED', label: 'MODIFIED' },
+                  { value: 'INTEGRITY_CHECK', label: 'INTEGRITY CHECK' },
+                  { value: 'SIGNATURE_VERIFIED', label: 'SIGNATURE VERIFIED' }
+                ]}
+              />
+            </div>
           </div>
         </aside>
 

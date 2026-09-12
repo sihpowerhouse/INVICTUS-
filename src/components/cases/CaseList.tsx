@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './CaseList.css';
 import type { Case } from '../../types/case';
 import CaseListItem from './CaseListItem';
@@ -8,6 +9,8 @@ interface CaseListProps {
 }
 
 export default function CaseList({ cases, isLoading }: CaseListProps) {
+  const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
+
   if (isLoading) {
     return <div className="case-list-empty">LOADING CASES...</div>;
   }
@@ -19,7 +22,12 @@ export default function CaseList({ cases, isLoading }: CaseListProps) {
   return (
     <div className="case-list">
       {cases.map(c => (
-        <CaseListItem key={c.id} caseData={c} />
+        <CaseListItem 
+          key={c.id} 
+          caseData={c} 
+          isExpanded={expandedCaseId === c.id}
+          onToggle={() => setExpandedCaseId(prev => prev === c.id ? null : c.id)}
+        />
       ))}
     </div>
   );

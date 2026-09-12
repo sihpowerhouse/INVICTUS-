@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import './EvidenceDetailsPage.css';
 import type { Evidence } from '../types/evidence';
 import { evidenceService } from '../services/evidenceService';
@@ -15,6 +16,7 @@ export default function EvidenceDetailsPage() {
   const navigate = useNavigate();
   const [evidence, setEvidence] = useState<Evidence | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!evidenceId) return;
@@ -47,9 +49,29 @@ export default function EvidenceDetailsPage() {
     );
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 5 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+  };
+
   return (
-    <div className="evd-details-page">
-      <div className="evd-details-header">
+    <motion.div 
+      className="evd-details-page"
+      variants={shouldReduceMotion ? {} : containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="evd-details-header" variants={itemVariants}>
         <div className="evd-details-title-area">
           <p className="page-tag" style={{ cursor: 'pointer' }} onClick={() => navigate('/evidence')}>
             &larr; BACK TO EVIDENCE VAULT
@@ -75,9 +97,9 @@ export default function EvidenceDetailsPage() {
         <div>
           <button className="btn-primary">UPDATE CUSTODY</button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="evd-details-meta-strip">
+      <motion.div className="evd-details-meta-strip" variants={itemVariants}>
         <div className="evd-meta-group">
           <span className="evd-meta-label">CUSTODY EVENTS</span>
           <span className="evd-meta-value">{evidence.custodyEvents.length}</span>
@@ -98,21 +120,21 @@ export default function EvidenceDetailsPage() {
           <span className="evd-meta-label">DESCRIPTION</span>
           <span className="evd-meta-value" style={{ fontSize: '12px' }}>{evidence.description}</span>
         </div>
-      </div>
+      </motion.div>
 
       <div className="evd-details-layout">
-        <div className="evd-details-left">
+        <motion.div className="evd-details-left" variants={itemVariants}>
           <ChainOfCustody events={evidence.custodyEvents} />
           <EvidenceActivity events={evidence.activityEvents} />
-        </div>
+        </motion.div>
         
-        <div className="evd-details-right">
+        <motion.div className="evd-details-right" variants={itemVariants}>
           <CustodyStatus evidence={evidence} />
           <RelatedDocuments documentIds={evidence.relatedDocumentIds} />
           <RelatedMedia mediaIds={evidence.relatedMediaIds} />
           <EvidenceIntegritySummary integrity={evidence.integrity} />
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -2,7 +2,7 @@ import type { Case } from '../types/case';
 
 export const mockCases: Case[] = [
   {
-    id: 'INV-26190-001',
+    id: 'CAS-26190',
     title: 'Operation Orion',
     status: 'ACTIVE',
     priority: 'HIGH',
@@ -29,10 +29,11 @@ export const mockCases: Case[] = [
       { id: 'l1', location: 'Server Room Alpha', type: 'INCIDENT SITE', reference: 'Breach point.' }
     ],
     documents: [
-      { id: 'd1', name: 'Incident Report (Initial)', type: 'PDF', version: 'v1.0', status: 'VERIFIED' }
+      { id: 'DOC-26190-001', name: 'FORENSIC_REPORT_03.pdf', type: 'PDF', version: 'v3.0', status: 'VERIFIED' },
+      { id: 'DOC-26190-002', name: 'WITNESS_STATEMENT_MARCUS.docx', type: 'DOCX', version: 'v1.0', status: 'REQUIRES_REVIEW' }
     ],
     timeline: [
-      { id: 't1', date: '01 SEP 2026', event: 'INCIDENT', description: 'Unauthorized access detected.' }
+      { id: 't1', date: '08 SEP 2026', event: 'INCIDENT', description: 'Unauthorized access detected.' }
     ]
   },
   {

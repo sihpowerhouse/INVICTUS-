@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import './ChainOfCustody.css';
 import type { CustodyEvent } from '../../types/evidence';
 
@@ -14,15 +16,10 @@ function formatTimestamp(iso: string): string {
   return `${day} ${month} ${year} · ${time}`;
 }
 
-function ageCls(index: number): string {
-  // index 0 = newest (current)
-  if (index === 0) return 'coc__event--current';
-  if (index === 1) return 'coc__event--past-1';
-  if (index === 2) return 'coc__event--past-2';
-  return 'coc__event--past-old';
-}
-
 export default function ChainOfCustody({ events }: ChainOfCustodyProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(events[0]?.id || null);
+  const shouldReduceMotion = useReducedMotion();
+
   // Sort: newest first
   const sorted = [...events].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -37,15 +34,24 @@ export default function ChainOfCustody({ events }: ChainOfCustodyProps) {
 
       <div className="coc__timeline" role="list">
         {sorted.map((event, index) => {
-          const cls = ageCls(index);
           const isCurrent = index === 0;
+          const isExpanded = expandedId === event.id;
+
+          let cls = 'coc__event';
+          if (isCurrent) cls += ' coc__event--current';
+          else if (index === 1) cls += ' coc__event--past-1';
+          else if (index === 2) cls += ' coc__event--past-2';
+          else cls += ' coc__event--past-old';
+
+          if (isExpanded) cls += ' is-expanded';
 
           return (
-            <div
+            <motion.div
+              layout={!shouldReduceMotion}
               key={event.id}
-              className={`coc__event ${cls}`}
+              className={cls}
               role="listitem"
-              aria-label={`${event.action.replace(/_/g, ' ')} — ${event.actor}`}
+              onClick={() => setExpandedId(isExpanded ? null : event.id)}
             >
               <div className="coc__track">
                 <div className="coc__dot" aria-hidden="true" />
@@ -54,7 +60,7 @@ export default function ChainOfCustody({ events }: ChainOfCustodyProps) {
                 )}
               </div>
 
-              <div className="coc__content">
+              <motion.div layout={!shouldReduceMotion} className="coc__content">
                 <div className="coc__event-head">
                   <span className="coc__action">
                     {event.action.replace(/_/g, ' ')}
@@ -62,6 +68,9 @@ export default function ChainOfCustody({ events }: ChainOfCustodyProps) {
                   {isCurrent && (
                     <span className="coc__current-tag">CURRENT</span>
                   )}
+                  <time className="coc__timestamp" dateTime={event.timestamp}>
+                    {formatTimestamp(event.timestamp)}
+                  </time>
                 </div>
 
                 <div className="coc__actor-row">
@@ -70,20 +79,32 @@ export default function ChainOfCustody({ events }: ChainOfCustodyProps) {
                   <span className="coc__dept">{event.department}</span>
                 </div>
 
-                <div className="coc__meta">
-                  <time className="coc__timestamp" dateTime={event.timestamp}>
-                    {formatTimestamp(event.timestamp)}
-                  </time>
-                  {event.location && (
-                    <span className="coc__location">{event.location}</span>
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+                      className="coc__details"
+                    >
+                      {event.location && (
+                        <div className="coc__detail-row">
+                          <span className="coc__detail-label">LOCATION</span>
+                          <span className="coc__detail-value">{event.location}</span>
+                        </div>
+                      )}
+                      {event.note && (
+                        <div className="coc__detail-row">
+                          <span className="coc__detail-label">NOTE</span>
+                          <span className="coc__detail-value">{event.note}</span>
+                        </div>
+                      )}
+                    </motion.div>
                   )}
-                </div>
-
-                {event.note && (
-                  <p className="coc__note">{event.note}</p>
-                )}
-              </div>
-            </div>
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
           );
         })}
       </div>

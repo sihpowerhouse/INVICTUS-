@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
     LayoutDashboard,
     FolderKanban,
@@ -56,6 +57,8 @@ const navigation: NavGroup[] = [
 ];
 
 function Sidebar() {
+    const shouldReduceMotion = useReducedMotion();
+
     return (
         <aside className="sidebar">
             <div className="sidebar-brand">
@@ -85,8 +88,22 @@ function Sidebar() {
                                     key={item.label}
                                     to={item.path}
                                 >
-                                    <Icon size={18} strokeWidth={1.8} />
-                                    <span>{item.label}</span>
+                                    {({ isActive }) => (
+                                        <>
+                                            {isActive && !shouldReduceMotion && (
+                                                <motion.div 
+                                                    layoutId="sidebar-active-indicator"
+                                                    className="nav-item-active-bg"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.2 }}
+                                                />
+                                            )}
+                                            <Icon size={18} strokeWidth={1.8} style={{ position: 'relative', zIndex: 1 }} />
+                                            <span style={{ position: 'relative', zIndex: 1 }}>{item.label}</span>
+                                        </>
+                                    )}
                                 </NavLink>
                             );
                         })}
@@ -101,8 +118,22 @@ function Sidebar() {
                     }
                     to="/settings"
                 >
-                    <Settings size={18} strokeWidth={1.8} />
-                    <span>Settings</span>
+                    {({ isActive }) => (
+                        <>
+                            {isActive && !shouldReduceMotion && (
+                                <motion.div 
+                                    layoutId="sidebar-active-indicator"
+                                    className="nav-item-active-bg"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                />
+                            )}
+                            <Settings size={18} strokeWidth={1.8} style={{ position: 'relative', zIndex: 1 }} />
+                            <span style={{ position: 'relative', zIndex: 1 }}>Settings</span>
+                        </>
+                    )}
                 </NavLink>
 
                 <div className="security-status">

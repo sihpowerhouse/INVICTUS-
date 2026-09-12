@@ -9,7 +9,7 @@ export default function EvidenceBasis({ basis }: EvidenceBasisProps) {
   return (
     <div className="intel-basis">
       <div className="intel-basis__header">
-        <span className="intel-basis__title">EVIDENCE BASIS</span>
+        <span className="intel-basis__title">SOURCE BASIS</span>
         <span className={`intel-basis__badge intel-basis__badge--${basis.relevance.toLowerCase()}`}>
           DEMO RELEVANCE: {basis.relevance}
         </span>

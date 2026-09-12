@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardPage from '../pages/DashboardPage';
-import PlaceholderPage from '../pages/PlaceholderPage';
 import CasesPage from '../pages/CasesPage';
 import CaseDetailsPage from '../pages/CaseDetailsPage';
 import DocumentsPage from '../pages/DocumentsPage';
@@ -20,6 +19,8 @@ import IntegrityPage from '../pages/IntegrityPage';
 import IntegrityDetailPage from '../pages/IntegrityDetailPage';
 import AuditPage from '../pages/AuditPage';
 import AccessRequestsPage from '../pages/AccessRequestsPage';
+
+import SettingsPage from '../pages/SettingsPage';
 
 /**
  * Central route definitions for the INVICTUS application.
@@ -56,7 +57,7 @@ function AppRoutes() {
 
       {/* Settings & Analytics */}
       <Route path="/analytics" element={<AnalyticsPage />} />
-      <Route path="/settings" element={<PlaceholderPage title="Settings" section="SYSTEM" />} />
+      <Route path="/settings" element={<SettingsPage />} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

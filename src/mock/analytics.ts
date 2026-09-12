@@ -59,7 +59,7 @@ export const MOCK_PENDING_ACTIONS: PendingAction[] = [
   {
     id: 'ACT-101',
     type: 'ACCESS_REQUEST',
-    description: 'Level 4 clearance requested for CASE-2026-88',
+    description: 'Level 4 clearance requested for CAS-26190',
     priority: 'HIGH',
     timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     route: '/access-requests'
@@ -67,10 +67,10 @@ export const MOCK_PENDING_ACTIONS: PendingAction[] = [
   {
     id: 'ACT-102',
     type: 'EVIDENCE_VERIFICATION',
-    description: 'Verify digital signature for mobile extraction EV-902',
+    description: 'Verify digital signature for mobile extraction EVD-26190-001',
     priority: 'HIGH',
     timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    route: '/evidence/EV-902'
+    route: '/evidence/EVD-26190-001'
   },
   {
     id: 'ACT-103',
@@ -103,7 +103,7 @@ export const MOCK_SYSTEM_ACTIVITY: SystemActivity[] = [
     id: 'EVT-9002',
     action: 'CASE_STATUS_UPDATED',
     entityType: 'CASE',
-    entityId: 'CASE-2026-92',
+    entityId: 'CAS-26190',
     timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     user: 'Cmdr. Sarah Vance'
   },
@@ -111,7 +111,7 @@ export const MOCK_SYSTEM_ACTIVITY: SystemActivity[] = [
     id: 'EVT-9003',
     action: 'DOCUMENT_INDEXED',
     entityType: 'DOCUMENT',
-    entityId: 'DOC-1102',
+    entityId: 'DOC-26190-002',
     timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     user: 'SYSTEM_OCR'
   },
@@ -119,7 +119,7 @@ export const MOCK_SYSTEM_ACTIVITY: SystemActivity[] = [
     id: 'EVT-9004',
     action: 'EVIDENCE_TRANSFERRED',
     entityType: 'EVIDENCE',
-    entityId: 'EV-884',
+    entityId: 'EVD-26190-003',
     timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
     user: 'Tech. Marcus Chen'
   },

@@ -13,10 +13,15 @@ export default function SearchResult({ result, isSelected, onClick }: SearchResu
 
   const handleOpenSource = (e: React.MouseEvent) => {
     e.stopPropagation();
+    let targetId = result.id;
+    if (result.id === 'RES-001') targetId = 'DOC-26190-001';
+    if (result.id === 'RES-002') targetId = 'DOC-26190-002';
+    if (result.id === 'RES-003') targetId = 'MEDIA-26190-002';
+
     if (result.sourceType === 'DOCUMENT') {
-      navigate(`/documents/${result.id.replace('RES-', 'DOC-26190-')}`); // Mock ID transform
+      navigate(`/documents/${targetId}`);
     } else if (result.sourceType === 'MEDIA') {
-      navigate(`/media/${result.id.replace('RES-', 'MED-26190-')}`);
+      navigate(`/media/${targetId}`);
     } else if (result.sourceType === 'CASE') {
       navigate(`/cases/${result.caseId}`);
     }
@@ -24,39 +29,43 @@ export default function SearchResult({ result, isSelected, onClick }: SearchResu
 
   return (
     <div 
-      className={`intel-result ${isSelected ? 'intel-result--selected' : ''}`}
+      className={`intel-research-result ${isSelected ? 'intel-research-result--selected' : ''}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
     >
-      <div className="intel-result__header">
-        <div className="intel-result__relevance">
-          <span className="intel-result__score">{result.relevanceScore}%</span>
-          <span className="intel-result__score-label">DEMO RELEVANCE</span>
+      <div className="intel-research-result__metadata">
+        <div className="intel-research-result__source-id">
+          {result.id}
         </div>
-        <div className="intel-result__meta">
-          <span className="intel-result__date">{new Date(result.date).toISOString().split('T')[0]}</span>
-          <span className={`intel-result__status intel-result__status--${result.status.toLowerCase()}`}>
-            {result.status}
+        <div className="intel-research-result__badges">
+          <span className="intel-research-result__badge intel-research-result__badge--type">
+            {result.sourceType}
+          </span>
+          <span className="intel-research-result__badge intel-research-result__badge--case">
+            {result.caseId}
+          </span>
+          <span className="intel-research-result__badge intel-research-result__badge--relevance">
+            {result.relevanceScore}% MATCH
           </span>
         </div>
       </div>
       
-      <div className="intel-result__title-area">
-        <h3 className="intel-result__title">{result.title}</h3>
-        <span className="intel-result__source-type">{result.sourceType}</span>
-        <span className="intel-result__case">{result.caseId}</span>
-      </div>
+      <h3 className="intel-research-result__title">{result.title}</h3>
       
-      <div className="intel-result__excerpt">
+      <div className="intel-research-result__excerpt">
         "{result.excerpt}"
       </div>
       
-      <div className="intel-result__footer">
-        <div className="intel-result__location">
+      <div className="intel-research-result__footer">
+        <div className="intel-research-result__location">
+          <span className="intel-research-result__status">
+            {result.status === 'VERIFIED' ? '[ VERIFIED ]' : result.status === 'RESTRICTED' ? '[ RESTRICTED ]' : `[ ${result.status} ]`}
+          </span>
           {result.page && <span>PAGE {result.page}</span>}
           {result.lines && <span>LINES {result.lines}</span>}
+          <span className="intel-research-result__date">{new Date(result.date).toISOString().split('T')[0]}</span>
         </div>
         
         <button 
@@ -64,7 +73,7 @@ export default function SearchResult({ result, isSelected, onClick }: SearchResu
           onClick={handleOpenSource}
           disabled={!result.isAuthorized}
         >
-          {result.isAuthorized ? '[ OPEN SOURCE ]' : '[ UNAUTHORIZED ]'}
+          {result.isAuthorized ? '[ OPEN SOURCE ]' : '[ ACCESS REQUIRED ]'}
         </button>
       </div>
     </div>

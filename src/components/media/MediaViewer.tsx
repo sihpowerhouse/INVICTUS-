@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Maximize } from 'lucide-react';
+import Dropdown from '../common/Dropdown';
 import './MediaViewer.css';
 
 interface MediaViewerProps {
@@ -135,17 +136,17 @@ export default function MediaViewer({
           </div>
 
           <div className="media-viewer__btn-group">
-            <select 
-              className="media-viewer__speed-select"
-              value={playbackSpeed}
-              onChange={(e) => onSpeedChange(Number(e.target.value))}
-              aria-label="Playback speed"
-            >
-              <option value={0.5}>0.5x</option>
-              <option value={1}>1.0x</option>
-              <option value={1.5}>1.5x</option>
-              <option value={2}>2.0x</option>
-            </select>
+            <Dropdown 
+              value={playbackSpeed.toString()}
+              onChange={(val) => onSpeedChange(Number(val))}
+              options={[
+                { value: '0.5', label: '0.5x' },
+                { value: '1', label: '1.0x' },
+                { value: '1.5', label: '1.5x' },
+                { value: '2', label: '2.0x' }
+              ]}
+              style={{ minWidth: '70px', border: 'none', background: 'transparent' }}
+            />
             <button className="media-viewer__btn" aria-label="Mute">
               <Volume2 size={18} />
             </button>

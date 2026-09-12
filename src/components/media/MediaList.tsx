@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
+import { motion, type Variants } from 'framer-motion';
 import type { Media } from '../../types/media';
 
 interface MediaListProps {
   items: Media[];
+  itemVariants?: Variants;
 }
 
-export default function MediaList({ items }: MediaListProps) {
+export default function MediaList({ items, itemVariants }: MediaListProps) {
   const navigate = useNavigate();
 
   function formatDate(iso: string) {
@@ -15,7 +17,7 @@ export default function MediaList({ items }: MediaListProps) {
   }
 
   return (
-    <div className="media-list">
+    <motion.div className="media-list" variants={itemVariants}>
       <div className="media-list__header">
         <div className="media-list__col">MEDIA ID</div>
         <div className="media-list__col">FILENAME</div>
@@ -33,9 +35,10 @@ export default function MediaList({ items }: MediaListProps) {
           </div>
         ) : (
           items.map(media => (
-            <div 
+            <motion.div 
               key={media.id} 
               className="media-item"
+              variants={itemVariants}
               role="listitem"
               tabIndex={0}
               onClick={() => navigate(`/media/${media.id}`)}
@@ -54,10 +57,10 @@ export default function MediaList({ items }: MediaListProps) {
                 </span>
               </div>
               <div className="media-item__date">{formatDate(media.lastActivityAt)}</div>
-            </div>
+            </motion.div>
           ))
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

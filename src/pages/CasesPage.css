@@ -50,6 +50,11 @@
   transform: translateY(-1px);
 }
 
+.btn-primary:active {
+  transform: translateY(1px);
+  background: #00b8c2;
+}
+
 .cases-page__loading,
 .cases-page__empty {
   padding: 64px;
@@ -68,5 +73,46 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+  }
+}
+
+.cases-page__registry {
+  margin-top: 16px;
+}
+
+.cases-list-header {
+  display: grid;
+  grid-template-columns: 140px 1fr 100px 100px 160px 120px 40px;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 24px;
+}
+
+.cases-header-col {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cases-header-col--right {
+  text-align: right;
+}
+
+.cases-header-col--center {
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .cases-list-header {
+    grid-template-columns: 120px 1fr 100px 120px 40px;
+  }
+  .cases-header-col--owner,
+  .cases-header-col:nth-child(4) { /* priority */
+    display: none;
   }
 }

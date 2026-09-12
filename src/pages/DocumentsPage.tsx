@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, useReducedMotion, AnimatePresence, type Variants } from 'framer-motion';
 import './DocumentsPage.css';
 import type { Document } from '../types/document';
 import { documentService } from '../services/documentService';
@@ -10,6 +11,7 @@ export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const initialFilters: DocumentFiltersState = {
     searchQuery: '',
@@ -57,9 +59,61 @@ export default function DocumentsPage() {
     }).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [documents, filters]);
 
+  // Grouping Logic
+  const groupedDocuments = useMemo(() => {
+    const groups: Record<string, Document[]> = {
+      TODAY: [],
+      YESTERDAY: [],
+      'THIS WEEK': [],
+      OLDER: []
+    };
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const lastWeek = new Date(today);
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    processedDocuments.forEach(d => {
+      const date = new Date(d.updatedAt);
+      if (date >= today) {
+        groups.TODAY.push(d);
+      } else if (date >= yesterday && date < today) {
+        groups.YESTERDAY.push(d);
+      } else if (date >= lastWeek && date < yesterday) {
+        groups['THIS WEEK'].push(d);
+      } else {
+        groups.OLDER.push(d);
+      }
+    });
+
+    return groups;
+  }, [processedDocuments]);
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as any } }
+  };
+
   return (
-    <div className="documents-page">
-      <div className="documents-page__header">
+    <motion.div 
+      className="documents-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="documents-page__header" variants={itemVariants}>
         <div className="documents-page__title-group">
           <p className="page-tag">INVICTUS / DOCUMENT INTELLIGENCE</p>
           <h1 className="documents-page__title">DOCUMENT REGISTRY</h1>
@@ -72,26 +126,32 @@ export default function DocumentsPage() {
             {showUpload ? 'CANCEL UPLOAD' : '+ UPLOAD DOCUMENT'}
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      {showUpload && (
-        <DocumentUpload 
-          onClose={() => setShowUpload(false)} 
-          onComplete={handleUploadComplete} 
+      <AnimatePresence>
+        {showUpload && (
+          <DocumentUpload 
+            onClose={() => setShowUpload(false)} 
+            onComplete={handleUploadComplete} 
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.div variants={itemVariants}>
+        <DocumentCommandBar 
+          filters={filters}
+          onChange={setFilters}
+          onReset={() => setFilters(initialFilters)}
         />
-      )}
-
-      <DocumentCommandBar 
-        filters={filters}
-        onChange={setFilters}
-        onReset={() => setFilters(initialFilters)}
-      />
+      </motion.div>
 
       {isLoading ? (
-        <div className="documents-page__loading">LOADING SECURE REGISTRY...</div>
+        <motion.div className="documents-page__loading" variants={itemVariants}>
+          LOADING SECURE REGISTRY...
+        </motion.div>
       ) : (
-        <DocumentList documents={processedDocuments} />
+        <DocumentList groupedDocuments={groupedDocuments} itemVariants={itemVariants} />
       )}
-    </div>
+    </motion.div>
   );
 }

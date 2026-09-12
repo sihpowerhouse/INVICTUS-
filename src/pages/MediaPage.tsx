@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import './MediaPage.css';
 import type { Media } from '../types/media';
 import { mediaService } from '../services/mediaService';
@@ -8,6 +9,7 @@ import MediaList from '../components/media/MediaList';
 export default function MediaPage() {
   const [items, setItems] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     let mounted = true;
@@ -20,22 +22,44 @@ export default function MediaPage() {
     return () => { mounted = false; };
   }, []);
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  };
+
   return (
-    <div className="media-page">
-      <div className="media-page__header">
+    <motion.div 
+      className="media-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="media-page__header" variants={itemVariants}>
         <h1 className="media-page__title">MEDIA EVIDENCE</h1>
         <div className="media-page__subtitle">INVICTUS / MEDIA INTELLIGENCE</div>
-      </div>
+      </motion.div>
 
-      <MediaCommandBar />
+      <motion.div variants={itemVariants}>
+        <MediaCommandBar />
+      </motion.div>
 
       {isLoading ? (
-        <div style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <motion.div style={{ padding: '64px', textAlign: 'center', color: 'var(--text-muted)' }} variants={itemVariants}>
           LOADING MEDIA ARCHIVES...
-        </div>
+        </motion.div>
       ) : (
-        <MediaList items={items} />
+        <MediaList items={items} itemVariants={itemVariants} />
       )}
-    </div>
+    </motion.div>
   );
 }

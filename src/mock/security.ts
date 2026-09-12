@@ -168,7 +168,7 @@ export const mockAuditEvents: AuditEvent[] = [
     actor: 'Det. Miller',
     department: 'HOMICIDE',
     action: 'VIEWED',
-    target: 'MED-26190-001',
+    target: 'MEDIA-26190-001',
     targetType: 'MEDIA',
     result: 'SUCCESS',
     caseId: 'CAS-26190'
@@ -204,7 +204,7 @@ export const mockAccessRequests: AccessRequest[] = [
     requester: 'Dr. A. Patel',
     department: 'CYBER',
     caseId: 'CAS-26190',
-    documentId: 'MED-26190-001',
+    documentId: 'MEDIA-26190-002',
     documentName: 'CCTV_North_Entrance.mp4',
     permission: 'DOWNLOAD',
     requestedAt: '2026-09-11T10:15:00Z',

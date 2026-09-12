@@ -188,7 +188,7 @@ const integrity004: EvidenceIntegrity = {
 export const MOCK_EVIDENCE: Evidence[] = [
   {
     id: 'EVD-26190-001',
-    caseId: 'CASE-26190-001',
+    caseId: 'CAS-26190',
     title: 'Mobile Device — Samsung Galaxy',
     description: 'Android device recovered from primary scene. Suspected to contain relevant communications and media.',
     type: 'DEVICE',
@@ -208,7 +208,7 @@ export const MOCK_EVIDENCE: Evidence[] = [
   },
   {
     id: 'EVD-26190-002',
-    caseId: 'CASE-26190-001',
+    caseId: 'CAS-26190',
     title: 'Forensic Image Set — CCTV Export',
     description: 'Collection of 48 extracted frames from CCTV footage covering 09 Sep 0200–0600 hrs.',
     type: 'IMAGE',
@@ -221,14 +221,14 @@ export const MOCK_EVIDENCE: Evidence[] = [
     updatedAt: '2026-09-09T08:45:00',
     lastActivityAt: '2026-09-09T08:45:00',
     relatedDocumentIds: [],
-    relatedMediaIds: ['MEDIA-26190-001'],
+    relatedMediaIds: ['MEDIA-26190-002'],
     custodyEvents: custody002,
     activityEvents: activity002,
     integrity: integrity002,
   },
   {
     id: 'EVD-26190-003',
-    caseId: 'CASE-26190-001',
+    caseId: 'CAS-26190',
     title: 'Interrogation Recording — Primary Subject',
     description: 'Audio recording of formal interrogation session. Duration: 1h 42m.',
     type: 'AUDIO',
@@ -241,7 +241,7 @@ export const MOCK_EVIDENCE: Evidence[] = [
     updatedAt: '2026-09-09T16:30:00',
     lastActivityAt: '2026-09-09T16:30:00',
     relatedDocumentIds: ['DOC-26190-002'],
-    relatedMediaIds: ['MEDIA-26190-002'],
+    relatedMediaIds: ['MEDIA-26190-001'],
     custodyEvents: custody003,
     activityEvents: activity003,
     integrity: integrity003,

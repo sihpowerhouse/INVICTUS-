@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import './VersionHistory.css';
 import type { Document } from '../../types/document';
 
@@ -6,9 +7,8 @@ interface VersionHistoryProps {
 }
 
 export default function VersionHistory({ document: doc }: VersionHistoryProps) {
-  // Generate some mock previous versions based on current version
-  // If version is v3, we'll mock v2 and v1.
   const currentVersionNum = parseInt(doc.version.replace('v', '')) || 1;
+  const shouldReduceMotion = useReducedMotion();
   
   const history = [];
   for (let i = currentVersionNum; i >= 1; i--) {
@@ -21,28 +21,58 @@ export default function VersionHistory({ document: doc }: VersionHistoryProps) {
     });
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -10 },
+    show: { opacity: 1, x: 0, transition: { duration: 0.3 } }
+  };
+
   return (
     <div className="version-history">
       <div className="vh-header">
         <h3 className="vh-title">VERSION HISTORY</h3>
       </div>
       
-      <div className="vh-timeline">
-        {history.map(item => (
-          <div key={item.version} className={`vh-item ${item.active ? 'active' : ''}`}>
-            <div className="vh-marker" />
+      <motion.div 
+        className="vh-timeline"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        {history.map((item, idx) => (
+          <motion.div 
+            key={item.version} 
+            className={`vh-item ${item.active ? 'active' : ''}`}
+            variants={itemVariants}
+          >
+            <div className="vh-marker-container">
+              <div className="vh-marker" />
+              {idx < history.length - 1 && <div className="vh-line" />}
+            </div>
+            
             <div className="vh-content">
               <div className="vh-version-row">
                 <span className="vh-version">{item.version}</span>
-                <span className="vh-status">{item.status.replace('_', ' ')}</span>
+                <span className={`vh-status vh-status--${item.status.toLowerCase()}`}>
+                  {item.status.replace('_', ' ')}
+                </span>
               </div>
               <div className="vh-meta">
-                {item.date} • <span className="vh-meta-user">{item.user}</span>
+                <span className="vh-meta-date">{item.date}</span>
+                <span className="vh-meta-sep">•</span>
+                <span className="vh-meta-user">{item.user}</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

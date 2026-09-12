@@ -18,7 +18,8 @@ export default function CaseStatusBadge({ type, value, label }: CaseStatusBadgeP
   
   return (
     <span className={`case-badge ${variantClass}`}>
-      {displayText}
+      <span className="case-badge__dot"></span>
+      <span className="case-badge__text">{displayText}</span>
     </span>
   );
 }

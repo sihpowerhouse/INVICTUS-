@@ -1,5 +1,6 @@
 import './EvidenceCommandBar.css';
 import type { EvidenceType, EvidenceStatus, CustodyState } from '../../types/evidence';
+import Dropdown from '../common/Dropdown';
 
 export interface EvidenceFiltersState {
   searchQuery: string;
@@ -38,53 +39,53 @@ export default function EvidenceCommandBar({
       </div>
 
       <div className="evd-command-bar__filters">
-        <select
-          className="evd-filter-select"
+        <Dropdown
           value={filters.type}
-          onChange={e => onChange({ ...filters, type: e.target.value as EvidenceType | 'ALL' })}
-          aria-label="Filter by type"
-        >
-          <option value="ALL">ALL TYPES</option>
-          <option value="DIGITAL_DOCUMENT">DIGITAL DOCUMENT</option>
-          <option value="IMAGE">IMAGE</option>
-          <option value="VIDEO">VIDEO</option>
-          <option value="AUDIO">AUDIO</option>
-          <option value="DEVICE">DEVICE</option>
-          <option value="PHYSICAL_RECORD">PHYSICAL RECORD</option>
-          <option value="FORENSIC_SAMPLE">FORENSIC SAMPLE</option>
-          <option value="OTHER">OTHER</option>
-        </select>
-
-        <select
+          onChange={val => onChange({ ...filters, type: val as EvidenceType | 'ALL' })}
+          options={[
+            { value: 'ALL', label: 'ALL TYPES' },
+            { value: 'DIGITAL_DOCUMENT', label: 'DIGITAL DOCUMENT' },
+            { value: 'IMAGE', label: 'IMAGE' },
+            { value: 'VIDEO', label: 'VIDEO' },
+            { value: 'AUDIO', label: 'AUDIO' },
+            { value: 'DEVICE', label: 'DEVICE' },
+            { value: 'PHYSICAL_RECORD', label: 'PHYSICAL RECORD' },
+            { value: 'FORENSIC_SAMPLE', label: 'FORENSIC SAMPLE' },
+            { value: 'OTHER', label: 'OTHER' }
+          ]}
           className="evd-filter-select"
+        />
+
+        <Dropdown
           value={filters.status}
-          onChange={e => onChange({ ...filters, status: e.target.value as EvidenceStatus | 'ALL' })}
-          aria-label="Filter by status"
-        >
-          <option value="ALL">ALL STATUS</option>
-          <option value="REGISTERED">REGISTERED</option>
-          <option value="IN_CUSTODY">IN CUSTODY</option>
-          <option value="UNDER_EXAMINATION">UNDER EXAMINATION</option>
-          <option value="TRANSFERRED">TRANSFERRED</option>
-          <option value="VERIFIED">VERIFIED</option>
-          <option value="REQUIRES_REVIEW">REQUIRES REVIEW</option>
-          <option value="ARCHIVED">ARCHIVED</option>
-        </select>
-
-        <select
+          onChange={val => onChange({ ...filters, status: val as EvidenceStatus | 'ALL' })}
+          options={[
+            { value: 'ALL', label: 'ALL STATUS' },
+            { value: 'REGISTERED', label: 'REGISTERED' },
+            { value: 'IN_CUSTODY', label: 'IN CUSTODY' },
+            { value: 'UNDER_EXAMINATION', label: 'UNDER EXAMINATION' },
+            { value: 'TRANSFERRED', label: 'TRANSFERRED' },
+            { value: 'VERIFIED', label: 'VERIFIED' },
+            { value: 'REQUIRES_REVIEW', label: 'REQUIRES REVIEW' },
+            { value: 'ARCHIVED', label: 'ARCHIVED' }
+          ]}
           className="evd-filter-select"
+        />
+
+        <Dropdown
           value={filters.custodyState}
-          onChange={e => onChange({ ...filters, custodyState: e.target.value as CustodyState | 'ALL' })}
-          aria-label="Filter by custody state"
-        >
-          <option value="ALL">ALL CUSTODY</option>
-          <option value="IN_CUSTODY">IN CUSTODY</option>
-          <option value="AT_FSL">AT FSL</option>
-          <option value="UNDER_EXAMINATION">UNDER EXAMINATION</option>
-          <option value="TRANSFERRED">TRANSFERRED</option>
-          <option value="RELEASED">RELEASED</option>
-          <option value="ARCHIVED">ARCHIVED</option>
-        </select>
+          onChange={val => onChange({ ...filters, custodyState: val as CustodyState | 'ALL' })}
+          options={[
+            { value: 'ALL', label: 'ALL CUSTODY' },
+            { value: 'IN_CUSTODY', label: 'IN CUSTODY' },
+            { value: 'AT_FSL', label: 'AT FSL' },
+            { value: 'UNDER_EXAMINATION', label: 'UNDER EXAMINATION' },
+            { value: 'TRANSFERRED', label: 'TRANSFERRED' },
+            { value: 'RELEASED', label: 'RELEASED' },
+            { value: 'ARCHIVED', label: 'ARCHIVED' }
+          ]}
+          className="evd-filter-select"
+        />
 
         <button className="evd-btn-reset" onClick={onReset}>RESET</button>
 

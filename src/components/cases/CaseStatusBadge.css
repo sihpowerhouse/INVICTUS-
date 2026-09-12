@@ -1,92 +1,80 @@
 .case-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
-  border-radius: 4px;
+  gap: 6px;
+}
+
+.case-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.case-badge__text {
   font-family: monospace;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  border: 1px solid transparent;
+  color: var(--text-secondary);
 }
 
 /* Status variants */
-.case-badge--status-new {
-  color: #fff;
-  background: var(--accent);
-  border-color: var(--accent);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+.case-badge--status-new .case-badge__dot { background: var(--accent); }
+.case-badge--status-new .case-badge__text { color: var(--accent); }
+
+.case-badge--status-active .case-badge__dot { 
+  background: var(--success); 
+  animation: statusPulse 3s ease-in-out infinite;
+}
+.case-badge--status-active .case-badge__text { color: var(--success); }
+
+@keyframes statusPulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
 }
 
-.case-badge--status-active {
-  color: var(--success);
-  background: rgba(53, 212, 154, 0.1);
-  border-color: rgba(53, 212, 154, 0.2);
+@media (prefers-reduced-motion: reduce) {
+  .case-badge--status-active .case-badge__dot {
+    animation: none;
+    opacity: 1;
+  }
 }
 
-.case-badge--status-review {
-  color: var(--warning);
-  background: rgba(255, 171, 0, 0.1);
-  border-color: rgba(255, 171, 0, 0.2);
+.case-badge--status-review .case-badge__dot { background: var(--warning); }
+.case-badge--status-review .case-badge__text { color: var(--warning); }
+
+.case-badge--status-on_hold .case-badge__dot { background: var(--danger); }
+.case-badge--status-on_hold .case-badge__text { color: var(--danger); }
+
+.case-badge--status-closed .case-badge__dot,
+.case-badge--status-archived .case-badge__dot { background: rgba(255, 255, 255, 0.2); }
+
+/* Priority variants - no dot for priority, just colored text */
+.case-badge--priority-low .case-badge__dot,
+.case-badge--priority-medium .case-badge__dot,
+.case-badge--priority-high .case-badge__dot,
+.case-badge--priority-critical .case-badge__dot {
+  display: none;
 }
 
-.case-badge--status-on_hold {
-  color: var(--danger);
-  background: rgba(255, 86, 48, 0.1);
-  border-color: rgba(255, 86, 48, 0.2);
-}
-
-.case-badge--status-closed,
-.case-badge--status-archived {
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Priority variants */
-.case-badge--priority-low {
-  color: var(--text-secondary);
-  border-color: var(--border-subtle);
-}
-
-.case-badge--priority-medium {
-  color: var(--warning);
-  border-color: rgba(255, 171, 0, 0.3);
-}
-
-.case-badge--priority-high {
-  color: var(--danger);
-  border-color: rgba(255, 86, 48, 0.3);
-}
-
-.case-badge--priority-critical {
-  color: #fff;
-  background: var(--danger);
-  border-color: var(--danger);
-  box-shadow: 0 0 10px rgba(255, 86, 48, 0.4);
-}
+.case-badge--priority-low .case-badge__text { color: var(--text-muted); font-weight: 400; }
+.case-badge--priority-medium .case-badge__text { color: var(--warning); }
+.case-badge--priority-high .case-badge__text { color: var(--danger); }
+.case-badge--priority-critical .case-badge__text { color: var(--danger); border-bottom: 1px solid var(--danger); }
 
 /* Attention variants */
-.case-badge--attention-action_required {
-  color: var(--danger);
-  border-color: rgba(255, 86, 48, 0.4);
-  background: rgba(255, 86, 48, 0.1);
-}
+.case-badge--attention-action_required .case-badge__dot { background: var(--danger); }
+.case-badge--attention-action_required .case-badge__text { color: var(--danger); }
 
-.case-badge--attention-overdue {
-  color: #fff;
-  background: var(--danger);
-  border-color: var(--danger);
-  box-shadow: 0 0 10px rgba(255, 86, 48, 0.4);
-}
+.case-badge--attention-overdue .case-badge__dot { background: var(--danger); box-shadow: 0 0 4px var(--danger); }
+.case-badge--attention-overdue .case-badge__text { color: var(--danger); font-weight: 700; }
 
-.case-badge--attention-waiting {
-  color: var(--warning);
-  border-color: rgba(255, 171, 0, 0.4);
-  background: rgba(255, 171, 0, 0.1);
-}
+.case-badge--attention-waiting .case-badge__dot { background: var(--warning); }
+.case-badge--attention-waiting .case-badge__text { color: var(--warning); }
 
 .case-badge--attention-none {
-  display: none; /* Usually won't render, but fallback */
+  display: none;
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import './EvidencePage.css';
 import type { Evidence } from '../types/evidence';
 import { evidenceService } from '../services/evidenceService';
@@ -48,9 +49,29 @@ export default function EvidencePage() {
       .sort((a, b) => new Date(b.lastActivityAt).getTime() - new Date(a.lastActivityAt).getTime());
   }, [evidence, filters]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 5 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+  };
+
   return (
-    <div className="evidence-page">
-      <div className="evidence-page__header">
+    <motion.div 
+      className="evidence-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="evidence-page__header" variants={itemVariants}>
         <div className="evidence-page__title-group">
           <p className="page-tag">INVICTUS / EVIDENCE INTELLIGENCE</p>
           <h1 className="evidence-page__title">EVIDENCE VAULT</h1>
@@ -58,20 +79,24 @@ export default function EvidencePage() {
         <div>
           <button className="btn-primary">+ REGISTER EVIDENCE</button>
         </div>
-      </div>
+      </motion.div>
 
-      <EvidenceCommandBar
-        filters={filters}
-        resultCount={processed.length}
-        onChange={setFilters}
-        onReset={() => setFilters(INITIAL_FILTERS)}
-      />
+      <motion.div variants={itemVariants}>
+        <EvidenceCommandBar
+          filters={filters}
+          resultCount={processed.length}
+          onChange={setFilters}
+          onReset={() => setFilters(INITIAL_FILTERS)}
+        />
+      </motion.div>
 
-      {isLoading ? (
-        <div className="evidence-page__loading">LOADING SECURE VAULT...</div>
-      ) : (
-        <EvidenceList evidence={processed} />
-      )}
-    </div>
+      <motion.div variants={itemVariants}>
+        {isLoading ? (
+          <div className="evidence-page__loading">LOADING SECURE VAULT...</div>
+        ) : (
+          <EvidenceList evidence={processed} />
+        )}
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import './MediaPanels.css';
 import type { ImportantMoment } from '../../types/media';
 
@@ -7,6 +8,8 @@ interface ImportantMomentsProps {
 }
 
 export default function ImportantMoments({ moments, onTimeSelect }: ImportantMomentsProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="media-panel">
       <div className="media-panel__header">
@@ -33,6 +36,15 @@ export default function ImportantMoments({ moments, onTimeSelect }: ImportantMom
           ))}
         </div>
       )}
+      <div style={{ padding: '16px', borderTop: '1px solid var(--border-color)', marginTop: '8px' }}>
+        <button 
+          className="btn-outline" 
+          style={{ width: '100%' }}
+          onClick={() => navigate('/intelligence/search?q=CAS-26190')}
+        >
+          [ ANALYZE IN INTELLIGENCE ]
+        </button>
+      </div>
     </div>
   );
 }

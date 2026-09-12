@@ -1,6 +1,12 @@
+import { useState } from 'react';
 import { Search } from 'lucide-react';
+import Dropdown from '../common/Dropdown';
 
 export default function MediaCommandBar() {
+  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [dateFilter, setDateFilter] = useState('ALL');
+
   return (
     <div className="media-cmd">
       <div style={{ display: 'flex', alignItems: 'center', flex: 1, position: 'relative' }}>
@@ -14,26 +20,38 @@ export default function MediaCommandBar() {
       </div>
       
       <div className="media-cmd__filters">
-        <select className="media-cmd__select" defaultValue="ALL" aria-label="Filter by Type">
-          <option value="ALL">TYPE: ALL</option>
-          <option value="AUDIO">AUDIO</option>
-          <option value="VIDEO">VIDEO</option>
-        </select>
+        <Dropdown
+          value={typeFilter}
+          onChange={setTypeFilter}
+          options={[
+            { value: 'ALL', label: 'TYPE: ALL' },
+            { value: 'AUDIO', label: 'AUDIO' },
+            { value: 'VIDEO', label: 'VIDEO' }
+          ]}
+        />
         
-        <select className="media-cmd__select" defaultValue="ALL" aria-label="Filter by Status">
-          <option value="ALL">STATUS: ALL</option>
-          <option value="UNPROCESSED">UNPROCESSED</option>
-          <option value="PROCESSING">PROCESSING</option>
-          <option value="READY">READY</option>
-          <option value="FLAGGED">FLAGGED</option>
-        </select>
+        <Dropdown
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={[
+            { value: 'ALL', label: 'STATUS: ALL' },
+            { value: 'UNPROCESSED', label: 'UNPROCESSED' },
+            { value: 'PROCESSING', label: 'PROCESSING' },
+            { value: 'READY', label: 'READY' },
+            { value: 'FLAGGED', label: 'FLAGGED' }
+          ]}
+        />
         
-        <select className="media-cmd__select" defaultValue="ALL" aria-label="Filter by Date">
-          <option value="ALL">DATE: ANY</option>
-          <option value="TODAY">TODAY</option>
-          <option value="WEEK">LAST 7 DAYS</option>
-          <option value="MONTH">LAST 30 DAYS</option>
-        </select>
+        <Dropdown
+          value={dateFilter}
+          onChange={setDateFilter}
+          options={[
+            { value: 'ALL', label: 'DATE: ANY' },
+            { value: 'TODAY', label: 'TODAY' },
+            { value: 'WEEK', label: 'LAST 7 DAYS' },
+            { value: 'MONTH', label: 'LAST 30 DAYS' }
+          ]}
+        />
       </div>
     </div>
   );

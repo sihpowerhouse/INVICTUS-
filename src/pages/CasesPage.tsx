@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import './CasesPage.css';
 import type { Case } from '../types/case';
 import { caseService } from '../services/caseService';
@@ -11,6 +12,8 @@ import CaseListItem from '../components/cases/CaseListItem';
 export default function CasesPage() {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const initialFilters: CaseFiltersState = {
     searchQuery: '',
@@ -103,9 +106,33 @@ export default function CasesPage() {
     return groups;
   }, [processedCases]);
 
+  const toggleExpand = (caseId: string) => {
+    setExpandedCaseId(prev => prev === caseId ? null : caseId);
+  };
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as any } }
+  };
+
   return (
-    <div className="cases-page">
-      <div className="cases-page__header">
+    <motion.div 
+      className="cases-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="cases-page__header" variants={itemVariants}>
         <div className="cases-page__title-group">
           <p className="page-tag">INVICTUS / REGISTRY</p>
           <h1 className="cases-page__title">CASE OPERATIONS</h1>
@@ -113,24 +140,30 @@ export default function CasesPage() {
         <div className="cases-page__actions">
           <button className="btn-primary">+ NEW CASE</button>
         </div>
-      </div>
+      </motion.div>
 
-      <CaseCommandBar 
-        filters={filters}
-        onChange={setFilters}
-        onReset={handleReset}
-      />
+      <motion.div variants={itemVariants}>
+        <CaseCommandBar 
+          filters={filters}
+          onChange={setFilters}
+          onReset={handleReset}
+        />
+      </motion.div>
 
-      <CaseSavedViews 
-        currentFilters={filters}
-        onApplyView={handleApplyView}
-      />
+      <motion.div variants={itemVariants}>
+        <CaseSavedViews 
+          currentFilters={filters}
+          onApplyView={handleApplyView}
+        />
+      </motion.div>
 
       {!isLoading && (
-        <CaseResultSummary 
-          totalCount={processedCases.length} 
-          filters={filters} 
-        />
+        <motion.div variants={itemVariants}>
+          <CaseResultSummary 
+            totalCount={processedCases.length} 
+            filters={filters} 
+          />
+        </motion.div>
       )}
 
       {isLoading ? (
@@ -138,19 +171,57 @@ export default function CasesPage() {
       ) : processedCases.length === 0 ? (
         <div className="cases-page__empty">NO CASES MATCH CURRENT FILTERS</div>
       ) : (
-        <div className="cases-page__groups">
-          {Object.entries(groupedCases).map(([groupName, groupCases]) => {
-            if (groupCases.length === 0) return null;
-            return (
-              <CaseGroup key={groupName} title={groupName}>
-                {groupCases.map(c => (
-                  <CaseListItem key={c.id} caseData={c} />
-                ))}
-              </CaseGroup>
-            );
-          })}
-        </div>
+        <motion.div className="cases-page__registry" variants={itemVariants}>
+          <div className="cases-list-header">
+            <div className="cases-header-col">CASE ID</div>
+            <div className="cases-header-col">TITLE</div>
+            <div className="cases-header-col">STATUS</div>
+            <div className="cases-header-col">PRIORITY</div>
+            <div className="cases-header-col cases-header-col--owner">OWNER / DEPT</div>
+            <div className="cases-header-col cases-header-col--right">ACTIVITY</div>
+            <div className="cases-header-col cases-header-col--center">ACTION</div>
+          </div>
+          
+          <div className="cases-page__groups">
+            <AnimatePresence mode="popLayout">
+              {Object.entries(groupedCases).map(([groupName, groupCases]) => {
+                if (groupCases.length === 0) return null;
+                return (
+                  <motion.div 
+                    key={groupName}
+                    layout={!shouldReduceMotion}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <CaseGroup title={groupName}>
+                      <AnimatePresence mode="popLayout">
+                        {groupCases.map(c => (
+                          <motion.div 
+                            key={c.id}
+                            layout={!shouldReduceMotion}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <CaseListItem 
+                              caseData={c} 
+                              isExpanded={expandedCaseId === c.id}
+                              onToggle={() => toggleExpand(c.id)}
+                            />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </CaseGroup>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

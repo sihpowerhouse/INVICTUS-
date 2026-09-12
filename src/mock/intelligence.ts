@@ -10,7 +10,7 @@ export const mockSearchResults: SearchResult[] = [
     caseId: 'CAS-26190',
     excerpt: '...material consistent with the scene was found on the suspect\'s clothing...',
     relevanceScore: 94,
-    date: '2026-01-15T10:30:00Z',
+    date: '2026-09-11T10:30:00Z',
     status: 'VERIFIED',
     page: 7,
     lines: '12–18',
@@ -23,7 +23,7 @@ export const mockSearchResults: SearchResult[] = [
     caseId: 'CAS-26190',
     excerpt: '...I saw a dark vehicle leaving the area at high speed around 23:45...',
     relevanceScore: 91,
-    date: '2026-01-13T14:00:00Z',
+    date: '2026-09-09T14:00:00Z',
     status: 'PROCESSED',
     page: 2,
     lines: '4–6',
@@ -36,7 +36,7 @@ export const mockSearchResults: SearchResult[] = [
     caseId: 'CAS-26190',
     excerpt: 'Subject matching description enters frame.',
     relevanceScore: 88,
-    date: '2026-01-10T23:40:00Z',
+    date: '2026-09-08T23:40:00Z',
     status: 'PROCESSED',
     isAuthorized: true
   },
@@ -47,7 +47,7 @@ export const mockSearchResults: SearchResult[] = [
     caseId: 'CAS-26190',
     excerpt: 'REDACTED',
     relevanceScore: 85,
-    date: '2026-01-12T09:00:00Z',
+    date: '2026-09-10T09:00:00Z',
     status: 'RESTRICTED',
     isAuthorized: false
   }
@@ -122,7 +122,7 @@ export const mockAnswers: Record<string, AIAnswer> = {
 export const mockTimeline: TimelineEvent[] = [
   {
     id: 'EVT-001',
-    date: '10 JAN',
+    date: '08 SEP',
     time: '23:30',
     event: 'INCIDENT',
     sourceType: 'CASE',
@@ -132,27 +132,27 @@ export const mockTimeline: TimelineEvent[] = [
   },
   {
     id: 'EVT-002',
-    date: '10 JAN',
+    date: '08 SEP',
     time: '23:40',
     event: 'SUBJECT DETECTED',
     sourceType: 'MEDIA',
-    sourceId: 'MED-26190-001',
+    sourceId: 'MEDIA-26190-002',
     sourceName: 'CCTV North Entrance',
     caseId: 'CAS-26190'
   },
   {
     id: 'EVT-003',
-    date: '11 JAN',
+    date: '09 SEP',
     time: '08:15',
     event: 'FIR FILED',
     sourceType: 'DOCUMENT',
-    sourceId: 'DOC-26190-FIR',
+    sourceId: 'DOC-26190-003',
     sourceName: 'Initial_Report.pdf',
     caseId: 'CAS-26190'
   },
   {
     id: 'EVT-004',
-    date: '13 JAN',
+    date: '09 SEP',
     time: '14:00',
     event: 'WITNESS STATEMENT',
     sourceType: 'DOCUMENT',
@@ -162,7 +162,7 @@ export const mockTimeline: TimelineEvent[] = [
   },
   {
     id: 'EVT-005',
-    date: '15 JAN',
+    date: '11 SEP',
     time: '10:30',
     event: 'FORENSIC REPORT LOGGED',
     sourceType: 'DOCUMENT',
@@ -187,14 +187,14 @@ export const mockInconsistencies: PotentialInconsistency[] = [
     type: 'INCIDENT DATE',
     description: 'The exact timing of the incident differs between the witness statement and the initial report.',
     sourceA: {
-      sourceId: 'DOC-26190-FIR',
+      sourceId: 'DOC-26190-003',
       sourceName: 'Initial_Report.pdf',
-      value: 'Incident occurred prior to 23:00 on 10 January.'
+      value: 'Incident occurred prior to 23:00 on 08 September.'
     },
     sourceB: {
       sourceId: 'DOC-26190-002',
       sourceName: 'Witness_A_Statement.pdf',
-      value: 'I saw the vehicle speeding away at 23:45 on 10 January.'
+      value: 'I saw the vehicle speeding away at 23:45 on 08 September.'
     }
   },
   {
@@ -203,12 +203,12 @@ export const mockInconsistencies: PotentialInconsistency[] = [
     type: 'LOCATION CONFLICT',
     description: 'Subject location is reported differently by the subject and CCTV.',
     sourceA: {
-      sourceId: 'DOC-26190-INT',
-      sourceName: 'Interrogation_Transcript.pdf',
+      sourceId: 'MEDIA-26190-001',
+      sourceName: 'Interrogation Audio',
       value: 'Subject claims to have been at home all night.'
     },
     sourceB: {
-      sourceId: 'MED-26190-001',
+      sourceId: 'MEDIA-26190-002',
       sourceName: 'CCTV North Entrance',
       value: 'Subject detected entering Sector 4 Industrial Park.'
     }

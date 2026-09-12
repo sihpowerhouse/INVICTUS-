@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import './MediaDetailsPage.css';
 import type { Media } from '../types/media';
 import { mediaService } from '../services/mediaService';
@@ -15,6 +16,7 @@ export default function MediaDetailsPage() {
   const navigate = useNavigate();
   const [media, setMedia] = useState<Media | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
 
   // Playback state
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
@@ -59,9 +61,29 @@ export default function MediaDetailsPage() {
     setCurrentTimeMs(timeMs);
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  };
+
   return (
-    <div className="media-details-page">
-      <div className="media-details__header">
+    <motion.div 
+      className="media-details-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="media-details__header" variants={itemVariants}>
         <div className="media-details__title-area">
           <p className="page-tag" style={{ cursor: 'pointer' }} onClick={() => navigate('/media')}>
             &larr; BACK TO MEDIA INTELLIGENCE
@@ -84,42 +106,52 @@ export default function MediaDetailsPage() {
             </span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="media-details__content">
         <div className="media-details__main">
-          <MediaViewer 
-            type={media.type}
-            durationMs={media.duration}
-            currentTimeMs={currentTimeMs}
-            isPlaying={isPlaying}
-            playbackSpeed={playbackSpeed}
-            onTimeChange={setCurrentTimeMs}
-            onPlayPause={setIsPlaying}
-            onSpeedChange={setPlaybackSpeed}
-          />
+          <motion.div variants={itemVariants}>
+            <MediaViewer 
+              type={media.type}
+              durationMs={media.duration}
+              currentTimeMs={currentTimeMs}
+              isPlaying={isPlaying}
+              playbackSpeed={playbackSpeed}
+              onTimeChange={setCurrentTimeMs}
+              onPlayPause={setIsPlaying}
+              onSpeedChange={setPlaybackSpeed}
+            />
+          </motion.div>
 
-          <TranscriptPanel 
-            lines={media.transcript}
-            currentTimeMs={currentTimeMs}
-            onTimeSelect={handleTimeSelect}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
+          <motion.div variants={itemVariants}>
+            <TranscriptPanel 
+              lines={media.transcript}
+              currentTimeMs={currentTimeMs}
+              onTimeSelect={handleTimeSelect}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </motion.div>
         </div>
         
         <div className="media-details__sidebar">
-          <ImportantMoments 
-            moments={media.importantMoments}
-            onTimeSelect={handleTimeSelect}
-          />
-          <MediaMetadata media={media} />
-          <RelatedEvidence 
-            caseIds={media.relatedCaseIds}
-            evidenceIds={media.relatedEvidenceIds}
-          />
+          <motion.div variants={itemVariants}>
+            <ImportantMoments 
+              moments={media.importantMoments}
+              onTimeSelect={handleTimeSelect}
+            />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <MediaMetadata media={media} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <RelatedEvidence 
+              caseIds={media.relatedCaseIds}
+              evidenceIds={media.relatedEvidenceIds}
+            />
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

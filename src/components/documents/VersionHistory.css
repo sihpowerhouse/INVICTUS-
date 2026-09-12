@@ -1,21 +1,20 @@
 .version-history {
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
   padding: 24px;
 }
 
 .vh-header {
   margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .vh-title {
-  font-family: monospace;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
   letter-spacing: 0.1em;
   margin: 0;
 }
@@ -23,82 +22,96 @@
 .vh-timeline {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  position: relative;
-}
-
-.vh-timeline::before {
-  content: '';
-  position: absolute;
-  top: 12px;
-  bottom: 12px;
-  left: 5px;
-  width: 2px;
-  background: var(--border-subtle);
-  z-index: 0;
 }
 
 .vh-item {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   position: relative;
-  z-index: 1;
+  min-height: 64px;
+}
+
+.vh-marker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16px;
+  margin-top: 4px;
 }
 
 .vh-marker {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--bg-card);
-  border: 2px solid var(--text-muted);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-text-dim);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.vh-line {
+  flex: 1;
+  width: 1px;
+  background-color: var(--color-border);
   margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .vh-item.active .vh-marker {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
 }
 
 .vh-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding-bottom: 24px;
 }
 
 .vh-version-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .vh-version {
-  font-family: monospace;
-  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--color-text);
 }
 
 .vh-status {
-  font-family: monospace;
-  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
   padding: 2px 6px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-dim);
+  letter-spacing: 0.05em;
 }
 
 .vh-item.active .vh-status {
-  background: rgba(0, 240, 255, 0.1);
-  color: var(--accent);
+  background-color: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
 }
 
 .vh-meta {
-  font-family: monospace;
-  font-size: 10px;
-  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .vh-meta-user {
-  color: var(--text-secondary);
+  color: var(--color-text);
 }
+
+.vh-meta-sep {
+  opacity: 0.5;
+}
+

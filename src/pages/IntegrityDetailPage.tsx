@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import './IntegrityDetailPage.css';
 import { securityService } from '../services/securityService';
 import type { DocumentIntegrity } from '../types/security';
@@ -12,6 +12,7 @@ import VerificationResult from '../components/security/VerificationResult';
 
 export default function IntegrityDetailPage() {
   const { documentId } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState<DocumentIntegrity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,7 +37,12 @@ export default function IntegrityDetailPage() {
           <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '11px' }}>/</span>
           <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: '11px' }}>{documentId}</span>
         </div>
-        <h1 className="page-title">DOCUMENT INTEGRITY</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <h1 className="page-title">DOCUMENT INTEGRITY</h1>
+          <button className="intel-btn-outline" onClick={() => navigate(`/audit?targetId=${documentId}`)} style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}>
+            [ VIEW AUDIT TRAIL ]
+          </button>
+        </div>
       </div>
 
       {isLoading || !data ? (

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, useReducedMotion, type Variants, AnimatePresence } from 'framer-motion';
 import './IntelligenceSearchPage.css';
 import { intelligenceService } from '../services/intelligenceService';
 import type { SearchResult as ISearchResult, SearchMode } from '../types/intelligence';
@@ -14,6 +15,7 @@ export default function IntelligenceSearchPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedResult, setSelectedResult] = useState<ISearchResult | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const handleSearch = async (newQuery: string, newMode: SearchMode) => {
     setQuery(newQuery);
@@ -27,58 +29,95 @@ export default function IntelligenceSearchPage() {
   };
 
   const handleFilterChange = (filters: any) => {
-    // In a real app, this would trigger a new search with filters
     console.log('Filters updated:', filters);
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
-    <div className="intel-search-page">
-      <div className="intel-search-page__header">
+    <motion.div 
+      className="intel-search-page"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="intel-search-page__header" variants={itemVariants}>
         <p className="page-tag">INVICTUS / INTELLIGENCE</p>
         <h1 className="page-title">CASE INTELLIGENCE</h1>
-      </div>
+      </motion.div>
 
-      <SearchBar initialQuery={query} onSearch={handleSearch} />
+      <motion.div variants={itemVariants}>
+        <SearchBar initialQuery={query} onSearch={handleSearch} />
+      </motion.div>
 
       <div className="intel-search-page__layout">
-        <aside className="intel-filters-sidebar">
+        <motion.aside className="intel-filters-sidebar" variants={itemVariants}>
           <SearchFilters onFilterChange={handleFilterChange} />
-        </aside>
+        </motion.aside>
 
         <main className="intel-results-main">
           {!hasSearched ? (
-            <div className="intelligence-empty">
+            <motion.div className="intelligence-empty" variants={itemVariants}>
               ENTER A QUERY TO SEARCH THE INTELLIGENCE DATABASE
-            </div>
+            </motion.div>
           ) : isLoading ? (
-            <div className="intelligence-loading">
+            <motion.div className="intelligence-loading" variants={itemVariants}>
               ANALYZING SOURCES...
-            </div>
+            </motion.div>
           ) : results.length === 0 ? (
-            <div className="intelligence-empty">
+            <motion.div className="intelligence-empty" variants={itemVariants}>
               NO RESULTS FOUND FOR THE GIVEN QUERY
-            </div>
+            </motion.div>
           ) : (
-            <>
-              <div className="intel-results-count">
+            <motion.div 
+              variants={containerVariants} 
+              initial="hidden" 
+              animate="show"
+              className="intel-results-list"
+            >
+              <motion.div className="intel-results-count" variants={itemVariants}>
                 FOUND {results.length} EVIDENCE MATCHES
-              </div>
+              </motion.div>
               {results.map(result => (
-                <SearchResult 
-                  key={result.id} 
-                  result={result} 
-                  isSelected={selectedResult?.id === result.id}
-                  onClick={() => setSelectedResult(result)}
-                />
+                <motion.div key={result.id} variants={itemVariants}>
+                  <SearchResult 
+                    result={result} 
+                    isSelected={selectedResult?.id === result.id}
+                    onClick={() => setSelectedResult(result)}
+                  />
+                </motion.div>
               ))}
-            </>
+            </motion.div>
           )}
         </main>
 
-        <aside className="intel-preview-sidebar">
-          <SourcePreview result={selectedResult} />
-        </aside>
+        <AnimatePresence mode="wait">
+          {selectedResult && (
+            <motion.aside 
+              className="intel-preview-sidebar"
+              key="source-preview"
+              initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 20 }}
+              animate={{ opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } }}
+              exit={{ opacity: 0, x: shouldReduceMotion ? 0 : 20, transition: { duration: 0.3 } }}
+            >
+              <SourcePreview result={selectedResult} />
+            </motion.aside>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

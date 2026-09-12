@@ -18,46 +18,49 @@ export default function CitationPanel({ citation }: CitationPanelProps) {
   }
 
   const handleOpenSource = () => {
-    // Navigate to the document route, conceptually passing the target line
     navigate(`/documents/${citation.documentId}`);
   };
 
   return (
     <div className="intel-panel-shell">
       <div className="intel-panel__header">
-        <h3 className="intel-panel__title">SOURCE</h3>
+        <h3 className="intel-panel__title">CITATION SOURCE</h3>
       </div>
       
       <div className="intel-panel__meta-group">
-        <span className="intel-label">DOCUMENT</span>
-        <span className="intel-value" style={{fontFamily: 'monospace'}}>{citation.documentName}</span>
+        <span className="intel-label">DOCUMENT NAME</span>
+        <span className="intel-value">{citation.documentName}</span>
       </div>
       
       <div className="intel-panel__grid">
         <div>
-          <span className="intel-label">VERSION</span>
-          <span className="intel-value">{citation.version}</span>
+          <span className="intel-label">DOCUMENT ID</span>
+          <span className="intel-value" style={{fontFamily: 'monospace', color: 'var(--accent)'}}>{citation.documentId}</span>
         </div>
         <div>
-          <span className="intel-label">PAGE</span>
-          <span className="intel-value">{citation.page}</span>
+          <span className="intel-label">VERSION</span>
+          <span className="intel-value" style={{fontFamily: 'monospace'}}>{citation.version}</span>
+        </div>
+        <div>
+          <span className="intel-label">EXACT PAGE</span>
+          <span className="intel-value" style={{fontFamily: 'monospace'}}>{citation.page}</span>
         </div>
         <div>
           <span className="intel-label">LINES</span>
-          <span className="intel-value">{citation.startLine}–{citation.endLine}</span>
+          <span className="intel-value" style={{fontFamily: 'monospace'}}>{citation.startLine}–{citation.endLine}</span>
         </div>
       </div>
       
       <div className="intel-panel__excerpt-box">
-        <span className="intel-label">EXCERPT</span>
+        <span className="intel-label">SOURCE EXCERPT</span>
         <div className="intel-panel__excerpt">
-          "{citation.excerpt}"
+          {citation.excerpt}
         </div>
       </div>
       
       <div className="intel-panel__actions">
-        <button className="btn-primary" onClick={handleOpenSource}>
-          [ OPEN DOCUMENT ]
+        <button className="intel-btn-outline" onClick={handleOpenSource} style={{ width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)' }}>
+          [ VIEW IN DOCUMENT ]
         </button>
       </div>
     </div>

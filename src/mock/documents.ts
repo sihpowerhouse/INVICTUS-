@@ -5,8 +5,8 @@ const subtractMinutes = (mins: number) => new Date(now.getTime() - mins * 60000)
 
 export const MOCK_DOCUMENTS: Document[] = [
   {
-    id: 'DOC-2026-0811',
-    caseId: 'CASE-26190-001',
+    id: 'DOC-26190-001',
+    caseId: 'CAS-26190',
     name: 'FORENSIC_REPORT_03.pdf',
     type: 'FORENSIC_REPORT',
     status: 'VERIFIED',
@@ -28,8 +28,8 @@ export const MOCK_DOCUMENTS: Document[] = [
     incidentDate: '2026-09-08'
   },
   {
-    id: 'DOC-2026-0812',
-    caseId: 'CASE-26190-001',
+    id: 'DOC-26190-002',
+    caseId: 'CAS-26190',
     name: 'WITNESS_STATEMENT_MARCUS.docx',
     type: 'WITNESS_STATEMENT',
     status: 'REQUIRES_REVIEW',
@@ -90,8 +90,8 @@ export const MOCK_DOCUMENTS: Document[] = [
     confidentiality: 'SECRET'
   },
   {
-    id: 'DOC-2026-0815',
-    caseId: 'CASE-26190-001',
+    id: 'DOC-26190-003',
+    caseId: 'CAS-26190',
     name: 'ARREST_WARRANT_DRAFT.docx',
     type: 'COURT_FILING',
     status: 'UPLOADED',

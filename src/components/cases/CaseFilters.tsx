@@ -1,4 +1,5 @@
 import './CaseFilters.css';
+import Dropdown from '../common/Dropdown';
 
 interface CaseFiltersProps {
   searchQuery: string;
@@ -28,20 +29,20 @@ export default function CaseFilters({
       </div>
 
       <div className="case-filter-group">
-        <label className="case-filter-label" htmlFor="case-status">STATUS</label>
-        <select 
-          id="case-status"
-          className="case-filter-select"
+        <Dropdown
+          label="STATUS"
           value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-        >
-          <option value="ALL">ALL STATUSES</option>
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="REVIEW">REVIEW</option>
-          <option value="ON_HOLD">ON HOLD</option>
-          <option value="CLOSED">CLOSED</option>
-          <option value="ARCHIVED">ARCHIVED</option>
-        </select>
+          onChange={setStatusFilter}
+          options={[
+            { value: 'ALL', label: 'ALL STATUSES' },
+            { value: 'ACTIVE', label: 'ACTIVE' },
+            { value: 'REVIEW', label: 'REVIEW' },
+            { value: 'ON_HOLD', label: 'ON HOLD' },
+            { value: 'CLOSED', label: 'CLOSED' },
+            { value: 'ARCHIVED', label: 'ARCHIVED' }
+          ]}
+          className="case-filter-select"
+        />
       </div>
     </div>
   );

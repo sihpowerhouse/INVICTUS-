@@ -42,7 +42,7 @@ export const MOCK_MEDIA: Media[] = [
   {
     id: 'MEDIA-26190-001',
     caseId: 'CAS-26190',
-    evidenceId: 'EVD-26190-002',
+    evidenceId: 'EVD-26190-003',
     title: 'Interrogation Audio — Primary Subject',
     filename: 'INT_SubA_09SEP.wav',
     type: 'AUDIO',
@@ -57,12 +57,12 @@ export const MOCK_MEDIA: Media[] = [
     transcript: mockTranscriptA,
     importantMoments: mockMomentsA,
     relatedCaseIds: ['CAS-26190'],
-    relatedEvidenceIds: ['EVD-26190-002']
+    relatedEvidenceIds: ['EVD-26190-003']
   },
   {
     id: 'MEDIA-26190-002',
     caseId: 'CAS-26190',
-    evidenceId: 'EVD-26190-001',
+    evidenceId: 'EVD-26190-002',
     title: 'CCTV Export — Sector 9 — 09 SEP',
     filename: 'CCTV_S9_09SEP_2100.mp4',
     type: 'VIDEO',
@@ -79,7 +79,7 @@ export const MOCK_MEDIA: Media[] = [
       { id: 'm-1', timestamp: '00:00:45', timestampMs: 45000, title: 'Vehicle sighted', description: 'Target vehicle enters frame.' }
     ],
     relatedCaseIds: ['CAS-26190'],
-    relatedEvidenceIds: ['EVD-26190-001']
+    relatedEvidenceIds: ['EVD-26190-002']
   },
   {
     id: 'MEDIA-26191-001',
