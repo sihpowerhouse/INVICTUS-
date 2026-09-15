@@ -6,12 +6,22 @@ import { documentService } from '../services/documentService';
 import DocumentCommandBar, { type DocumentFiltersState } from '../components/documents/DocumentCommandBar';
 import DocumentList from '../components/documents/DocumentList';
 import DocumentUpload from '../components/documents/DocumentUpload';
+import DocumentsWorkspaceNav, { type WorkspaceView } from '../components/documents/DocumentsWorkspaceNav';
+import { useSearchParams } from 'react-router-dom';
+
+import CasesPage from './CasesPage';
+import EvidencePage from './EvidencePage';
+import MediaPage from './MediaPage';
+import IntelligenceTimelinePage from './IntelligenceTimelinePage';
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const [searchParams] = useSearchParams();
+  
+  const currentView = (searchParams.get('view') as WorkspaceView) || 'all';
 
   const initialFilters: DocumentFiltersState = {
     searchQuery: '',
@@ -131,6 +141,7 @@ export default function DocumentsPage() {
       <AnimatePresence>
         {showUpload && (
           <DocumentUpload 
+            caseId="GENERAL"
             onClose={() => setShowUpload(false)} 
             onComplete={handleUploadComplete} 
           />
@@ -138,19 +149,43 @@ export default function DocumentsPage() {
       </AnimatePresence>
 
       <motion.div variants={itemVariants}>
-        <DocumentCommandBar 
-          filters={filters}
-          onChange={setFilters}
-          onReset={() => setFilters(initialFilters)}
-        />
+        <DocumentsWorkspaceNav currentView={currentView} />
       </motion.div>
 
-      {isLoading ? (
-        <motion.div className="documents-page__loading" variants={itemVariants}>
-          LOADING SECURE REGISTRY...
+      {currentView === 'all' && (
+        <motion.div variants={itemVariants}>
+          <DocumentCommandBar 
+            filters={filters}
+            onChange={setFilters}
+            onReset={() => setFilters(initialFilters)}
+          />
         </motion.div>
-      ) : (
-        <DocumentList groupedDocuments={groupedDocuments} itemVariants={itemVariants} />
+      )}
+
+      {currentView === 'all' && (
+        isLoading ? (
+          <motion.div className="documents-page__loading" variants={itemVariants}>
+            LOADING SECURE REGISTRY...
+          </motion.div>
+        ) : (
+          <DocumentList groupedDocuments={groupedDocuments} itemVariants={itemVariants} />
+        )
+      )}
+
+      {currentView === 'cases' && (
+        <CasesPage isEmbedded={true} />
+      )}
+
+      {currentView === 'evidence' && (
+        <EvidencePage isEmbedded={true} />
+      )}
+
+      {currentView === 'media' && (
+        <MediaPage isEmbedded={true} />
+      )}
+
+      {currentView === 'timeline' && (
+        <IntelligenceTimelinePage isEmbedded={true} />
       )}
     </motion.div>
   );

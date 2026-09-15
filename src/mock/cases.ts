@@ -31,9 +31,6 @@ export const mockCases: Case[] = [
     documents: [
       { id: 'DOC-26190-001', name: 'FORENSIC_REPORT_03.pdf', type: 'PDF', version: 'v3.0', status: 'VERIFIED' },
       { id: 'DOC-26190-002', name: 'WITNESS_STATEMENT_MARCUS.docx', type: 'DOCX', version: 'v1.0', status: 'REQUIRES_REVIEW' }
-    ],
-    timeline: [
-      { id: 't1', date: '08 SEP 2026', event: 'INCIDENT', description: 'Unauthorized access detected.' }
     ]
   },
   {

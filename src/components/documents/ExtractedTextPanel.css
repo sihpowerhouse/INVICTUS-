@@ -1,0 +1,74 @@
+.extracted-text-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 200px;
+}
+
+.extracted-text-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+
+.extracted-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.extracted-search input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 11px;
+  outline: none;
+  width: 150px;
+}
+
+.extracted-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-matches {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.extracted-text-content {
+  padding: 16px;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #d1d5db;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.text-highlight {
+  border-radius: 2px;
+  padding: 0 4px;
+  margin: 0 2px;
+  color: #000;
+  font-weight: bold;
+}
+
+.text-highlight.NAME { background-color: #bfdbfe; }
+.text-highlight.LOCATION { background-color: #a7f3d0; }
+.text-highlight.DATE { background-color: #fde68a; }
+
+.search-highlight {
+  background-color: rgba(0, 240, 255, 0.4);
+  color: white;
+}

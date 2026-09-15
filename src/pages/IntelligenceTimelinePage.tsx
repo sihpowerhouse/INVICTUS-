@@ -6,7 +6,11 @@ import type { TimelineEvent } from '../types/intelligence';
 
 import IntelligenceTimeline from '../components/intelligence/IntelligenceTimeline';
 
-export default function IntelligenceTimelinePage() {
+interface IntelligenceTimelinePageProps {
+  isEmbedded?: boolean;
+}
+
+export default function IntelligenceTimelinePage({ isEmbedded = false }: IntelligenceTimelinePageProps = {}) {
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
@@ -42,10 +46,12 @@ export default function IntelligenceTimelinePage() {
       initial="hidden"
       animate="show"
     >
-      <motion.div className="intel-timeline-page__header" variants={itemVariants}>
-        <p className="page-tag">INVICTUS / INTELLIGENCE / CAS-26190</p>
-        <h1 className="page-title">CASE TIMELINE</h1>
-      </motion.div>
+      {!isEmbedded && (
+        <motion.div className="intel-timeline-page__header" variants={itemVariants}>
+          <p className="page-tag">INVICTUS / INTELLIGENCE / CAS-26190</p>
+          <h1 className="page-title">CASE TIMELINE</h1>
+        </motion.div>
+      )}
 
       <div className="intel-timeline-page__layout">
         <main className="intel-timeline-main">

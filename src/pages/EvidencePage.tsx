@@ -13,7 +13,11 @@ const INITIAL_FILTERS: EvidenceFiltersState = {
   custodyState: 'ALL',
 };
 
-export default function EvidencePage() {
+interface EvidencePageProps {
+  isEmbedded?: boolean;
+}
+
+export default function EvidencePage({ isEmbedded = false }: EvidencePageProps = {}) {
   const [evidence, setEvidence] = useState<Evidence[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<EvidenceFiltersState>(INITIAL_FILTERS);
@@ -71,15 +75,17 @@ export default function EvidencePage() {
       initial="hidden"
       animate="show"
     >
-      <motion.div className="evidence-page__header" variants={itemVariants}>
-        <div className="evidence-page__title-group">
-          <p className="page-tag">INVICTUS / EVIDENCE INTELLIGENCE</p>
-          <h1 className="evidence-page__title">EVIDENCE VAULT</h1>
-        </div>
-        <div>
-          <button className="btn-primary">+ REGISTER EVIDENCE</button>
-        </div>
-      </motion.div>
+      {!isEmbedded && (
+        <motion.div className="evidence-page__header" variants={itemVariants}>
+          <div className="evidence-page__title-group">
+            <p className="page-tag">INVICTUS / EVIDENCE INTELLIGENCE</p>
+            <h1 className="evidence-page__title">EVIDENCE VAULT</h1>
+          </div>
+          <div>
+            <button className="btn-primary">+ REGISTER EVIDENCE</button>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div variants={itemVariants}>
         <EvidenceCommandBar

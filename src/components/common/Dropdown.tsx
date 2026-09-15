@@ -41,15 +41,16 @@ export default function Dropdown({ label, value, options, onChange, placeholder 
     };
   }, [isOpen]);
 
-  // Sync focused index when opening
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       const idx = options.findIndex(opt => opt.value === value);
       setFocusedIndex(idx >= 0 ? idx : 0);
     } else {
       setFocusedIndex(-1);
     }
-  }, [isOpen, value, options]);
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen) {

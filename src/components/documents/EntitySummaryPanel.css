@@ -1,0 +1,76 @@
+.entity-summary-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.entity-counts {
+  display: flex;
+  justify-content: space-between;
+}
+
+.entity-count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.entity-count-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.entity-count-value {
+  font-size: 16px;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.entity-count-value.name { color: #3b82f6; }
+.entity-count-value.location { color: #10b981; }
+.entity-count-value.date { color: #f59e0b; }
+
+.entity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.entity-tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid transparent;
+  font-family: monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.entity-tag:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.entity-tag.NAME {
+  border-left-color: #3b82f6;
+  color: #bfdbfe;
+}
+
+.entity-tag.LOCATION {
+  border-left-color: #10b981;
+  color: #a7f3d0;
+}
+
+.entity-tag.DATE {
+  border-left-color: #f59e0b;
+  color: #fde68a;
+}
+
+.entity-tag-confidence {
+  font-size: 9px;
+  color: var(--text-muted);
+}

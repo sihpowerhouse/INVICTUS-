@@ -45,11 +45,11 @@ export default function AuditPage() {
           <h1 className="page-title">AUDIT TRAIL</h1>
         </div>
         <button 
-          className="intel-btn-outline" 
+          type="button"
+          className="audit-page__analytics-link" 
           onClick={() => navigate('/analytics')}
-          style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
         >
-          [ VIEW OPERATIONAL ANALYTICS ]
+          OPERATIONAL ANALYTICS →
         </button>
       </div>
 

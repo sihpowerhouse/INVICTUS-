@@ -9,7 +9,11 @@ import CaseResultSummary from '../components/cases/CaseResultSummary';
 import CaseGroup from '../components/cases/CaseGroup';
 import CaseListItem from '../components/cases/CaseListItem';
 
-export default function CasesPage() {
+interface CasesPageProps {
+  isEmbedded?: boolean;
+}
+
+export default function CasesPage({ isEmbedded = false }: CasesPageProps = {}) {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
@@ -54,7 +58,7 @@ export default function CasesPage() {
       if (filters.status !== 'ALL' && c.status !== filters.status) return false;
       if (filters.searchQuery) {
         const q = filters.searchQuery.toLowerCase();
-        return c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q);
+        return c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || (c.firNumber?.toLowerCase().includes(q) ?? false);
       }
       return true;
     });
@@ -132,15 +136,18 @@ export default function CasesPage() {
       initial="hidden"
       animate="show"
     >
-      <motion.div className="cases-page__header" variants={itemVariants}>
-        <div className="cases-page__title-group">
-          <p className="page-tag">INVICTUS / REGISTRY</p>
-          <h1 className="cases-page__title">CASE OPERATIONS</h1>
-        </div>
-        <div className="cases-page__actions">
-          <button className="btn-primary">+ NEW CASE</button>
-        </div>
-      </motion.div>
+      {!isEmbedded && (
+        <motion.div className="cases-page__header" variants={itemVariants}>
+          <div className="cases-page__title-group">
+            <p className="page-tag">INVICTUS / OPERATIONS</p>
+            <h1 className="cases-page__title">ACTIVE REGISTRY</h1>
+          </div>
+          <div className="cases-page__actions">
+            <button className="btn-secondary">IMPORT</button>
+            <button className="btn-primary" onClick={() => window.location.href = '/cases/new'}>+ NEW RECORD</button>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div variants={itemVariants}>
         <CaseCommandBar 

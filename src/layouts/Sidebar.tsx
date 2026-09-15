@@ -2,19 +2,16 @@ import { NavLink } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
     LayoutDashboard,
-    FolderKanban,
     Files,
-    ShieldCheck,
-    Search,
     Brain,
-    Clock3,
     TriangleAlert,
     Shield,
     ScrollText,
     Settings,
-    PlaySquare,
+    LineChart,
     type LucideIcon,
 } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface NavItem {
     label: string;
@@ -31,33 +28,30 @@ const navigation: NavGroup[] = [
     {
         section: 'OPERATIONS',
         items: [
-            { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-            { label: 'Cases', icon: FolderKanban, path: '/cases' },
-            { label: 'Documents', icon: Files, path: '/documents' },
-            { label: 'Evidence', icon: ShieldCheck, path: '/evidence' },
-            { label: 'Media', icon: PlaySquare, path: '/media' },
+            { label: 'nav.dashboard', icon: LayoutDashboard, path: '/dashboard' },
+            { label: 'nav.documents', icon: Files, path: '/documents' },
+            { label: 'nav.analytics', icon: LineChart, path: '/analytics' },
         ],
     },
     {
         section: 'INTELLIGENCE',
         items: [
-            { label: 'AI Search', icon: Search, path: '/intelligence/search' },
-            { label: 'Case Q&A', icon: Brain, path: '/intelligence/qa' },
-            { label: 'Timeline', icon: Clock3, path: '/intelligence/timeline' },
-            { label: 'Inconsistencies', icon: TriangleAlert, path: '/intelligence/inconsistencies' },
+            { label: 'nav.intelligence', icon: Brain, path: '/intelligence/qa' },
+            { label: 'nav.inconsistencies', icon: TriangleAlert, path: '/intelligence/inconsistencies' },
         ],
     },
     {
         section: 'SECURITY',
         items: [
-            { label: 'Integrity', icon: Shield, path: '/integrity' },
-            { label: 'Audit Logs', icon: ScrollText, path: '/audit' },
+            { label: 'nav.integrity', icon: Shield, path: '/integrity' },
+            { label: 'nav.audit', icon: ScrollText, path: '/audit' },
         ],
     },
 ];
 
 function Sidebar() {
     const shouldReduceMotion = useReducedMotion();
+    const { t } = useI18n();
 
     return (
         <aside className="sidebar">
@@ -101,7 +95,7 @@ function Sidebar() {
                                                 />
                                             )}
                                             <Icon size={18} strokeWidth={1.8} style={{ position: 'relative', zIndex: 1 }} />
-                                            <span style={{ position: 'relative', zIndex: 1 }}>{item.label}</span>
+                                            <span style={{ position: 'relative', zIndex: 1 }}>{t(item.label)}</span>
                                         </>
                                     )}
                                 </NavLink>
@@ -131,7 +125,7 @@ function Sidebar() {
                                 />
                             )}
                             <Settings size={18} strokeWidth={1.8} style={{ position: 'relative', zIndex: 1 }} />
-                            <span style={{ position: 'relative', zIndex: 1 }}>Settings</span>
+                            <span style={{ position: 'relative', zIndex: 1 }}>{t('nav.settings')}</span>
                         </>
                     )}
                 </NavLink>

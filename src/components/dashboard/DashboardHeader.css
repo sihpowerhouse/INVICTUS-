@@ -1,0 +1,61 @@
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 1.25rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.dashboard-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.dashboard-header__title {
+  color: var(--accent);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.dashboard-header__name {
+  color: var(--text-primary);
+}
+
+.dashboard-header__separator {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-header__type {
+  color: var(--warning);
+}
+
+.dashboard-header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-header__status-text {
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.status-dot.active {
+  background-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}

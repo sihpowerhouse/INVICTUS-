@@ -12,10 +12,10 @@ interface MockSearchResult {
 }
 
 const MOCK_RESULTS: MockSearchResult[] = [
-  { id: '1', type: 'CASE', title: 'Operation Alpha', meta: 'INV-2026-892', route: '/cases' },
+  { id: '1', type: 'CASE', title: 'Operation Alpha', meta: 'INV-2026-892', route: '/documents?view=cases' },
   { id: '2', type: 'DOCUMENT', title: 'Financial Audit Report', meta: 'DOC-883-A', route: '/documents' },
-  { id: '3', type: 'EVIDENCE', title: 'Seized Hard Drive (WD 2TB)', meta: 'EV-44-12', route: '/evidence' },
-  { id: '4', type: 'PERSON', title: 'John Doe', meta: 'Suspect / Primary', route: '/cases' },
+  { id: '3', type: 'EVIDENCE', title: 'Seized Hard Drive (WD 2TB)', meta: 'EV-44-12', route: '/documents?view=evidence' },
+  { id: '4', type: 'PERSON', title: 'John Doe', meta: 'Suspect / Primary', route: '/documents?view=cases' },
 ];
 
 export default function CommandSearch() {

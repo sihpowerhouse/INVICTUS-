@@ -2,6 +2,7 @@ import { Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CommandSearch from './CommandSearch';
 import SystemStatus from '../common/SystemStatus';
+import AccessibilityMenu from './AccessibilityMenu';
 import UserMenu from './UserMenu';
 import './TopNav.css';
 
@@ -26,6 +27,7 @@ export default function TopNav() {
       <div className="top-nav__right">
         <div className="top-nav__actions">
           <SystemStatus />
+          <AccessibilityMenu />
           <button className="top-nav__icon-btn" aria-label="Notifications">
             <Bell size={16} />
           </button>

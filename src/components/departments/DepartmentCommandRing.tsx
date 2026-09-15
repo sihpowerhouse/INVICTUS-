@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Department } from '../../types/department';
 import './DepartmentCommandRing.css';
@@ -9,31 +9,36 @@ interface DepartmentCommandRingProps {
 
 export default function DepartmentCommandRing({ departments }: DepartmentCommandRingProps) {
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [radius, setRadius] = useState(300); // Increased default radius for expansive layout
+  const [radius, setRadius] = useState(250); // Default radius
 
   useEffect(() => {
     const handleResize = () => {
-      // Calculate responsive radius based on screen width/height to avoid overlaps
-      const minDimension = Math.min(window.innerWidth, window.innerHeight);
-      if (minDimension <= 768) {
-        setRadius(160);
-      } else if (minDimension <= 1024) {
-        setRadius(240);
-      } else {
-        setRadius(320);
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        // Calculate responsive radius based on available container dimension.
+        // We leave space for the nodes and labels (approx 120px margin total).
+        const minDimension = Math.min(width, height);
+        const calculatedRadius = Math.max(100, (minDimension - 140) / 2);
+        
+        // Cap the radius so it doesn't get absurdly huge on ultrawide monitors
+        setRadius(Math.min(calculatedRadius, 320));
       }
     };
     
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    handleResize(); // Initial calculation
+    
+    const observer = new ResizeObserver(() => handleResize());
+    if (containerRef.current) observer.observe(containerRef.current);
+    
+    return () => observer.disconnect();
   }, []);
 
   const hoveredDept = departments.find(d => d.id === hoveredId);
 
   return (
-    <div className="command-ring">
+    <div className="command-ring" ref={containerRef}>
       {/* Contextual Detail Panel (Moved out of center, positioned top-left of container) */}
       {hoveredDept && (
         <div className="command-panel">
@@ -88,18 +93,18 @@ export default function DepartmentCommandRing({ departments }: DepartmentCommand
       {/* Central Core */}
       <div className="command-core">
         <svg className="command-core__reticle" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="48" strokeDasharray="2 6" />
-          <circle cx="50" cy="50" r="40" strokeDasharray="4 12" style={{ opacity: 0.5 }} />
+          <circle cx="50" cy="50" r="48" strokeDasharray="2 6" className="command-core__reticle-inner" />
+          <circle cx="50" cy="50" r="40" strokeDasharray="4 12" style={{ opacity: 0.6 }} />
           {/* Tick marks */}
-          <line x1="50" y1="0" x2="50" y2="4" stroke="var(--accent)" strokeWidth="1" />
-          <line x1="50" y1="96" x2="50" y2="100" stroke="var(--accent)" strokeWidth="1" />
-          <line x1="0" y1="50" x2="4" y2="50" stroke="var(--accent)" strokeWidth="1" />
-          <line x1="96" y1="50" x2="100" y2="50" stroke="var(--accent)" strokeWidth="1" />
+          <line x1="50" y1="0" x2="50" y2="4" stroke="var(--accent)" strokeWidth="1.5" />
+          <line x1="50" y1="96" x2="50" y2="100" stroke="var(--accent)" strokeWidth="1.5" />
+          <line x1="0" y1="50" x2="4" y2="50" stroke="var(--accent)" strokeWidth="1.5" />
+          <line x1="96" y1="50" x2="100" y2="50" stroke="var(--accent)" strokeWidth="1.5" />
         </svg>
 
         <div className="command-core__title">INVICTUS</div>
         <div className="command-core__subtitle">INTELLIGENCE CORE</div>
-        <div className="command-core__subtitle" style={{ marginTop: '16px', opacity: 0.5 }}>SELECT DEPARTMENT</div>
+        <div className="command-core__prompt">SELECT DEPARTMENT</div>
       </div>
 
       {/* Orbital Nodes */}

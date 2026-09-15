@@ -40,18 +40,50 @@
   --transition-normal: 280ms ease;
 }
 
+/* ── Accessibility Themes ───────────────────────── */
+html.theme-high-contrast {
+  --bg-primary: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-card: #000000;
+  --bg-card-hover: #111111;
+  
+  --border-subtle: #ffffff;
+  --border-accent: #18c8ff;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #eeeeee;
+  --text-muted: #dddddd;
+  
+  --accent: #00ffff;
+  --accent-dim: transparent;
+  --accent-glow: transparent;
+  
+  --success: #00ff00;
+  --warning: #ffaa00;
+  --danger: #ff0000;
+}
+
+html.text-size-standard {
+  font-size: 14px;
+}
+html.text-size-large {
+  font-size: 16px;
+}
+html.text-size-extra-large {
+  font-size: 18px;
+}
+
 * {
   box-sizing: border-box;
 }
 
 html,
-body {
+body,
+#root {
+  height: 100%;
   margin: 0;
+  padding: 0;
   min-width: 320px;
-  min-height: 100%;
   background: #090b10;
-}
-
-body {
-  min-height: 100vh;
 }

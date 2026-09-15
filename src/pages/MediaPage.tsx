@@ -6,7 +6,11 @@ import { mediaService } from '../services/mediaService';
 import MediaCommandBar from '../components/media/MediaCommandBar';
 import MediaList from '../components/media/MediaList';
 
-export default function MediaPage() {
+interface MediaPageProps {
+  isEmbedded?: boolean;
+}
+
+export default function MediaPage({ isEmbedded = false }: MediaPageProps = {}) {
   const [items, setItems] = useState<Media[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
@@ -44,10 +48,12 @@ export default function MediaPage() {
       initial="hidden"
       animate="show"
     >
-      <motion.div className="media-page__header" variants={itemVariants}>
-        <h1 className="media-page__title">MEDIA EVIDENCE</h1>
-        <div className="media-page__subtitle">INVICTUS / MEDIA INTELLIGENCE</div>
-      </motion.div>
+      {!isEmbedded && (
+        <motion.div className="media-page__header" variants={itemVariants}>
+          <h1 className="media-page__title">MEDIA EVIDENCE</h1>
+          <div className="media-page__subtitle">INVICTUS / MEDIA INTELLIGENCE</div>
+        </motion.div>
+      )}
 
       <motion.div variants={itemVariants}>
         <MediaCommandBar />

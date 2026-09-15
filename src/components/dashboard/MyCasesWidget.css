@@ -1,0 +1,121 @@
+.my-cases-widget {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+}
+
+.my-cases-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.my-cases-widget__title {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.my-cases-widget__view-all {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.my-cases-widget__view-all:hover {
+  color: #fff;
+  text-shadow: 0 0 5px var(--accent);
+}
+
+.my-cases-widget__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.my-cases-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.my-cases-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.my-cases-item__top {
+  margin-bottom: 0.15rem;
+}
+
+.my-cases-item__id {
+  font-size: 0.68rem;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.my-cases-item__title {
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-cases-item__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6rem;
+}
+
+.my-cases-item__status {
+  color: var(--warning);
+}
+
+.my-cases-item__status.case-status--active {
+  color: var(--accent);
+}
+
+.my-cases-item__time {
+  color: var(--text-muted);
+}
+
+.my-cases-widget__empty {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.68rem;
+}
+
+.my-cases-widget__skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.my-cases-widget__skeleton-row {
+  height: 48px;
+  width: 100%;
+}

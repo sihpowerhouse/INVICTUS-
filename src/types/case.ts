@@ -24,16 +24,51 @@ export interface CaseDocument {
   status: string;
 }
 
+export type TimelineEventType = 
+  | 'FIR_CREATED' 
+  | 'DOCUMENT_UPLOADED' | 'DOCUMENT_VIEWED' | 'DOCUMENT_UPDATED' | 'DOCUMENT_VERSION_CREATED'
+  | 'EVIDENCE_ADDED' | 'EVIDENCE_ACCESSED'
+  | 'MEDIA_UPLOADED' | 'MEDIA_PROCESSED'
+  | 'OCR_COMPLETED' | 'ENTITY_EXTRACTION_COMPLETED' | 'INDEXING_COMPLETED'
+  | 'INTEGRITY_CHECKED' | 'SIGNATURE_CREATED'
+  | 'ACCESS_REQUESTED' | 'ACCESS_GRANTED' | 'ACCESS_DENIED'
+  | 'EXTERNAL_LOGIN' | 'EXTERNAL_DOCUMENT_VIEWED'
+  | 'AI_QUERY' | 'AI_ANSWER' | 'AI_SOURCE_ACCESSED'
+  | 'PROCESSING_FAILED';
+
 export interface CaseTimelineEvent {
   id: string;
-  date: string;
-  event: string;
+  caseId: string;
+  timestamp: string; // ISO string
+  type: TimelineEventType;
+  title: string;
   description: string;
-  sourceReference?: string;
+  actor?: string;
+  actorRole?: string;
+  department?: string;
+  resourceId?: string;
+  resourceType?: 'DOCUMENT' | 'EVIDENCE' | 'MEDIA' | 'CASE' | 'USER';
+  status?: 'SUCCESS' | 'PENDING' | 'FAILED' | 'WARNING';
+  severity?: 'INFO' | 'WARNING' | 'CRITICAL';
 }
+
+export interface CaseMember {
+  id: string;
+  name: string;
+  email?: string;
+  role: string;
+  department: string;
+  memberType?: 'INTERNAL' | 'EXTERNAL';
+  authorizedDocuments?: number;
+  accessState: 'APPROVED' | 'PENDING' | 'DENIED' | 'INVITED' | 'SUSPENDED' | 'EXPIRED';
+  joinedAt?: string;
+}
+
+export type CaseAIStatus = 'ENABLED' | 'DISABLED';
 
 export interface Case {
   id: string;
+  firNumber?: string;
   title: string;
   status: CaseStatus;
   priority: CasePriority;
@@ -42,6 +77,7 @@ export interface Case {
   isNew: boolean;
   department: string;
   officer: string;
+  caseHead?: string;
   description: string;
   documentsCount: number;
   evidenceCount: number;
@@ -52,9 +88,14 @@ export interface Case {
   updatedAt: string;    // ISO string
   lastActivityAt: string; // ISO string
   
+  // AI State
+  aiStatus?: CaseAIStatus;
+  aiProvider?: string;
+  aiModel?: string;
+
   // Relations (loaded on detail view)
   persons?: CasePerson[];
   locations?: CaseLocation[];
   documents?: CaseDocument[];
-  timeline?: CaseTimelineEvent[];
+  members?: CaseMember[];
 }

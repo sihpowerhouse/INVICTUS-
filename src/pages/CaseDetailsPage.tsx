@@ -8,11 +8,21 @@ import PersonsPanel from '../components/cases/PersonsPanel';
 import LocationsPanel from '../components/cases/LocationsPanel';
 import KeyDocuments from '../components/cases/KeyDocuments';
 import CaseTimeline from '../components/cases/CaseTimeline';
+import CaseWorkspaceHeader from '../components/cases/CaseWorkspaceHeader';
+import CaseMembersList from '../components/cases/CaseMembersList';
+import DocumentUpload from '../components/documents/DocumentUpload';
+import CaseAITab from '../components/cases/CaseAITab';
+import DocumentViewerOverlay from '../components/documents/DocumentViewerOverlay';
+import { AnimatePresence } from 'framer-motion';
 
 export default function CaseDetailsPage() {
   const { caseId } = useParams<{ caseId: string }>();
   const [caseData, setCaseData] = useState<Case | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'FILES' | 'MEMBERS' | 'TIMELINE' | 'CASE AI'>('FILES');
 
   useEffect(() => {
     if (!caseId) return;
@@ -27,6 +37,14 @@ export default function CaseDetailsPage() {
 
     return () => { mounted = false; };
   }, [caseId]);
+
+  const handleWorkspaceAction = (action: string) => {
+    if (action === 'UPLOAD') {
+      setIsUploadOpen(true);
+    } else if (action === 'FILES' || action === 'MEMBERS' || action === 'TIMELINE' || action === 'CASE AI') {
+      setActiveTab(action as any);
+    }
+  };
 
   if (isLoading) {
     return <div className="case-details-page"><div className="case-not-found" style={{color: 'var(--text-muted)'}}>LOADING CASE INTELLIGENCE...</div></div>;
@@ -46,7 +64,7 @@ export default function CaseDetailsPage() {
   return (
     <div className="case-details-page">
       <div className="case-details__header">
-        <div className="case-details__id">{caseData.id}</div>
+        <div className="case-details__id">{caseData.firNumber || caseData.id}</div>
         <h1 className="case-details__title">{caseData.title}</h1>
         <div className="case-details__badges">
           <CaseStatusBadge type="status" value={caseData.status} />
@@ -54,6 +72,8 @@ export default function CaseDetailsPage() {
         </div>
         <div className="case-details__dept">{caseData.department} &bull; OFFICER: {caseData.officer}</div>
       </div>
+
+      <CaseWorkspaceHeader activeTab={activeTab} onActionSelect={handleWorkspaceAction} />
 
       <div className="case-details__stats">
         <div className="case-stat-box">
@@ -75,28 +95,71 @@ export default function CaseDetailsPage() {
       </div>
 
       <div className="case-details__content">
-        <div className="case-details__main">
-          <div className="case-summary">
-            <h3>CASE SUMMARY</h3>
-            <p style={{ margin: 0 }}>{caseData.description}</p>
-          </div>
+        <div className="case-details__main" style={{ flex: 1, paddingRight: activeTab === 'TIMELINE' ? '0' : undefined }}>
+          {activeTab === 'FILES' && (
+            <>
+              <div className="case-summary">
+                <h3>CASE SUMMARY</h3>
+                <p style={{ margin: 0 }}>{caseData.description}</p>
+              </div>
+              <PersonsPanel persons={caseData.persons} />
+              <LocationsPanel locations={caseData.locations} />
+              <KeyDocuments 
+                documents={caseData.documents} 
+                onUploadClick={() => setIsUploadOpen(true)}
+                onDocumentClick={(docId) => setActiveDocumentId(docId)}
+              />
+            </>
+          )}
 
-          <PersonsPanel persons={caseData.persons} />
-          <LocationsPanel locations={caseData.locations} />
-          <KeyDocuments documents={caseData.documents} />
-        </div>
+          {activeTab === 'MEMBERS' && (
+            <CaseMembersList caseId={caseData.id} />
+          )}
 
-        <div className="case-details__sidebar">
-          <div className="data-panel">
-            <div className="data-panel-header">
-              <h3 className="data-panel-title">TIMELINE</h3>
+          {activeTab === 'TIMELINE' && (
+            <div className="data-panel" style={{ marginTop: '0' }}>
+              <div className="data-panel-header">
+                <h3 className="data-panel-title">TIMELINE</h3>
+              </div>
+              <div className="data-panel-content" style={{ padding: '0' }}>
+                <CaseTimeline caseId={caseData.id} onOpenDocument={setActiveDocumentId} />
+              </div>
             </div>
-            <div className="data-panel-content" style={{ padding: '0 24px' }}>
-              <CaseTimeline events={caseData.timeline} />
-            </div>
-          </div>
+          )}
+
+          {activeTab === 'CASE AI' && (
+            <CaseAITab caseId={caseData.id} onOpenDocument={setActiveDocumentId} />
+          )}
         </div>
       </div>
+      
+      {isUploadOpen && (
+        <DocumentUpload 
+          caseId={caseId || ''}
+          onClose={() => setIsUploadOpen(false)}
+          onComplete={(newDoc) => {
+            setIsUploadOpen(false);
+            if (newDoc && caseData) {
+              setCaseData({
+                ...caseData,
+                documents: [...(caseData.documents || []), newDoc],
+                documentsCount: (caseData.documentsCount || 0) + 1
+              });
+            }
+          }}
+        />
+      )}
+
+
+
+      <AnimatePresence>
+        {activeDocumentId && (
+          <DocumentViewerOverlay 
+            documentId={activeDocumentId} 
+            onClose={() => setActiveDocumentId(null)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -69,8 +69,7 @@ export default function AnalyticsPage() {
           setSystemActivity(sysData);
           setLoading(false);
         }
-      } catch (err) {
-        console.error('Failed to load analytics data', err);
+      } catch {
         if (mounted) setLoading(false);
       }
     }

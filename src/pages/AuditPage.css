@@ -19,3 +19,32 @@
   overflow-y: auto;
   padding-right: 16px;
 }
+
+.audit-page__analytics-link {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.audit-page__analytics-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.audit-page__analytics-link:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}

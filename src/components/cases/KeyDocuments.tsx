@@ -1,17 +1,29 @@
 import './KeyDocuments.css';
 import './PersonsPanel.css'; // Reusing data-panel classes
 import type { CaseDocument } from '../../types/case';
-import { FileText } from 'lucide-react';
+import { FileText, Upload } from 'lucide-react';
 
 interface KeyDocumentsProps {
   documents?: CaseDocument[];
+  onUploadClick?: () => void;
+  onDocumentClick?: (documentId: string) => void;
 }
 
-export default function KeyDocuments({ documents = [] }: KeyDocumentsProps) {
+export default function KeyDocuments({ documents = [], onUploadClick, onDocumentClick }: KeyDocumentsProps) {
   return (
     <div className="data-panel">
-      <div className="data-panel-header">
+      <div className="data-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 className="data-panel-title">KEY DOCUMENTS</h3>
+        {onUploadClick && (
+          <button 
+            onClick={onUploadClick} 
+            className="btn-secondary" 
+            style={{ padding: '4px 12px', fontSize: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Upload size={12} />
+            UPLOAD DOCUMENT
+          </button>
+        )}
       </div>
       <div className="data-panel-content">
         {documents.length === 0 ? (
@@ -19,7 +31,12 @@ export default function KeyDocuments({ documents = [] }: KeyDocumentsProps) {
         ) : (
           <div className="data-list">
             {documents.map(doc => (
-              <div key={doc.id} className="docs-grid">
+              <div 
+                key={doc.id} 
+                className="docs-grid" 
+                style={onDocumentClick ? { cursor: 'pointer' } : {}}
+                onClick={() => onDocumentClick && onDocumentClick(doc.id)}
+              >
                 <div className="doc-name">
                   <FileText size={14} style={{ color: 'var(--text-muted)' }} />
                   {doc.name}

@@ -28,8 +28,8 @@ export default function IntelligenceSearchPage() {
     setIsLoading(false);
   };
 
-  const handleFilterChange = (filters: any) => {
-    console.log('Filters updated:', filters);
+  const handleFilterChange = (_filters: any) => {
+    // Placeholder
   };
 
   const containerVariants: Variants = {
