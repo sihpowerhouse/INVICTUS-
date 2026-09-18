@@ -42,9 +42,15 @@ export interface DocumentIntegrity {
   hash: HashRecord;
   versions: VersionRecord[];
   signature: SignatureRecord;
-  merkleNodes: MerkleNode[];
-  merkleRoot: string;
+  merkleNodes?: MerkleNode[]; // Optional, decoupled from Document
+  merkleRoot?: string;        // Optional, decoupled from Document
   lastVerifiedAt: string;
+}
+
+export interface CaseMerkleVerification {
+  root_hash: string;
+  valid?: boolean;
+  message?: string;
 }
 
 export interface IntegritySummary {

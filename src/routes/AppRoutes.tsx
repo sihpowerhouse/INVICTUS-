@@ -125,7 +125,7 @@ function AppRoutes() {
             <Route path="*" element={<Navigate to={isInternal ? "/dashboard" : "/external/dashboard"} replace />} />
           </>
         ) : (
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to={window.location.pathname.startsWith('/external') ? "/external/login" : "/login"} replace />} />
         )}
       </Routes>
     </Suspense>

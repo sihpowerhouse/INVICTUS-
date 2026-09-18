@@ -5,17 +5,10 @@ import { X } from 'lucide-react';
 import type { Document } from '../../types/document';
 import type { DocumentPermission } from '../../types/access';
 import { documentService } from '../../services/documentService';
-import { extractionService } from '../../services/extractionService';
-import type { ExtractedIntelligence } from '../../types/extraction';
-
 import DocumentPreview from './DocumentPreview';
 import MetadataPanel from './MetadataPanel';
 import OCRVerification from './OCRVerification';
 import VersionHistory from './VersionHistory';
-import ExtractionStatusPanel from './ExtractionStatusPanel';
-import EntitySummaryPanel from './EntitySummaryPanel';
-import ExtractedTextPanel from './ExtractedTextPanel';
-import ProcessingActivityTimeline from './ProcessingActivityTimeline';
 
 import './DocumentViewerOverlay.css';
 import '../../pages/DocumentDetailsPage.css'; // Reuse badge styles
@@ -28,7 +21,7 @@ interface DocumentViewerOverlayProps {
 
 export default function DocumentViewerOverlay({ documentId, onClose, permission = 'FULL' }: DocumentViewerOverlayProps) {
   const [document, setDocument] = useState<Document | null>(null);
-  const [intelligence, setIntelligence] = useState<ExtractedIntelligence | null>(null);
+  const [selectedVersionId, setSelectedVersionId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const { user } = useAuth();
@@ -45,13 +38,15 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    Promise.all([
-      documentService.getDocumentById(documentId),
-      extractionService.getIntelligenceForDocument(documentId)
-    ]).then(([docData, intelData]) => {
+    documentService.getDocumentById(documentId).then(docData => {
       if (mounted) {
         setDocument(docData || null);
-        setIntelligence(intelData);
+        if (docData?.versionId) {
+          setSelectedVersionId(docData.versionId);
+          console.log('[DIAGNOSTICS] document_id =', docData.id);
+          console.log('[DIAGNOSTICS] selected version =', docData.version);
+          console.log('[DIAGNOSTICS] selected versionId =', docData.versionId);
+        }
         setIsLoading(false);
       }
     });
@@ -129,8 +124,7 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
 
       <motion.div className="doc-viewer-body" variants={contentVariants}>
         <div className="doc-viewer-left" style={{ position: 'relative' }}>
-          {/* Reuse DocumentPreview. Make sure it takes full height of its container */}
-          <DocumentPreview document={document} />
+          <DocumentPreview document={document} versionId={selectedVersionId} />
           
           {/* Dynamic Watermark */}
           <div className="doc-watermark-overlay">
@@ -144,18 +138,16 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
         </div>
 
         <div className="doc-viewer-right">
-          {intelligence && (
-            <>
-              <ExtractedTextPanel text={intelligence.text} entities={intelligence.entities} />
-              <EntitySummaryPanel entities={intelligence.entities} />
-              <ExtractionStatusPanel intelligence={intelligence} />
-              <ProcessingActivityTimeline timeline={intelligence.timeline} />
-            </>
-          )}
-
-          {/* Existing panels for Integrity & Metadata context */}
-          <VersionHistory document={document} />
-          <OCRVerification document={document} />
+          <VersionHistory 
+            versions={document.versions || []} 
+            documentStatus={document.status} 
+            selectedVersionId={selectedVersionId} 
+          />
+          <OCRVerification 
+            versionId={selectedVersionId} 
+            documentType={document.type}
+            documentStatus={document.status}
+          />
           <MetadataPanel document={document} />
         </div>
       </motion.div>

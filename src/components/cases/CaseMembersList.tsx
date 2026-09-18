@@ -53,7 +53,7 @@ export default function CaseMembersList({ caseId }: CaseMembersListProps) {
   const handleVerifyOTP = async (code: string) => {
     const isValid = await memberService.verifyOTP('CURRENT_USER', code);
     if (isValid && pendingInviteData) {
-      const token = await invitationService.createInvitation(
+      const token = await invitationService.createExternalInvitation(
         caseId, 
         pendingInviteData.email, 
         pendingInviteData.role, 

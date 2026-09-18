@@ -1,12 +1,7 @@
 import type { IAuthService } from './auth/AuthServiceInterface';
 import { MockAuthAdapter } from './auth/mockAuthAdapter';
 import { ApiAuthAdapter } from './auth/apiAuthAdapter';
-
-/**
- * Global configuration to toggle between Mock and API data sources.
- * In production, this would be driven by environment variables (e.g., import.meta.env.VITE_USE_MOCK).
- */
-const USE_MOCK_DATA = true;
+import { USE_MOCK_DATA } from './api/apiClient';
 
 /**
  * authService singleton
@@ -15,3 +10,4 @@ const USE_MOCK_DATA = true;
 export const authService: IAuthService = USE_MOCK_DATA 
   ? new MockAuthAdapter() 
   : new ApiAuthAdapter();
+

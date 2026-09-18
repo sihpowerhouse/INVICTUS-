@@ -36,10 +36,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    const handleUnauthorized = () => {
+      if (mounted) {
+        setSession({ user: null, isAuthenticated: false, isLoading: false });
+        // The apiClient has already cleared the token
+      }
+    };
+
+    window.addEventListener('invictus:unauthorized', handleUnauthorized);
     initSession();
 
     return () => {
       mounted = false;
+      window.removeEventListener('invictus:unauthorized', handleUnauthorized);
     };
   }, []);
 

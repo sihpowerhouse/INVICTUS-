@@ -21,6 +21,8 @@ import EvidenceMovementChart from '../components/analytics/EvidenceMovementChart
 import PendingActionsPanel from '../components/analytics/PendingActionsPanel';
 import SystemActivityPanel from '../components/analytics/SystemActivityPanel';
 
+const IS_API_MODE = import.meta.env.VITE_USE_MOCK_DATA !== 'true';
+
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   
@@ -95,7 +97,9 @@ export default function AnalyticsPage() {
           <h1 className="analytics-page__title">OPERATIONAL INTELLIGENCE</h1>
         </div>
         <div className="analytics-page__actions">
-          <div className="analytics-time-period">PERIOD: LAST 30 DAYS</div>
+          <div className="analytics-time-period">
+            {IS_API_MODE ? 'API MODE — AUTHORIZED CASES ONLY' : 'PERIOD: LAST 30 DAYS'}
+          </div>
         </div>
       </header>
 
@@ -126,6 +130,18 @@ export default function AnalyticsPage() {
         <div className="analytics-operational">
           <SystemActivityPanel activities={systemActivity} />
         </div>
+      </div>
+
+      {/* System note footer */}
+      <div className="analytics-system-note">
+        <div className="analytics-system-note__live">
+          <div className="analytics-system-note__live-dot" />
+          LIVE TELEMETRY
+        </div>
+        <span className="analytics-system-note__desc">
+          Showing only metrics currently exposed by authorized backend services.
+          {IS_API_MODE && ' Mock data is disabled in API mode.'}
+        </span>
       </div>
     </div>
   );

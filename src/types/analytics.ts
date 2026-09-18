@@ -46,9 +46,9 @@ export interface SystemActivity {
 }
 
 export interface AnalyticsSummary {
-  activeCases: number;
-  activeCasesTrend: number; // percentage change
-  documentsProcessed: number;
-  evidenceItems: number;
-  pendingActions: number;
+  activeCases: number | string;
+  activeCasesTrend: number | string; // percentage change
+  documentsProcessed: number | string;
+  evidenceItems: number | string;
+  pendingActions: number | string;
 }

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import './IntegrityDetailPage.css';
 import { securityService } from '../services/securityService';
-import type { DocumentIntegrity } from '../types/security';
+import { documentService } from '../services/documentService';
+import type { DocumentIntegrity, CaseMerkleVerification, MerkleNode } from '../types/security';
 
 import HashViewer from '../components/security/HashViewer';
 import VersionChain from '../components/security/VersionChain';
@@ -14,20 +15,84 @@ export default function IntegrityDetailPage() {
   const { documentId } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState<DocumentIntegrity | null>(null);
+  const [caseMerkle, setCaseMerkle] = useState<CaseMerkleVerification | null>(null);
+  const [syntheticMerkleNodes, setSyntheticMerkleNodes] = useState<MerkleNode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBuilding, setIsBuilding] = useState(false);
 
   useEffect(() => {
     if (!documentId) return;
     
     let mounted = true;
-    securityService.getDocumentIntegrity(documentId).then(res => {
-      if (mounted) {
-        setData(res);
-        setIsLoading(false);
+    
+    const fetchData = async () => {
+      try {
+        const integrityData = await securityService.getDocumentIntegrity(documentId);
+        let merkleData: CaseMerkleVerification | null = null;
+        
+        // Retrieve real case_id via document versions endpoint since verify does not return it
+        const docInfo = await documentService.getDocumentById(documentId);
+        const caseId = docInfo?.caseId;
+        
+        if (caseId && integrityData) {
+          integrityData.caseId = caseId;
+          try {
+            merkleData = await securityService.verifyMerkle(caseId);
+          } catch (err) {
+            console.warn("Could not fetch case merkle integrity", err);
+          }
+        }
+        
+        if (mounted) {
+          setData(integrityData);
+          setCaseMerkle(merkleData);
+          
+          if (merkleData?.root_hash) {
+            setSyntheticMerkleNodes([{
+              id: 'case_root',
+              hash: merkleData.root_hash,
+              label: 'CASE MERKLE ROOT',
+              type: 'ROOT',
+              children: [],
+              parentId: null
+            }]);
+          }
+          
+          setIsLoading(false);
+        }
+      } catch (err) {
+        console.error(err);
+        if (mounted) setIsLoading(false);
       }
-    });
+    };
+
+    fetchData();
     return () => { mounted = false; };
   }, [documentId]);
+
+  const handleBuildMerkle = async () => {
+    if (!data?.caseId || data.caseId === 'N/A' || isBuilding) return;
+    setIsBuilding(true);
+    try {
+      await securityService.buildMerkle(data.caseId);
+      const newMerkleData = await securityService.verifyMerkle(data.caseId);
+      setCaseMerkle(newMerkleData);
+      if (newMerkleData?.root_hash) {
+        setSyntheticMerkleNodes([{
+          id: 'case_root',
+          hash: newMerkleData.root_hash,
+          label: 'CASE MERKLE ROOT',
+          type: 'ROOT',
+          children: [],
+          parentId: null
+        }]);
+      }
+    } catch (err) {
+      console.error("Failed to build merkle tree", err);
+    } finally {
+      setIsBuilding(false);
+    }
+  };
 
   return (
     <div className="integrity-detail-page">
@@ -50,7 +115,10 @@ export default function IntegrityDetailPage() {
       ) : (
         <div className="integrity-detail-page__layout">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <VerificationResult />
+            <VerificationResult 
+              documentStatus={data.status} 
+              caseMerkleValid={caseMerkle?.valid} 
+            />
             
             <div className="security-panel">
               <div className="security-panel__header">
@@ -73,7 +141,32 @@ export default function IntegrityDetailPage() {
             </div>
 
             <SignatureStatus signature={data.signature} />
-            <MerkleTree nodes={data.merkleNodes} />
+            
+            <div style={{ position: 'relative' }}>
+              <MerkleTree nodes={syntheticMerkleNodes} />
+              {data.caseId && data.caseId !== 'N/A' && (
+                <button 
+                  onClick={handleBuildMerkle}
+                  disabled={isBuilding}
+                  style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    background: 'rgba(0, 230, 118, 0.1)',
+                    border: '1px solid rgba(0, 230, 118, 0.4)',
+                    color: '#00e676',
+                    padding: '4px 12px',
+                    fontSize: '11px',
+                    fontFamily: 'monospace',
+                    cursor: isBuilding ? 'not-allowed' : 'pointer',
+                    borderRadius: '4px',
+                    opacity: isBuilding ? 0.6 : 1
+                  }}
+                >
+                  {isBuilding ? '[ BUILDING... ]' : (caseMerkle?.root_hash ? '[ REBUILD CASE MERKLE ROOT ]' : '[ BUILD CASE MERKLE ROOT ]')}
+                </button>
+              )}
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

@@ -1,35 +1,14 @@
-import { mockCases } from '../mock/cases';
-import type { Case } from '../types/case';
+import type { ICaseService } from './case/CaseServiceInterface';
+import { MockCaseAdapter } from './case/mockCaseAdapter';
+import { ApiCaseAdapter } from './case/apiCaseAdapter';
+import { USE_MOCK_DATA } from './api/apiClient';
 
 /**
- * CaseService
- * Provides data access for Case entities.
- * Currently uses local mock data. Designed to be swapped with HTTP calls later.
+ * caseService singleton
+ * Consumers import this and use it without knowing if it's mock or real.
  */
-class CaseService {
-  /**
-   * Fetch all cases (with optional filtering later).
-   */
-  async getCases(): Promise<Case[]> {
-    // Simulate network delay
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([...mockCases]);
-      }, 300);
-    });
-  }
+export const caseService: ICaseService = USE_MOCK_DATA 
+  ? new MockCaseAdapter() 
+  : new ApiCaseAdapter();
 
-  /**
-   * Fetch a specific case by ID.
-   */
-  async getCaseById(id: string): Promise<Case | null> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const found = mockCases.find((c) => c.id === id);
-        resolve(found || null);
-      }, 300);
-    });
-  }
-}
-
-export const caseService = new CaseService();
+export * from './case/CaseServiceInterface';

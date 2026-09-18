@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { aiService, type CaseAIInfo, type CaseSummary, type ProcessingLog } from '../../services/aiService';
 import { intelligenceService } from '../../services/intelligenceService';
+import { ApiError } from '../../services/api/ApiError';
 import type { AIAnswer as IAIAnswer } from '../../types/intelligence';
 import AIAnswer from '../intelligence/AIAnswer';
 import './CaseAITab.css';
@@ -73,9 +74,17 @@ export default function CaseAITab({ caseId, onOpenDocument }: CaseAITabProps) {
       setMessages(prev => 
         prev.map(msg => msg.id === loadingMessage.id ? { ...msg, isLoading: false, answer } : msg)
       );
-    } catch {
+    } catch (error: any) {
+      const errorAnswer: IAIAnswer = {
+        id: `err-${Date.now()}`,
+        question,
+        answer: error instanceof ApiError ? error.message : 'An unexpected error occurred.',
+        status: error?.status === 401 || error?.status === 403 ? 'UNAUTHORIZED' : 'INSUFFICIENT_EVIDENCE',
+        citations: [],
+        basis: { totalSources: 0, documentCount: 0, mediaCount: 0, evidenceCount: 0, relevance: 'LOW' }
+      };
       setMessages(prev => 
-        prev.map(msg => msg.id === loadingMessage.id ? { ...msg, isLoading: false, text: 'RETRIEVAL FAILED. PLEASE TRY AGAIN.' } : msg)
+        prev.map(msg => msg.id === loadingMessage.id ? { ...msg, isLoading: false, answer: errorAnswer } : msg)
       );
     } finally {
       setIsSubmitting(false);
@@ -208,7 +217,7 @@ export default function CaseAITab({ caseId, onOpenDocument }: CaseAITabProps) {
                     <AIAnswer 
                       answer={msg.answer} 
                       selectedCitationId={selectedCitationId}
-                      onCitationSelect={(cit) => handleCitationSelect(cit.id, cit.documentId)}
+                      onCitationSelect={(cit) => handleCitationSelect(cit.id, cit.versionId || cit.documentId)}
                     />
                   </div>
                 ) : (

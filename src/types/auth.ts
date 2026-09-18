@@ -4,7 +4,7 @@ export interface User {
   userId: string;
   employeeId?: string;
   displayName: string;
-  email: string;
+  email?: string;
   role: string;
   department?: string;
   userType: UserType;

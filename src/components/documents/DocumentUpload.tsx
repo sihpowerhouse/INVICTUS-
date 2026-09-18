@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { type ProcessingState } from '../../services/processingService';
 import { documentUploadService } from '../../services/documentUploadService';
+import { securityService } from '../../services/securityService';
 import type { Document } from '../../types/document';
 import OTPModal from '../common/OTPModal';
 import './DocumentUpload.css';
@@ -45,35 +46,57 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
     }
   }, [uploadPhase, processingState, onComplete, newDocument]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
       setUploadPhase('integrity_check');
-      setTimeout(() => {
+      
+      try {
+        await securityService.requestOtp('UPLOAD_FILE', caseId);
         setUploadPhase('otp');
-      }, 1200);
+      } catch (err: any) {
+        alert(err.message || 'Failed to request OTP');
+        setFile(null);
+        setUploadPhase('select');
+      }
     }
   };
 
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  const [processingError, setProcessingError] = useState<string | null>(null);
+
   const handleOTPVerify = async (code: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        if (code === '000000' || code.length === 6) {
-          resolve(true);
-          // Start the upload processing
-          setUploadPhase('processing');
-          
-          let mounted = true;
-          documentUploadService.processUpload(file!, caseId, (state) => {
-            if (mounted) setProcessingState(state);
-          }).then(doc => {
-            if (mounted) setNewDocument(doc);
-          });
-        } else {
-          resolve(false);
+    try {
+      await securityService.verifyOtp('UPLOAD_FILE', code, caseId);
+      // Start the upload processing
+      setUploadPhase('processing');
+      setProcessingError(null);
+      
+      documentUploadService.processUpload(file!, caseId, (state) => {
+        if (mountedRef.current) setProcessingState(state);
+      }).then(doc => {
+        if (mountedRef.current) setNewDocument(doc);
+      }).catch((err: any) => {
+        if (mountedRef.current) {
+          setProcessingError(err?.message || 'Document processing failed.');
+          setUploadPhase('select');
         }
-      }, 800);
-    });
+      });
+      return true;
+    } catch (e: any) {
+      // Don't swallow the error here, so OTPModal handles displaying the error
+      throw e; 
+    }
+  };
+
+
+  const handleOTPResend = async () => {
+    await securityService.requestOtp('UPLOAD_FILE', caseId);
   };
 
   const handleOTPCancel = () => {
@@ -127,6 +150,11 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
+              {processingError && (
+                <div style={{ color: 'var(--error, #ff4d4f)', fontSize: '11px', marginBottom: '8px', textAlign: 'center', padding: '4px' }}>
+                  ⚠ {processingError}
+                </div>
+              )}
               <div className="doc-dropzone-text">CLICK OR DRAG DOCUMENT HERE</div>
               <div className="doc-dropzone-subtext">SUPPORTED: PDF, JPG, PNG, DOCX, AUDIO, VIDEO</div>
               <input 
@@ -138,6 +166,7 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
               />
             </motion.div>
           )}
+
 
           {uploadPhase === 'integrity_check' && (
             <motion.div 
@@ -160,7 +189,26 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
             </motion.div>
           )}
 
-          {(uploadPhase === 'processing' || uploadPhase === 'otp') && (
+          {uploadPhase === 'otp' && (
+            <motion.div 
+              key="otp-wait"
+              className="doc-upload-progress"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="upload-file-card">
+                <div className="upload-file-info">
+                  <span className="upload-file-name">{file?.name}</span>
+                  <span className="upload-file-size">
+                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • AWAITING AUTHORIZATION
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {uploadPhase === 'processing' && (
             <motion.div 
               key="progress"
               className="doc-upload-progress"
@@ -172,38 +220,37 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
                 <div className="upload-file-info">
                   <span className="upload-file-name">{file?.name}</span>
                   <span className="upload-file-size">
-                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • {uploadPhase === 'otp' ? 'AWAITING AUTHORIZATION' : 'PROCESSING...'}
+                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • PROCESSING...
                   </span>
                 </div>
               </div>
 
-              {uploadPhase === 'processing' && (
-                <div className="progress-stages" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {STAGES.map((stageName, index) => {
-                    const isComplete = currentStageIndex > index;
-                    const isActive = currentStageIndex === index;
-                    
-                    return (
-                      <motion.div 
-                        key={stageName} 
-                        className={`progress-stage ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}`}
-                        variants={stageVariants}
-                        initial="hidden"
-                        animate="visible"
-                        transition={{ delay: index * 0.05 }}
-                        style={{ padding: '8px', border: '1px solid var(--border)', background: isActive ? 'rgba(0, 240, 255, 0.05)' : 'transparent' }}
-                      >
-                        <div className={`stage-dot ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}`}>
-                          {isComplete ? '✓' : index + 1}
-                        </div>
-                        <span className="stage-label" style={{ fontSize: '10px' }}>{stageName.replace(/_/g, ' ')}</span>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="progress-stages" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {STAGES.map((stageName, index) => {
+                  const isComplete = currentStageIndex > index;
+                  const isActive = currentStageIndex === index;
+                  
+                  return (
+                    <motion.div 
+                      key={stageName} 
+                      className={`progress-stage ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}`}
+                      variants={stageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delay: index * 0.05 }}
+                      style={{ padding: '8px', border: '1px solid var(--border)', background: isActive ? 'rgba(0, 240, 255, 0.05)' : 'transparent' }}
+                    >
+                      <div className={`stage-dot ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}`}>
+                        {isComplete ? '✓' : index + 1}
+                      </div>
+                      <span className="stage-label" style={{ fontSize: '10px' }}>{stageName.replace(/_/g, ' ')}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </motion.div>
           )}
+
         </AnimatePresence>
       </motion.div>
       
@@ -211,6 +258,7 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
         isOpen={uploadPhase === 'otp'}
         onVerify={handleOTPVerify}
         onCancel={handleOTPCancel}
+        onResend={handleOTPResend}
         title="UPLOAD AUTHORIZATION"
         message="A 6-digit authorization code was sent to your official device to verify this document ingestion."
       />

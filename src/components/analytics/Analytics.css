@@ -35,6 +35,36 @@
   opacity: 0.2;
 }
 
+/* Restrained no-telemetry empty state (replaces the old red overlay) */
+.analytics-no-telemetry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 180px;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  border: 1px dashed rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.analytics-no-telemetry__title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
+}
+
+.analytics-no-telemetry__sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.12);
+  text-transform: uppercase;
+}
+
 /* Tooltip overriding for Recharts */
 .invictus-tooltip {
   background: var(--color-bg-tertiary) !important;
@@ -218,7 +248,7 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   position: relative;
 }
 
@@ -231,6 +261,10 @@
   height: 100%;
   background: var(--color-cyan);
   opacity: 0.5;
+}
+
+.summary-metric--unavailable::before {
+  opacity: 0.1;
 }
 
 .summary-label {
@@ -254,10 +288,84 @@
   font-weight: 400;
 }
 
+.summary-value--unavailable {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 1.25rem;
+}
+
+.summary-unavailable-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.18);
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
 .summary-trend {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--color-cyan);
+}
+
+/* Analytics page footer / system note */
+.analytics-system-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.analytics-system-note__live {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--color-cyan);
+  text-transform: uppercase;
+}
+
+.analytics-system-note__live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-cyan);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.analytics-system-note__desc {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+}
+
+/* Case status real data note */
+.case-status-real-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  color: var(--color-cyan);
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  padding: 0.1rem 0.4rem;
+  text-transform: uppercase;
+}
+
+/* Zero-count status bars remain subtle */
+.recharts-bar-rectangle[width="0"] {
+  opacity: 0;
 }
 
 @media (max-width: 1024px) {

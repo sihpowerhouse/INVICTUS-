@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, Eye, Shield } from 'lucide-react';
-import { accessService } from '../../services/accessService';
+import { documentService } from '../../services/documentService';
 import type { Document } from '../../types/document';
 import DocumentViewerOverlay from '../../components/documents/DocumentViewerOverlay';
 import { AnimatePresence } from 'framer-motion';
@@ -12,11 +12,14 @@ export default function ExternalDashboardPage() {
 
   useEffect(() => {
     let mounted = true;
-    accessService.getAuthorizedDocuments().then(data => {
+    documentService.getExternalDocuments().then(data => {
       if (mounted) {
         setDocuments(data);
         setIsLoading(false);
       }
+    }).catch(err => {
+      console.error('Failed to load external documents', err);
+      if (mounted) setIsLoading(false);
     });
     return () => { mounted = false; };
   }, []);

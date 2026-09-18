@@ -1,25 +1,35 @@
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import './VersionHistory.css';
-import type { Document } from '../../types/document';
 
 interface VersionHistoryProps {
-  document: Document;
+  versions: any[];
+  documentStatus: string;
+  selectedVersionId: string;
 }
 
-export default function VersionHistory({ document: doc }: VersionHistoryProps) {
-  const currentVersionNum = parseInt(doc.version.replace('v', '')) || 1;
+export default function VersionHistory({ versions, documentStatus, selectedVersionId }: VersionHistoryProps) {
   const shouldReduceMotion = useReducedMotion();
-  
-  const history = [];
-  for (let i = currentVersionNum; i >= 1; i--) {
-    history.push({
-      version: `v${i}`,
-      date: new Date(new Date(doc.updatedAt).getTime() - (currentVersionNum - i) * 86400000).toLocaleDateString(),
-      user: i === currentVersionNum ? doc.uploadedBy : 'SYSTEM AUTO',
-      status: i === currentVersionNum ? doc.status : 'SUPERSEDED',
-      active: i === currentVersionNum
-    });
-  }
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!versions || versions.length === 0) {
+      setHistory([]);
+      return;
+    }
+    
+    // The backend returns them ordered by version_number. Let's reverse them for display (newest first)
+    const reversed = [...versions].reverse();
+    
+    const mapped = reversed.map((item: any, idx: number) => ({
+      version: `v${item.version_number || (versions.length - idx)}`,
+      date: new Date(item.created_at || item.timestamp).toLocaleDateString(),
+      user: item.uploaded_by || item.verified_by || 'SYSTEM AUTO',
+      status: item.version_id === selectedVersionId ? documentStatus : 'SUPERSEDED',
+      active: item.version_id === selectedVersionId
+    }));
+    setHistory(mapped);
+  }, [versions, documentStatus, selectedVersionId]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -46,32 +56,38 @@ export default function VersionHistory({ document: doc }: VersionHistoryProps) {
         initial="hidden"
         animate="show"
       >
-        {history.map((item, idx) => (
-          <motion.div 
-            key={item.version} 
-            className={`vh-item ${item.active ? 'active' : ''}`}
-            variants={itemVariants}
-          >
-            <div className="vh-marker-container">
-              <div className="vh-marker" />
-              {idx < history.length - 1 && <div className="vh-line" />}
-            </div>
-            
-            <div className="vh-content">
-              <div className="vh-version-row">
-                <span className="vh-version">{item.version}</span>
-                <span className={`vh-status vh-status--${item.status.toLowerCase()}`}>
-                  {item.status.replace('_', ' ')}
-                </span>
+        {history.length === 0 ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.9rem' }}>
+            VERSION DATA UNAVAILABLE
+          </div>
+        ) : (
+          history.map((item, idx) => (
+            <motion.div 
+              key={item.version} 
+              className={`vh-item ${item.active ? 'active' : ''}`}
+              variants={itemVariants}
+            >
+              <div className="vh-marker-container">
+                <div className="vh-marker" />
+                {idx < history.length - 1 && <div className="vh-line" />}
               </div>
-              <div className="vh-meta">
-                <span className="vh-meta-date">{item.date}</span>
-                <span className="vh-meta-sep">•</span>
-                <span className="vh-meta-user">{item.user}</span>
+              
+              <div className="vh-content">
+                <div className="vh-version-row">
+                  <span className="vh-version">{item.version}</span>
+                  <span className={`vh-status vh-status--${item.status.toLowerCase()}`}>
+                    {item.status.replace('_', ' ')}
+                  </span>
+                </div>
+                <div className="vh-meta">
+                  <span className="vh-meta-date">{item.date}</span>
+                  <span className="vh-meta-sep">•</span>
+                  <span className="vh-meta-user">{item.user}</span>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))
+        )}
       </motion.div>
     </div>
   );

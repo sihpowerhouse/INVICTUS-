@@ -7,11 +7,14 @@ import type { AIAnswer as IAIAnswer, Citation as ICitation } from '../types/inte
 import QuestionInput from '../components/intelligence/QuestionInput';
 import AIAnswer from '../components/intelligence/AIAnswer';
 import CitationPanel from '../components/intelligence/CitationPanel';
+import DocumentViewerOverlay from '../components/documents/DocumentViewerOverlay';
+import { ApiError } from '../services/api/ApiError';
 
 export default function IntelligenceQAPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [answer, setAnswer] = useState<IAIAnswer | null>(null);
   const [selectedCitation, setSelectedCitation] = useState<ICitation | null>(null);
+  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
 
   const handleAsk = async (question: string) => {
@@ -19,10 +22,21 @@ export default function IntelligenceQAPage() {
     setAnswer(null);
     setSelectedCitation(null);
 
-    const result = await intelligenceService.getCaseAnswer(question, 'CAS-26190');
-    
-    setAnswer(result);
-    setIsLoading(false);
+    try {
+      const result = await intelligenceService.getCaseAnswer(question, 'CAS-26190');
+      setAnswer(result);
+    } catch (error: any) {
+      setAnswer({
+        id: `err-${Date.now()}`,
+        question,
+        answer: error instanceof ApiError ? error.message : 'An unexpected error occurred.',
+        status: error?.status === 401 || error?.status === 403 ? 'UNAUTHORIZED' : 'INSUFFICIENT_EVIDENCE',
+        citations: [],
+        basis: { totalSources: 0, documentCount: 0, mediaCount: 0, evidenceCount: 0, relevance: 'LOW' }
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants: Variants = {
@@ -94,11 +108,23 @@ export default function IntelligenceQAPage() {
               animate={{ opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } }}
               exit={{ opacity: 0, x: shouldReduceMotion ? 0 : 20, transition: { duration: 0.3 } }}
             >
-              <CitationPanel citation={selectedCitation} />
+              <CitationPanel 
+                citation={selectedCitation} 
+                onViewSource={(versionId) => setActiveDocumentId(versionId)} 
+              />
             </motion.aside>
           )}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {activeDocumentId && (
+          <DocumentViewerOverlay 
+            documentId={activeDocumentId} 
+            onClose={() => setActiveDocumentId(null)} 
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

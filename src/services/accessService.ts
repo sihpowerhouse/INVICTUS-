@@ -58,6 +58,7 @@ class AccessService {
             uploadedBy: 'Commander Vance',
             department: 'Police',
             version: '1.0',
+            versionId: 'mock-doc-1234',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             language: 'ENG',
@@ -72,11 +73,12 @@ class AccessService {
             status: 'VERIFIED',
             uploadedBy: 'Forensics Dept',
             department: 'Forensics',
-            version: '1.0',
+            version: '1.2',
+            versionId: 'mock-doc-5678',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             language: 'ENG',
-            pages: 24
+            pages: 524
           }
         ]);
       }, 500);

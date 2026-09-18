@@ -7,6 +7,7 @@ export interface FIRPayload {
   incidentDate: string;
   location: string;
   description: string;
+  clientRequestId?: string;
 }
 
 export type FIRCreationStep = 'VALIDATING' | 'GENERATING' | 'HASHING' | 'SIGNING' | 'CREATING_CASE' | 'READY';

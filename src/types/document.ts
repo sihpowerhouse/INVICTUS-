@@ -25,6 +25,7 @@ export interface Document {
   type: DocumentType;
   status: DocumentStatus;
   version: string;
+  versionId: string;
   language: string;
   pages: number;
   size: string; // e.g., "2.4 MB"
@@ -38,6 +39,9 @@ export interface Document {
   extractionMethod?: string;
   confidentiality?: 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET';
   
+  // Versions
+  versions?: any[];
+
   // Mock extracted entities
   keywords?: string[];
   persons?: string[];

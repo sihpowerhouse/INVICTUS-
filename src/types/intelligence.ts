@@ -17,12 +17,14 @@ export interface SearchResult {
 export interface Citation {
   id: string;
   documentId: string;
-  documentName: string;
-  version: number;
-  page: number;
-  startLine: number;
-  endLine: number;
-  excerpt: string;
+  versionId?: string; // from backend
+  documentName?: string; // made optional
+  version?: number; // made optional
+  page?: number; // from backend
+  chunkIndex?: number; // from backend
+  startLine?: number; // made optional
+  endLine?: number; // made optional
+  excerpt?: string; // made optional
 }
 
 export interface EvidenceBasis {
@@ -40,6 +42,9 @@ export interface AIAnswer {
   basis: EvidenceBasis;
   citations: Citation[];
   status: 'SUCCESS' | 'INSUFFICIENT_EVIDENCE' | 'UNAUTHORIZED';
+  provider?: string;
+  contextChunks?: number;
+  latencyMs?: number;
 }
 
 export interface TimelineEvent {

@@ -27,11 +27,16 @@ export default function ExternalRegisterPage() {
     }
   }, [token]);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === confirmPassword && password.length > 0) {
-      // Mock registration success
-      navigate('/external/dashboard');
+    if (password === confirmPassword && password.length > 0 && token) {
+      try {
+        await invitationService.acceptExternalInvitation(token, password);
+        navigate('/external/dashboard');
+      } catch (err) {
+        console.error('Failed to accept invitation:', err);
+        // You could add an error state here if needed
+      }
     }
   };
 

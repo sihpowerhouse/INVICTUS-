@@ -99,3 +99,23 @@
     grid-column: span 12;
   }
 }
+
+.analytics-unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.7);
+  color: #ff3366;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  z-index: 10;
+  text-align: center;
+  border: 1px dashed #333;
+}

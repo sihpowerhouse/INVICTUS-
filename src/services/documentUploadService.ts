@@ -8,11 +8,12 @@ class DocumentUploadService {
     caseId: string,
     onProgress: (state: ProcessingState) => void
   ): Promise<Document> {
-    // Start processing
-    await processingService.startProcessingJob(caseId, onProgress);
-    
-    // Simulate API upload & document creation
+    // 1. Upload first (so we get the versionId to poll)
     const newDoc = await documentService.uploadDocument(file, caseId);
+    
+    // 2. Poll processing status using the returned version string
+    await processingService.startProcessingJob(newDoc.versionId, onProgress);
+    
     return newDoc;
   }
 }

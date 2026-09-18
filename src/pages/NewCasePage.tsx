@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { firService } from '../services/firService';
@@ -14,13 +14,25 @@ export default function NewCasePage() {
     incidentType: '',
     incidentDate: '',
     location: '',
-    description: ''
+    description: '',
+    clientRequestId: '' // Will be generated on mount
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processingState, setProcessingState] = useState<FIRCreationState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FIRCreationResult | null>(null);
+
+  // Generate deterministic clientRequestId on mount
+  useEffect(() => {
+    const uuid = typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = (Math.random() * 16) | 0;
+          return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+        });
+    setFormData(prev => ({ ...prev, clientRequestId: uuid }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -6,6 +6,7 @@ interface OTPModalProps {
   isOpen: boolean;
   onVerify: (code: string) => Promise<boolean>;
   onCancel: () => void;
+  onResend?: () => Promise<void>;
   title?: string;
   message?: string;
 }
@@ -14,6 +15,7 @@ export default function OTPModal({
   isOpen, 
   onVerify, 
   onCancel,
+  onResend,
   title = "EMAIL VERIFICATION",
   message = "A 6-digit verification code was sent to your official email."
 }: OTPModalProps) {
@@ -61,11 +63,19 @@ export default function OTPModal({
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
+    if (onResend) {
+      try {
+        await onResend();
+      } catch (e: any) {
+        setErrorMessage(e.message || 'RESEND FAILED');
+        return;
+      }
+    }
     setStatus('idle');
     setCode('');
+    setErrorMessage('');
     inputRef.current?.focus();
-    // mock resend trigger
   };
 
   return createPortal(

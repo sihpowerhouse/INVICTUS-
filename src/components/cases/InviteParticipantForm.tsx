@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { caseService } from '../../services/caseService';
+import { memberService } from '../../services/memberService';
 import type { DocumentPermission, DocumentAccess } from '../../types/access';
 import { Shield, FileText } from 'lucide-react';
 
@@ -11,21 +12,40 @@ interface InviteParticipantFormProps {
 
 export default function InviteParticipantForm({ caseId, onCancel, onSubmit }: InviteParticipantFormProps) {
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('EXTERNAL COUNSEL');
+  const [role, setRole] = useState('');
   const [documents, setDocuments] = useState<any[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<string[]>(['EXTERNAL COUNSEL', 'EXPERT WITNESS', 'AUDITOR']);
   const [selectedAccess, setSelectedAccess] = useState<Record<string, DocumentPermission | 'NO ACCESS'>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    caseService.getCaseById(caseId).then(data => {
-      if (mounted && data) {
-        setDocuments(data.documents || []);
+    
+    Promise.all([
+      caseService.getCaseById(caseId),
+      memberService.getInviteOptions(caseId)
+    ]).then(([caseData, inviteOptions]) => {
+      if (mounted) {
+        if (caseData) {
+          setDocuments(caseData.documents || []);
+        }
+        if (inviteOptions && inviteOptions.roles && inviteOptions.roles.length > 0) {
+          // Filter to external roles if applicable or map them.
+          // For now, use the returned roles directly if they exist.
+          setAvailableRoles(inviteOptions.roles);
+          if (!role) setRole(inviteOptions.roles[0]);
+        } else if (!role) {
+          setRole('EXTERNAL COUNSEL');
+        }
         setIsLoading(false);
       }
+    }).catch(err => {
+      console.error('Failed to load invite options', err);
+      if (mounted) setIsLoading(false);
     });
+
     return () => { mounted = false; };
-  }, [caseId]);
+  }, [caseId, role]);
 
   const handleAccessChange = (documentId: string, permission: DocumentPermission | 'NO ACCESS') => {
     setSelectedAccess(prev => ({ ...prev, [documentId]: permission }));
@@ -84,9 +104,9 @@ export default function InviteParticipantForm({ caseId, onCancel, onSubmit }: In
                 fontFamily: 'var(--font-mono)'
               }}
             >
-              <option value="EXTERNAL COUNSEL">EXTERNAL COUNSEL</option>
-              <option value="EXPERT WITNESS">EXPERT WITNESS</option>
-              <option value="AUDITOR">AUDITOR</option>
+              {availableRoles.map(r => (
+                <option key={r} value={r}>{r}</option>
+              ))}
             </select>
           </div>
         </div>
