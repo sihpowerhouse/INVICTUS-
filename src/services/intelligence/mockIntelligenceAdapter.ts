@@ -25,6 +25,24 @@ export class MockIntelligenceAdapter implements IIntelligenceService {
     return mockAnswers['default'];
   }
 
+  async getDocumentAnswer(question: string, versionId: string): Promise<AIAnswer> {
+    // For VITE_USE_MOCK_DATA=true, just simulate a successful generic response or error.
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    return {
+      id: `ans-mock-${Date.now()}`,
+      question,
+      answer: `This is a mock answer for document version ${versionId}. Real mock data is not permitted by user instructions.`,
+      status: 'SUCCESS',
+      provider: 'mock',
+      contextChunks: 1,
+      latencyMs: 1200,
+      citations: [],
+      basis: {
+        totalSources: 0, documentCount: 0, mediaCount: 0, evidenceCount: 0, relevance: 'HIGH'
+      }
+    };
+  }
+
   async getTimeline(_caseId?: string): Promise<TimelineEvent[]> {
     await new Promise(resolve => setTimeout(resolve, 400));
     return [...mockTimeline];

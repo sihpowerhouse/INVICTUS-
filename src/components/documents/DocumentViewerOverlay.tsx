@@ -6,9 +6,11 @@ import type { Document } from '../../types/document';
 import type { DocumentPermission } from '../../types/access';
 import { documentService } from '../../services/documentService';
 import DocumentPreview from './DocumentPreview';
+import DocumentIntelligencePanel from './DocumentIntelligencePanel';
 import MetadataPanel from './MetadataPanel';
 import OCRVerification from './OCRVerification';
 import VersionHistory from './VersionHistory';
+import DocumentActivityTimeline from './DocumentActivityTimeline';
 
 import './DocumentViewerOverlay.css';
 import '../../pages/DocumentDetailsPage.css'; // Reuse badge styles
@@ -19,9 +21,12 @@ interface DocumentViewerOverlayProps {
   permission?: DocumentPermission | 'FULL'; // Assume FULL if internal
 }
 
+type TabType = 'PREVIEW' | 'OCR' | 'METADATA' | 'TIMELINE';
+
 export default function DocumentViewerOverlay({ documentId, onClose, permission = 'FULL' }: DocumentViewerOverlayProps) {
   const [document, setDocument] = useState<Document | null>(null);
   const [selectedVersionId, setSelectedVersionId] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<TabType>('PREVIEW');
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const { user } = useAuth();
@@ -29,23 +34,11 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
   useEffect(() => {
     let mounted = true;
 
-    // Lock body scroll
-    window.document.body.style.overflow = 'hidden';
-
-    // Handle ESC key
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-
     documentService.getDocumentById(documentId).then(docData => {
       if (mounted) {
         setDocument(docData || null);
         if (docData?.versionId) {
           setSelectedVersionId(docData.versionId);
-          console.log('[DIAGNOSTICS] document_id =', docData.id);
-          console.log('[DIAGNOSTICS] selected version =', docData.version);
-          console.log('[DIAGNOSTICS] selected versionId =', docData.versionId);
         }
         setIsLoading(false);
       }
@@ -53,10 +46,14 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
 
     return () => {
       mounted = false;
-      window.document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [documentId, onClose]);
+  }, [documentId]);
+
+  const getVersionNumber = (vId: string) => {
+    if (!document) return '';
+    const v = document.versions?.find(ver => ver.id === vId);
+    return v ? `v${v.version_number}` : '';
+  };
 
   const overlayVariants = {
     hidden: { opacity: 0 },
@@ -84,12 +81,13 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
       <div className="doc-viewer-overlay">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '16px' }}>
           <div style={{ fontFamily: 'monospace', color: '#ef4444', fontSize: '14px', letterSpacing: '0.2em' }}>DOCUMENT NOT FOUND</div>
-          <button className="btn-secondary" onClick={onClose}>CLOSE VIEWER</button>
+          <button className="btn-secondary" onClick={onClose}>BACK TO DOCUMENTS</button>
         </div>
       </div>
     );
   }
 
+  const vNum = getVersionNumber(selectedVersionId);
   const statusClass = `doc-badge--status-${document.status.toLowerCase()}`;
 
   return (
@@ -100,57 +98,104 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
       animate="visible"
       exit="exit"
     >
-      <div className="doc-viewer-header">
-        <div className="doc-viewer-title-area">
-          <div className="doc-viewer-title-row">
-            <span className="doc-viewer-id">{document.id.substring(0, 8)}</span>
-            <h2 className="doc-viewer-title">{document.name}</h2>
-          </div>
-          <div className="doc-viewer-badges">
-            <span className="doc-badge doc-badge--case">{document.caseId}</span>
-            <span className="doc-badge doc-badge--type">{document.type.replace('_', ' ')}</span>
-            <span className={`doc-badge ${statusClass}`}>{document.status.replace('_', ' ')}</span>
-          </div>
-        </div>
-        <div className="doc-viewer-actions">
-          {permission !== 'READ ONLY' && (
-            <button className="btn-primary" style={{ fontSize: '10px', padding: '6px 12px' }}>DOWNLOAD SECURE COPY</button>
-          )}
-          <button className="btn-close-viewer" onClick={onClose} aria-label="Close Viewer">
-            <X size={16} />
-          </button>
-        </div>
-      </div>
-
-      <motion.div className="doc-viewer-body" variants={contentVariants}>
-        <div className="doc-viewer-left" style={{ position: 'relative' }}>
-          <DocumentPreview document={document} versionId={selectedVersionId} />
+      <div className="doc-viewer-body" style={{ flex: 1, display: 'flex', gap: '24px', overflow: 'hidden' }}>
+        <div className="doc-viewer-left" style={{ flex: 6, display: 'flex', flexDirection: 'column' }}>
           
-          {/* Dynamic Watermark */}
-          <div className="doc-watermark-overlay">
-            <div className="doc-watermark-content">
-              AUTHORIZED VIEWER<br/>
-              {user?.email}<br/><br/>
-              CASE:<br/>
-              {document.caseId}
+          <div className="doc-viewer-header" style={{ padding: '0 0 16px 0', borderBottom: 'none' }}>
+            <div className="doc-viewer-breadcrumb">Documents &gt; Document Details</div>
+            
+            <div className="doc-viewer-title-area" style={{ justifyContent: 'space-between', display: 'flex', alignItems: 'center' }}>
+              <div className="doc-viewer-title-row" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <h2 className="doc-viewer-title" style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>{document.name}</h2>
+                <span className={`doc-badge ${statusClass}`}>{vNum}</span>
+              </div>
+              <div className="doc-viewer-actions" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                {permission !== 'READ ONLY' && (
+                  <button className="btn-primary" style={{ fontSize: '10px', padding: '6px 12px' }}>DOWNLOAD SECURE COPY</button>
+                )}
+                <button className="btn-close-viewer" onClick={onClose} aria-label="Close Viewer">
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="doc-viewer-id" style={{ marginTop: '-4px', fontSize: '12px', fontFamily: 'monospace', color: 'var(--accent)' }}>
+              Case ID: {document.caseId} | Document ID: {document.id}
+            </div>
+
+            <div className="doc-viewer-tabs">
+              <button className={`doc-viewer-tab ${activeTab === 'PREVIEW' ? 'active' : ''}`} onClick={() => setActiveTab('PREVIEW')}>PREVIEW</button>
+              <button className={`doc-viewer-tab ${activeTab === 'OCR' ? 'active' : ''}`} onClick={() => setActiveTab('OCR')}>OCR / EXTRACTED TEXT</button>
+              <button className={`doc-viewer-tab ${activeTab === 'METADATA' ? 'active' : ''}`} onClick={() => setActiveTab('METADATA')}>METADATA</button>
+              <button className={`doc-viewer-tab ${activeTab === 'TIMELINE' ? 'active' : ''}`} onClick={() => setActiveTab('TIMELINE')}>TIMELINE</button>
             </div>
           </div>
+
+          <motion.div variants={contentVariants} style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            {activeTab === 'PREVIEW' && (
+              <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '4px' }}>
+                <DocumentPreview document={document} versionId={selectedVersionId} />
+                <div className="doc-watermark-overlay">
+                  <div className="doc-watermark-content">
+                    AUTHORIZED VIEWER<br/>
+                    {user?.email}<br/><br/>
+                    CASE:<br/>
+                    {document.caseId}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {activeTab === 'OCR' && (
+              <div style={{ flex: 1, overflowY: 'auto', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '4px', padding: '24px' }}>
+                <h3 style={{ fontSize: '12px', color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '16px' }}>EXTRACTED TEXT</h3>
+                <OCRVerification versionId={selectedVersionId} documentType={document.type} documentStatus={document.status} />
+              </div>
+            )}
+
+            {activeTab === 'METADATA' && (
+              <div style={{ flex: 1, overflowY: 'auto', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '4px', padding: '24px' }}>
+                <MetadataPanel document={document} />
+              </div>
+            )}
+
+            {activeTab === 'TIMELINE' && (
+              <div style={{ flex: 1, overflowY: 'auto', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '4px', padding: '24px' }}>
+                <h3 style={{ fontSize: '12px', color: 'var(--accent)', letterSpacing: '0.1em', marginBottom: '16px' }}>DOCUMENT ACTIVITY</h3>
+                <DocumentActivityTimeline
+                  versions={document.versions || []}
+                  selectedVersionId={selectedVersionId}
+                  onVersionSelect={setSelectedVersionId}
+                />
+              </div>
+            )}
+          </motion.div>
         </div>
 
-        <div className="doc-viewer-right">
+        <div className="doc-viewer-right" style={{ flex: 4, display: 'flex', flexDirection: 'column', gap: '16px', overflowY: 'auto', paddingRight: '8px' }}>
           <VersionHistory 
             versions={document.versions || []} 
             documentStatus={document.status} 
-            selectedVersionId={selectedVersionId} 
+            selectedVersionId={selectedVersionId}
+            onSelectVersion={setSelectedVersionId}
+          />
+          <DocumentActivityTimeline
+            versions={document.versions || []}
+            selectedVersionId={selectedVersionId}
+            onVersionSelect={setSelectedVersionId}
+          />
+          <DocumentIntelligencePanel 
+            versionId={selectedVersionId} 
+            documentType={document.type} 
+            onCitationClick={setSelectedVersionId}
           />
           <OCRVerification 
             versionId={selectedVersionId} 
             documentType={document.type}
             documentStatus={document.status}
           />
-          <MetadataPanel document={document} />
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }

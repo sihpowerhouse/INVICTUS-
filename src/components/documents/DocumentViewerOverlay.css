@@ -1,27 +1,65 @@
 .doc-viewer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 24px;
+  gap: 24px;
 }
 
 .doc-viewer-header {
-  height: 60px;
-  background: rgba(0, 0, 0, 0.9);
-  border-bottom: 1px solid var(--border);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
+  flex-direction: column;
+  gap: 16px;
   flex-shrink: 0;
 }
+
+.doc-viewer-breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.doc-viewer-tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+.doc-viewer-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 12px 0;
+  cursor: pointer;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.doc-viewer-tab:hover {
+  color: var(--text-primary);
+}
+
+.doc-viewer-tab.active {
+  color: var(--accent);
+}
+
+.doc-viewer-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
 
 .doc-viewer-title-area {
   display: flex;

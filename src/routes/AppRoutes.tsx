@@ -21,10 +21,6 @@ const MediaPage = lazy(() => import('../pages/MediaPage'));
 const MediaDetailsPage = lazy(() => import('../pages/MediaDetailsPage'));
 const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
 
-const IntelligenceSearchPage = lazy(() => import('../pages/IntelligenceSearchPage'));
-const IntelligenceQAPage = lazy(() => import('../pages/IntelligenceQAPage'));
-const IntelligenceTimelinePage = lazy(() => import('../pages/IntelligenceTimelinePage'));
-const IntelligenceInconsistenciesPage = lazy(() => import('../pages/IntelligenceInconsistenciesPage'));
 
 const IntegrityPage = lazy(() => import('../pages/IntegrityPage'));
 const IntegrityDetailPage = lazy(() => import('../pages/IntegrityDetailPage'));
@@ -96,11 +92,6 @@ function AppRoutes() {
                 <Route path="/media" element={<MediaPage />} />
                 <Route path="/media/:mediaId" element={<MediaDetailsPage />} />
 
-                {/* Intelligence */}
-                <Route path="/intelligence/search" element={<IntelligenceSearchPage />} />
-                <Route path="/intelligence/qa" element={<IntelligenceQAPage />} />
-                <Route path="/intelligence/timeline" element={<IntelligenceTimelinePage />} />
-                <Route path="/intelligence/inconsistencies" element={<IntelligenceInconsistenciesPage />} />
 
                 {/* Security */}
                 <Route path="/integrity" element={<IntegrityPage />} />

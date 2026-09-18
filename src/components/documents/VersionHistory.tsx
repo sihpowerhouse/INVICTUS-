@@ -6,9 +6,10 @@ interface VersionHistoryProps {
   versions: any[];
   documentStatus: string;
   selectedVersionId: string;
+  onSelectVersion?: (versionId: string) => void;
 }
 
-export default function VersionHistory({ versions, documentStatus, selectedVersionId }: VersionHistoryProps) {
+export default function VersionHistory({ versions, documentStatus, selectedVersionId, onSelectVersion }: VersionHistoryProps) {
   const shouldReduceMotion = useReducedMotion();
   const [history, setHistory] = useState<any[]>([]);
 
@@ -26,7 +27,8 @@ export default function VersionHistory({ versions, documentStatus, selectedVersi
       date: new Date(item.created_at || item.timestamp).toLocaleDateString(),
       user: item.uploaded_by || item.verified_by || 'SYSTEM AUTO',
       status: item.version_id === selectedVersionId ? documentStatus : 'SUPERSEDED',
-      active: item.version_id === selectedVersionId
+      active: item.version_id === selectedVersionId,
+      id: item.version_id
     }));
     setHistory(mapped);
   }, [versions, documentStatus, selectedVersionId]);
@@ -66,6 +68,8 @@ export default function VersionHistory({ versions, documentStatus, selectedVersi
               key={item.version} 
               className={`vh-item ${item.active ? 'active' : ''}`}
               variants={itemVariants}
+              onClick={() => onSelectVersion && onSelectVersion(item.id)}
+              style={{ cursor: onSelectVersion ? 'pointer' : 'default' }}
             >
               <div className="vh-marker-container">
                 <div className="vh-marker" />

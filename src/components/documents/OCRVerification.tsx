@@ -7,6 +7,7 @@ interface OCRVerificationProps {
   versionId: string;
   documentType: string;
   documentStatus: string;
+  hideHeader?: boolean;
 }
 
 interface AiStatusResponse {
@@ -21,7 +22,7 @@ interface AiStatusResponse {
   error?: string;
 }
 
-export default function OCRVerification({ versionId, documentType, documentStatus }: OCRVerificationProps) {
+export default function OCRVerification({ versionId, documentType, documentStatus, hideHeader }: OCRVerificationProps) {
   const shouldReduceMotion = useReducedMotion();
   const [statusData, setStatusData] = useState<AiStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,9 +84,11 @@ export default function OCRVerification({ versionId, documentType, documentStatu
       initial="hidden"
       animate="show"
     >
-      <motion.div className="ocr-header" variants={itemVariants}>
-        <h3 className="ocr-title">OCR EXTRACTION PIPELINE</h3>
-      </motion.div>
+      {!hideHeader && (
+        <motion.div className="ocr-header" variants={itemVariants}>
+          <h3 className="ocr-title">OCR EXTRACTION PIPELINE</h3>
+        </motion.div>
+      )}
 
       <motion.div className="ocr-flow" variants={itemVariants}>
         <div className="ocr-flow-node source">

@@ -3,8 +3,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
     LayoutDashboard,
     Files,
-    Brain,
-    TriangleAlert,
     Shield,
     ScrollText,
     Settings,
@@ -31,13 +29,6 @@ const navigation: NavGroup[] = [
             { label: 'nav.dashboard', icon: LayoutDashboard, path: '/dashboard' },
             { label: 'nav.documents', icon: Files, path: '/documents' },
             { label: 'nav.analytics', icon: LineChart, path: '/analytics' },
-        ],
-    },
-    {
-        section: 'INTELLIGENCE',
-        items: [
-            { label: 'nav.intelligence', icon: Brain, path: '/intelligence/qa' },
-            { label: 'nav.inconsistencies', icon: TriangleAlert, path: '/intelligence/inconsistencies' },
         ],
     },
     {

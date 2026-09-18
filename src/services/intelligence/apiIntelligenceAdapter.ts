@@ -80,6 +80,74 @@ export class ApiIntelligenceAdapter implements IIntelligenceService {
     }
   }
 
+  async getDocumentAnswer(question: string, versionId: string): Promise<AIAnswer> {
+    if (!versionId) {
+      throw new Error('Version ID is required for Document AI chat.');
+    }
+
+    try {
+      const response = await request<{
+        answer: string;
+        sources: Array<{
+          page?: number;
+          document_id?: string;
+          version_id?: string;
+          chunk_index?: number;
+        }>;
+        provider: string;
+        context_chunks: number;
+        latency_ms: number;
+      }>('/documents/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({
+          version_id: versionId,
+          question: question
+        })
+      });
+
+      const isInsufficient = response.answer.includes('Insufficient evidence in this document');
+      
+      const citations: Citation[] = response.sources.map((src: any, index: number) => ({
+        id: `cit-${index}-${src.version_id || 'unknown'}`,
+        documentId: src.document_id || 'Unknown',
+        versionId: src.version_id,
+        page: src.page,
+        chunkIndex: src.chunk_index,
+      }));
+
+      return {
+        id: `ans-${Date.now()}`,
+        question,
+        answer: response.answer,
+        status: isInsufficient ? 'INSUFFICIENT_EVIDENCE' : 'SUCCESS',
+        provider: response.provider,
+        contextChunks: response.context_chunks,
+        latencyMs: response.latency_ms,
+        citations,
+        basis: {
+          totalSources: citations.length,
+          documentCount: citations.length, // approximation
+          mediaCount: 0,
+          evidenceCount: 0,
+          relevance: 'HIGH'
+        }
+      };
+
+    } catch (error: any) {
+      if (error.status === 403 || error.status === 401 || error.status === 404 || error.status === 503) {
+        return {
+          id: `err-${Date.now()}`,
+          question,
+          answer: error.message || 'Access Denied',
+          status: 'UNAUTHORIZED', // or map 503, 404 properly if needed, but UI uses UNAUTHORIZED/INSUFFICIENT
+          citations: [],
+          basis: { totalSources: 0, documentCount: 0, mediaCount: 0, evidenceCount: 0, relevance: 'LOW' }
+        };
+      }
+      throw error;
+    }
+  }
+
   async getTimeline(_caseId: string): Promise<TimelineEvent[]> {
     throw new Error('Timeline is not yet implemented on the real backend.');
   }
