@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import {
     LayoutDashboard,
     Files,
-    Shield,
+    
     ScrollText,
     Settings,
     LineChart,
@@ -34,7 +34,6 @@ const navigation: NavGroup[] = [
     {
         section: 'SECURITY',
         items: [
-            { label: 'nav.integrity', icon: Shield, path: '/integrity' },
             { label: 'nav.audit', icon: ScrollText, path: '/audit' },
         ],
     },

@@ -1,5 +1,5 @@
 import './CaseFilters.css';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 
 interface CaseFiltersProps {
   searchQuery: string;
@@ -29,7 +29,7 @@ export default function CaseFilters({
       </div>
 
       <div className="case-filter-group">
-        <Dropdown
+        <InvictusSelect
           label="STATUS"
           value={statusFilter}
           onChange={setStatusFilter}

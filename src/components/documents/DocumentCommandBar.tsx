@@ -1,5 +1,5 @@
 import './DocumentCommandBar.css';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 
 export interface DocumentFiltersState {
   searchQuery: string;
@@ -59,21 +59,21 @@ export default function DocumentCommandBar({ filters, onChange, onReset }: Docum
         />
       </div>
 
-      <Dropdown 
+      <InvictusSelect 
         label="TYPE"
         value={filters.type}
         options={typeOptions}
         onChange={(val) => updateFilter('type', val)}
       />
 
-      <Dropdown 
+      <InvictusSelect 
         label="STATUS"
         value={filters.status}
         options={statusOptions}
         onChange={(val) => updateFilter('status', val)}
       />
 
-      <Dropdown 
+      <InvictusSelect 
         label="LANGUAGE"
         value={filters.language}
         options={langOptions}

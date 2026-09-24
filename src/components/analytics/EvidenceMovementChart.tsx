@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 interface Props {
-  data: EvidenceMovementPoint[];
+  data: EvidenceMovementPoint[] | null | undefined;
 }
 
 export default function EvidenceMovementChart({ data }: Props) {
@@ -33,10 +33,17 @@ export default function EvidenceMovementChart({ data }: Props) {
         <span>EVIDENCE OPERATIONS</span>
       </div>
 
-      {data.length === 0 ? (
+      {data === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO EVIDENCE TELEMETRY</span>
-          <span className="analytics-no-telemetry__sub">Evidence operation aggregate not exposed by current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : data === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">EVIDENCE METRICS NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         <div style={{ width: '100%', height: '240px' }}>

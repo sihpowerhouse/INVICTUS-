@@ -25,7 +25,7 @@ export class MockIntelligenceAdapter implements IIntelligenceService {
     return mockAnswers['default'];
   }
 
-  async getDocumentAnswer(question: string, versionId: string): Promise<AIAnswer> {
+  async getDocumentAnswer(question: string, versionId: string, _documentId?: string): Promise<AIAnswer> {
     // For VITE_USE_MOCK_DATA=true, just simulate a successful generic response or error.
     await new Promise(resolve => setTimeout(resolve, 1200));
     return {

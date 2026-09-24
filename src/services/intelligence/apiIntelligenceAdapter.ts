@@ -80,7 +80,7 @@ export class ApiIntelligenceAdapter implements IIntelligenceService {
     }
   }
 
-  async getDocumentAnswer(question: string, versionId: string): Promise<AIAnswer> {
+  async getDocumentAnswer(question: string, versionId: string, documentId?: string): Promise<AIAnswer> {
     if (!versionId) {
       throw new Error('Version ID is required for Document AI chat.');
     }
@@ -101,6 +101,7 @@ export class ApiIntelligenceAdapter implements IIntelligenceService {
         method: 'POST',
         body: JSON.stringify({
           version_id: versionId,
+          document_id: documentId,
           question: question
         })
       });
@@ -134,6 +135,16 @@ export class ApiIntelligenceAdapter implements IIntelligenceService {
       };
 
     } catch (error: any) {
+      if (error.status === 400) {
+         return {
+           id: `err-${Date.now()}`,
+           question,
+           answer: error.message || 'Insufficient evidence or document is still processing.',
+           status: 'INSUFFICIENT_EVIDENCE',
+           citations: [],
+           basis: { totalSources: 0, documentCount: 0, mediaCount: 0, evidenceCount: 0, relevance: 'LOW' }
+         };
+      }
       if (error.status === 403 || error.status === 401 || error.status === 404 || error.status === 503) {
         return {
           id: `err-${Date.now()}`,

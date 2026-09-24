@@ -61,8 +61,9 @@ export default function DocumentsPage() {
       })
       .catch(err => {
         if (!mounted.current) return;
+        console.log('[DocumentsPage] Caught error:', err, 'Name:', err?.name);
 
-        if (err instanceof ElevationRequiredError) {
+        if (err instanceof ElevationRequiredError || (err && err.name === 'ElevationRequiredError')) {
           // Backend requires VIEW_FILES OTP. Trigger the flow.
           setIsLoading(false);
           setDocuments([]);
@@ -267,7 +268,7 @@ export default function DocumentsPage() {
             className="btn-primary"
             onClick={() => setShowUpload(!showUpload)}
           >
-            {showUpload ? 'CANCEL UPLOAD' : '+ UPLOAD DOCUMENT'}
+            {showUpload ? 'CANCEL UPLOAD' : 'ADD DOCUMENT'}
           </button>
         </div>
       </motion.div>
@@ -285,7 +286,6 @@ export default function DocumentsPage() {
       <AnimatePresence>
         {showUpload && (
           <DocumentUpload
-            caseId="GENERAL"
             onClose={() => setShowUpload(false)}
             onComplete={handleUploadComplete}
           />

@@ -3,7 +3,7 @@ import './CaseWorkspaceHeader.css';
 
 interface CaseWorkspaceHeaderProps {
   activeTab: 'FILES' | 'MEMBERS' | 'TIMELINE' | 'CASE AI';
-  onActionSelect: (action: 'FILES' | 'UPLOAD' | 'MEMBERS' | 'AI' | 'TIMELINE' | 'CASE AI') => void;
+  onActionSelect: (action: 'FILES' | 'ADD_DOCUMENT' | 'ADD_EVIDENCE' | 'ADD_MEDIA' | 'MEMBERS' | 'AI' | 'TIMELINE' | 'CASE AI') => void;
 }
 
 export default function CaseWorkspaceHeader({ activeTab, onActionSelect }: CaseWorkspaceHeaderProps) {
@@ -39,9 +39,17 @@ export default function CaseWorkspaceHeader({ activeTab, onActionSelect }: CaseW
           <span>CASE AI</span>
         </button>
         <div style={{ flex: 1 }}></div>
-        <button className="workspace-action-btn" onClick={() => onActionSelect('UPLOAD')}>
+        <button className="workspace-action-btn" onClick={() => onActionSelect('ADD_DOCUMENT')}>
+          <FileText size={16} />
+          <span>ADD DOCUMENT</span>
+        </button>
+        <button className="workspace-action-btn" onClick={() => onActionSelect('ADD_EVIDENCE')}>
           <Upload size={16} />
-          <span>UPLOAD EVIDENCE</span>
+          <span>ADD EVIDENCE</span>
+        </button>
+        <button className="workspace-action-btn" onClick={() => onActionSelect('ADD_MEDIA')}>
+          <Upload size={16} />
+          <span>ADD MEDIA</span>
         </button>
       </div>
     </div>

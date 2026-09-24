@@ -21,6 +21,7 @@ export default function CaseDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [uploadType, setUploadType] = useState<string>('EVIDENCE');
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'FILES' | 'MEMBERS' | 'TIMELINE' | 'CASE AI'>('FILES');
 
@@ -39,10 +40,16 @@ export default function CaseDetailsPage() {
   }, [caseId]);
 
   const handleWorkspaceAction = (action: string) => {
-    if (action === 'UPLOAD') {
-      setIsUploadOpen(true);
-    } else if (action === 'FILES' || action === 'MEMBERS' || action === 'TIMELINE' || action === 'CASE AI') {
+    if (['FILES', 'MEMBERS', 'TIMELINE', 'CASE AI'].includes(action)) {
       setActiveTab(action as any);
+    } else if (action === 'ADD_DOCUMENT' || action === 'ADD_EVIDENCE' || action === 'ADD_MEDIA') {
+      const typeMap: Record<string, string> = {
+        'ADD_DOCUMENT': 'LEGAL_DOCUMENT',
+        'ADD_EVIDENCE': 'EVIDENCE',
+        'ADD_MEDIA': 'MEDIA'
+      };
+      setUploadType(typeMap[action] || 'EVIDENCE');
+      setIsUploadOpen(true);
     }
   };
 
@@ -133,25 +140,22 @@ export default function CaseDetailsPage() {
         </div>
       </div>
       
-      {isUploadOpen && (
-        <DocumentUpload 
-          caseId={caseId || ''}
-          onClose={() => setIsUploadOpen(false)}
-          onComplete={(newDoc) => {
-            setIsUploadOpen(false);
-            if (newDoc && caseData) {
-              setCaseData({
-                ...caseData,
-                documents: [...(caseData.documents || []), newDoc],
-                documentsCount: (caseData.documentsCount || 0) + 1
+      <AnimatePresence>
+        {isUploadOpen && (
+          <DocumentUpload 
+            caseId={caseId || ''}
+            documentType={uploadType}
+            onClose={() => setIsUploadOpen(false)}
+            onComplete={() => {
+              setIsUploadOpen(false);
+              // Simple refresh by re-fetching
+              caseService.getCaseById(caseId || '').then(data => {
+                if (data) setCaseData(data);
               });
-            }
-          }}
-        />
-      )}
-
-
-
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {activeDocumentId && (
           <DocumentViewerOverlay 

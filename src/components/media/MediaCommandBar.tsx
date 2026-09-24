@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 
 export default function MediaCommandBar() {
   const [typeFilter, setTypeFilter] = useState('ALL');
@@ -20,7 +20,7 @@ export default function MediaCommandBar() {
       </div>
       
       <div className="media-cmd__filters">
-        <Dropdown
+        <InvictusSelect
           value={typeFilter}
           onChange={setTypeFilter}
           options={[
@@ -30,7 +30,7 @@ export default function MediaCommandBar() {
           ]}
         />
         
-        <Dropdown
+        <InvictusSelect
           value={statusFilter}
           onChange={setStatusFilter}
           options={[
@@ -42,7 +42,7 @@ export default function MediaCommandBar() {
           ]}
         />
         
-        <Dropdown
+        <InvictusSelect
           value={dateFilter}
           onChange={setDateFilter}
           options={[

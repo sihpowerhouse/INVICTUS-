@@ -7,6 +7,7 @@ export interface User {
   email?: string;
   role: string;
   department?: string;
+  departmentType?: string;
   userType: UserType;
 }
 

@@ -18,16 +18,18 @@ export class MockDocumentAdapter implements IDocumentService {
     });
   }
 
-  async uploadDocument(file: File, caseId: string, documentType = 'OTHER'): Promise<Document> {
+  async uploadDocument(file: File, caseId: string, documentType?: string, documentId?: string): Promise<Document> {
     return new Promise((resolve) => {
       setTimeout(() => {
+        const newId = documentId || `DOC-NEW-${Date.now()}`;
+        const versionNum = documentId ? 2 : 1;
         resolve({
-          id: `DOC-NEW-${Date.now()}`,
+          id: newId,
           caseId,
           name: file.name,
           type: (documentType as any) || 'OTHER',
           status: 'UPLOADED',
-          version: 'v1',
+          version: `v${versionNum}`,
           versionId: `mock-uuid-${Date.now()}`,
           language: 'UNKNOWN',
           pages: 1,
@@ -105,4 +107,10 @@ export class MockDocumentAdapter implements IDocumentService {
   async getExternalDocumentPreviewBlob(versionId: string): Promise<Blob> {
     return this.getDocumentPreviewBlob(versionId);
   }
+
+  async acceptExtraction(_versionId: string): Promise<void> {}
+  async editExtraction(_versionId: string, _text: string): Promise<void> {}
+  async reprocessDocument(_versionId: string): Promise<void> {}
+
+  async getDocumentActivity(_documentId: string): Promise<any[]> { return []; }
 }

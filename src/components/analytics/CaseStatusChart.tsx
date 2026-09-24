@@ -12,13 +12,13 @@ import type { CaseStatusCount } from '../../types/analytics';
 import './Analytics.css';
 
 interface Props {
-  data: CaseStatusCount[];
+  data: CaseStatusCount[] | null | undefined;
 }
 
 // Only show statuses that have at least one case; zero-count rows are omitted
 // so the chart never implies missing data is zero.
 export default function CaseStatusChart({ data }: Props) {
-  const hasData = data.some(d => d.count > 0);
+  const hasData = data && data.length > 0;
 
   const getColor = (status: string) => {
     switch (status) {
@@ -33,8 +33,8 @@ export default function CaseStatusChart({ data }: Props) {
 
   // Filter out true-zero counts — they add noise; keep them only if all are zero
   // (so the chart is still rendered when fresh data arrives)
-  const visible = data.filter(d => d.count > 0);
-  const chartData = visible.length > 0 ? visible : data;
+  const visible = data ? data.filter(d => d.count > 0) : [];
+  const chartData = visible.length > 0 ? visible : (data || []);
 
   return (
     <div className="analytics-card" style={{ minHeight: '300px' }}>
@@ -43,10 +43,17 @@ export default function CaseStatusChart({ data }: Props) {
         {hasData && <span className="case-status-real-badge">LIVE DATA</span>}
       </div>
 
-      {!hasData ? (
+      {data === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO TELEMETRY</span>
-          <span className="analytics-no-telemetry__sub">No authorized cases available</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : data === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">DATA NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         <div style={{ width: '100%', height: '240px' }}>

@@ -39,25 +39,26 @@ export default function AnalyticsSummary({ summary }: Props) {
   return (
     <div className="analytics-summary-strip">
       <MetricCard
-        label="ACTIVE CASES"
+        label="SYSTEM ACTIVE CASES"
         value={summary.activeCases}
         trend={summary.activeCasesTrend}
       />
       <MetricCard
-        label="DOCS PROCESSED"
+        label="SYSTEM DOCS PROCESSED"
         value={summary.documentsProcessed}
-        unavailableLabel="NO PROCESSING METRIC"
+        unavailableLabel="DATA NOT EXPOSED BY CURRENT BACKEND"
       />
       <MetricCard
-        label="EVIDENCE ITEMS"
+        label="SYSTEM EVIDENCE ITEMS"
         value={summary.evidenceItems}
-        unavailableLabel="NO EVIDENCE METRIC"
+        unavailableLabel="DATA NOT EXPOSED BY CURRENT BACKEND"
       />
       <MetricCard
-        label="PENDING ACTIONS"
+        label="SYSTEM PENDING ACTIONS"
         value={summary.pendingActions}
-        unavailableLabel="NO ACTION FEED"
+        unavailableLabel="DATA NOT EXPOSED BY CURRENT BACKEND"
       />
     </div>
   );
 }
+

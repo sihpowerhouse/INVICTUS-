@@ -7,6 +7,7 @@ export interface FIRPayload {
   incidentDate: string;
   location: string;
   description: string;
+  priority?: string;
   clientRequestId?: string;
 }
 

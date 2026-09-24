@@ -5,13 +5,15 @@ import type { AIAnswer } from '../../types/intelligence';
 import './DocumentIntelligencePanel.css';
 
 interface DocumentIntelligencePanelProps {
+  documentId: string;
   versionId: string;
   documentType?: string;
-  onCitationClick?: (versionId: string) => void;
+  onCitationClick?: (versionId: string, page?: number) => void;
 }
 
-export default function DocumentIntelligencePanel({ versionId, onCitationClick }: DocumentIntelligencePanelProps) {
+export default function DocumentIntelligencePanel({ documentId, versionId, onCitationClick }: DocumentIntelligencePanelProps) {
   const [question, setQuestion] = useState('');
+  const [scope, setScope] = useState<'ALL' | 'SELECTED'>('SELECTED');
   const [isLoading, setIsLoading] = useState(false);
   const [answer, setAnswer] = useState<AIAnswer | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export default function DocumentIntelligencePanel({ versionId, onCitationClick }
     setAnswer(null);
 
     try {
-      const res = await intelligenceService.getDocumentAnswer(question, versionId);
+      const res = await intelligenceService.getDocumentAnswer(question, versionId, scope === 'ALL' ? documentId : undefined);
       if (res.status === 'UNAUTHORIZED') {
          setError(res.answer || 'access denied');
          setIsLoading(false);
@@ -55,6 +57,20 @@ export default function DocumentIntelligencePanel({ versionId, onCitationClick }
       </div>
       
       <div className="panel-content">
+        <div className="di-scope-toggle">
+          <button 
+            className={`di-scope-btn ${scope === 'ALL' ? 'active' : ''}`}
+            onClick={() => setScope('ALL')}
+          >
+            ALL VERSIONS
+          </button>
+          <button 
+            className={`di-scope-btn ${scope === 'SELECTED' ? 'active' : ''}`}
+            onClick={() => setScope('SELECTED')}
+          >
+            SELECTED VERSION
+          </button>
+        </div>
         <p className="panel-description">Ask anything about this document.</p>
         
         <form onSubmit={handleSubmit} className="di-form">
@@ -109,7 +125,7 @@ export default function DocumentIntelligencePanel({ versionId, onCitationClick }
                       className="di-source-tag"
                       onClick={() => {
                         if (cit.versionId && onCitationClick) {
-                          onCitationClick(cit.versionId);
+                          onCitationClick(cit.versionId, cit.page);
                         }
                       }}
                       style={{ cursor: cit.versionId && onCitationClick ? 'pointer' : 'default' }}

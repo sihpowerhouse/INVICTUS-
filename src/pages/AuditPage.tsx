@@ -4,12 +4,13 @@ import './AuditPage.css';
 import { securityService } from '../services/securityService';
 import type { AuditEvent } from '../types/security';
 import AuditTimeline from '../components/security/AuditTimeline';
-import Dropdown from '../components/common/Dropdown';
+import InvictusSelect from '../components/ui/InvictusSelect';
 
 export default function AuditPage() {
   const navigate = useNavigate();
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters (mock only)
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,12 +18,28 @@ export default function AuditPage() {
 
   useEffect(() => {
     let mounted = true;
-    securityService.getAuditEvents().then(res => {
-      if (mounted) {
-        setEvents(res);
-        setIsLoading(false);
+    
+    const fetchAudit = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const res = await securityService.getAuditEvents();
+        if (mounted) {
+          setEvents(res);
+        }
+      } catch (err: any) {
+        if (mounted) {
+          setError(err.message || 'AUDIT ACCESS NOT AUTHORIZED');
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-    });
+    };
+    
+    fetchAudit();
+    
     return () => { mounted = false; };
   }, []);
 
@@ -52,6 +69,9 @@ export default function AuditPage() {
           OPERATIONAL ANALYTICS →
         </button>
       </div>
+      <div style={{ fontSize: '10px', fontFamily: 'monospace', color: 'var(--text-dim)', letterSpacing: '0.15em', marginBottom: '8px' }}>
+        SCOPE: USER-AUTHORIZED EVENTS — SHOWING ONLY EVENTS ON YOUR ASSIGNED CASES AND DOCUMENTS
+      </div>
 
       <div className="audit-page__layout">
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -74,15 +94,20 @@ export default function AuditPage() {
               }}
             />
             <div style={{ marginTop: '12px' }}>
-              <Dropdown
+              <InvictusSelect
                 value={actionFilter}
                 onChange={val => setActionFilter(val)}
                 options={[
                   { value: '', label: 'ALL ACTIONS' },
                   { value: 'VIEWED', label: 'VIEWED' },
                   { value: 'MODIFIED', label: 'MODIFIED' },
+                  { value: 'UPLOADED', label: 'UPLOADED' },
+                  { value: 'EXTRACTION_ACCEPTED', label: 'EXTRACTION ACCEPTED' },
+                  { value: 'EXTRACTION_EDITED', label: 'EXTRACTION EDITED' },
+                  { value: 'DOCUMENT_REPROCESSED', label: 'DOCUMENT REPROCESSED' },
                   { value: 'INTEGRITY_CHECK', label: 'INTEGRITY CHECK' },
-                  { value: 'SIGNATURE_VERIFIED', label: 'SIGNATURE VERIFIED' }
+                  { value: 'SIGNATURE_VERIFIED', label: 'SIGNATURE VERIFIED' },
+                  { value: 'VERSION_CREATED', label: 'VERSION CREATED' },
                 ]}
               />
             </div>
@@ -92,6 +117,16 @@ export default function AuditPage() {
         <main>
           {isLoading ? (
             <div className="intelligence-loading">LOADING AUDIT TRAIL...</div>
+          ) : error ? (
+            <div className="audit-empty-state error" style={{ padding: '40px', textAlign: 'center', color: '#ff6b6b' }}>
+              <h3>AUDIT ACCESS NOT AUTHORIZED</h3>
+              <p>{error}</p>
+            </div>
+          ) : filteredEvents.length === 0 ? (
+            <div className="audit-empty-state" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+              <h3>NO AUTHORIZED ACTIVITY RECORDED</h3>
+              <p>No user-authorized events found matching the current scope.</p>
+            </div>
           ) : (
             <AuditTimeline events={filteredEvents} />
           )}

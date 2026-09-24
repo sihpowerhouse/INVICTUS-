@@ -3,6 +3,7 @@ import type {
   DocumentIntegrity,
   IntegritySummary,
   AuditEvent,
+  AuditAction,
   AccessRequest,
   SecurityEvent,
   AccessRequestStatus
@@ -66,7 +67,24 @@ export class ApiSecurityAdapter implements ISecurityService {
   }
 
   async getAuditEvents(): Promise<AuditEvent[]> {
-    return [];
+    try {
+      const data = (await apiClient.get<any>('/audit/logs'));
+      if (!data || !data.logs) return [];
+      return data.logs.map((log: any): AuditEvent => ({
+        id: log.event_id || log.id || String(Math.random()),
+        timestamp: log.created_at || log.timestamp || new Date().toISOString(),
+        actor: log.user_id || log.actor || 'SYSTEM',
+        department: log.details?.department || 'N/A',
+        action: (log.action as AuditAction) || 'VIEWED',
+        target: log.target_id || log.target || 'SYSTEM',
+        targetType: log.details?.target_type || 'SYSTEM',
+        result: log.details?.result || 'SUCCESS',
+        caseId: log.details?.case_id || log.target_id,
+      }));
+    } catch (err) {
+      console.warn('[AuditAdapter] Could not load audit events:', err);
+      throw err;
+    }
   }
 
   async getAccessRequests(): Promise<AccessRequest[]> {

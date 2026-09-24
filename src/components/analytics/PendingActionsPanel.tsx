@@ -3,7 +3,7 @@ import type { PendingAction } from '../../types/analytics';
 import './Analytics.css';
 
 interface Props {
-  actions: PendingAction[];
+  actions: PendingAction[] | null | undefined;
 }
 
 export default function PendingActionsPanel({ actions }: Props) {
@@ -11,13 +11,20 @@ export default function PendingActionsPanel({ actions }: Props) {
     <div className="analytics-card" style={{ minHeight: '300px' }}>
       <div className="analytics-panel-header">
         <span>PENDING ACTIONS</span>
-        {actions.length > 0 && <span>{actions.length} TASKS</span>}
+        {actions && actions.length > 0 && <span>{actions.length} TASKS</span>}
       </div>
 
-      {actions.length === 0 ? (
+      {actions === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO ACTION FEED</span>
-          <span className="analytics-no-telemetry__sub">Task/action endpoint not available from current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : actions === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">PENDING ACTION METRICS NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : actions.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         <div className="pending-actions-list">

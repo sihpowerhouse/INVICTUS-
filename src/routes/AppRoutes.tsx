@@ -22,8 +22,7 @@ const MediaDetailsPage = lazy(() => import('../pages/MediaDetailsPage'));
 const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
 
 
-const IntegrityPage = lazy(() => import('../pages/IntegrityPage'));
-const IntegrityDetailPage = lazy(() => import('../pages/IntegrityDetailPage'));
+
 const AuditPage = lazy(() => import('../pages/AuditPage'));
 const AccessRequestsPage = lazy(() => import('../pages/AccessRequestsPage'));
 
@@ -94,8 +93,7 @@ function AppRoutes() {
 
 
                 {/* Security */}
-                <Route path="/integrity" element={<IntegrityPage />} />
-                <Route path="/integrity/:documentId" element={<IntegrityDetailPage />} />
+
                 <Route path="/audit" element={<AuditPage />} />
                 <Route path="/access-requests" element={<AccessRequestsPage />} />
 

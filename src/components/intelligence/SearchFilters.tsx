@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 import './Intelligence.css';
 
 interface SearchFiltersProps {
@@ -20,7 +20,7 @@ export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       </div>
       
       <div className="intel-filters__group" style={{ marginBottom: '16px' }}>
-        <Dropdown
+        <InvictusSelect
           label="CASE"
           value={caseFilter}
           onChange={setCaseFilter}
@@ -33,7 +33,7 @@ export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       </div>
 
       <div className="intel-filters__group" style={{ marginBottom: '16px' }}>
-        <Dropdown
+        <InvictusSelect
           label="DOCUMENT TYPE"
           value={docFilter}
           onChange={setDocFilter}
@@ -47,7 +47,7 @@ export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       </div>
 
       <div className="intel-filters__group" style={{ marginBottom: '16px' }}>
-        <Dropdown
+        <InvictusSelect
           label="DEPARTMENT"
           value={deptFilter}
           onChange={setDeptFilter}
@@ -61,7 +61,7 @@ export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       </div>
       
       <div className="intel-filters__group">
-        <Dropdown
+        <InvictusSelect
           label="DATE RANGE"
           value={dateFilter}
           onChange={setDateFilter}

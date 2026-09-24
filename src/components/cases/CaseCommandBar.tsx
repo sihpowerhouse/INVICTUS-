@@ -1,5 +1,5 @@
 import './CaseCommandBar.css';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 
 export interface CaseFiltersState {
   searchQuery: string;
@@ -62,21 +62,21 @@ export default function CaseCommandBar({ filters, onChange, onReset }: CaseComma
         />
       </div>
 
-      <Dropdown 
+      <InvictusSelect 
         label="PRIORITY"
         value={filters.priority}
         options={priorityOptions}
         onChange={(val) => updateFilter('priority', val)}
       />
 
-      <Dropdown 
+      <InvictusSelect 
         label="STATUS"
         value={filters.status}
         options={statusOptions}
         onChange={(val) => updateFilter('status', val)}
       />
 
-      <Dropdown 
+      <InvictusSelect 
         label="SORT"
         value={filters.sort}
         options={sortOptions}

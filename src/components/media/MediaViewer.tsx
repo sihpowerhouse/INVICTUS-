@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Maximize } from 'lucide-react';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 import './MediaViewer.css';
 
 interface MediaViewerProps {
@@ -136,7 +136,7 @@ export default function MediaViewer({
           </div>
 
           <div className="media-viewer__btn-group">
-            <Dropdown 
+            <InvictusSelect 
               value={playbackSpeed.toString()}
               onChange={(val) => onSpeedChange(Number(val))}
               options={[

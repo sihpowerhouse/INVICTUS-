@@ -18,6 +18,7 @@ function mapBackendUser(data: any): User {
     employeeId: data.employee_id,
     displayName: data.full_name || 'Unknown User',
     department: data.department_name,
+    departmentType: data.department_type,
     role,
     userType: 'INTERNAL',
   };

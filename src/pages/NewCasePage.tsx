@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { firService } from '../services/firService';
 import type { FIRPayload, FIRCreationState, FIRCreationResult } from '../services/fir/FirServiceInterface';
+import InvictusSelect from '../components/ui/InvictusSelect';
 import './NewCasePage.css';
 
 export default function NewCasePage() {
@@ -15,6 +16,7 @@ export default function NewCasePage() {
     incidentDate: '',
     location: '',
     description: '',
+    priority: 'HIGH',
     clientRequestId: '' // Will be generated on mount
   });
 
@@ -102,6 +104,13 @@ export default function NewCasePage() {
       <div className="new-case-page__content">
         <form className={`new-case-form ${isSubmitting ? 'form--locked' : ''}`} onSubmit={handleSubmit}>
           
+          {error && !isSubmitting && (
+            <div className="fir-processing-error" style={{ marginBottom: '2rem' }}>
+              <h3>FIR CREATION FAILED</h3>
+              <p>{error}</p>
+            </div>
+          )}
+
           <div className="form-grid">
             <div className="form-field">
               <label>COMPLAINANT NAME</label>
@@ -143,6 +152,21 @@ export default function NewCasePage() {
                 onChange={e => setFormData({...formData, location: e.target.value})}
                 disabled={isSubmitting}
                 placeholder="Coordinates or Address"
+              />
+            </div>
+
+            <div className="form-field">
+              <InvictusSelect
+                label="PRIORITY"
+                value={formData.priority || 'HIGH'}
+                onChange={val => setFormData({...formData, priority: val})}
+                disabled={isSubmitting}
+                options={[
+                  { value: 'HIGH', label: 'HIGH' },
+                  { value: 'MEDIUM', label: 'MEDIUM' },
+                  { value: 'LOW', label: 'LOW' },
+                  { value: 'CRITICAL', label: 'CRITICAL' }
+                ]}
               />
             </div>
 

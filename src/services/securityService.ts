@@ -4,8 +4,8 @@ import type { ISecurityService } from './security/SecurityServiceInterface';
 import { MockSecurityAdapter } from './security/mockSecurityAdapter';
 import { ApiSecurityAdapter } from './security/apiSecurityAdapter';
 
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+import { USE_MOCK_DATA } from './api/apiClient';
 
-export const securityService: ISecurityService = useMockData
+export const securityService: ISecurityService = USE_MOCK_DATA
   ? new MockSecurityAdapter()
   : new ApiSecurityAdapter();

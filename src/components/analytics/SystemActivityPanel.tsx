@@ -2,7 +2,7 @@ import type { SystemActivity } from '../../types/analytics';
 import './Analytics.css';
 
 interface Props {
-  activities: SystemActivity[];
+  activities: SystemActivity[] | null | undefined;
 }
 
 export default function SystemActivityPanel({ activities }: Props) {
@@ -10,13 +10,20 @@ export default function SystemActivityPanel({ activities }: Props) {
     <div className="analytics-card" style={{ minHeight: '300px' }}>
       <div className="analytics-panel-header">
         <span>SYSTEM ACTIVITY</span>
-        {activities.length > 0 && <span>REAL-TIME STREAM</span>}
+        {activities && activities.length > 0 && <span>REAL-TIME STREAM</span>}
       </div>
 
-      {activities.length === 0 ? (
+      {activities === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO ACTIVITY FEED</span>
-          <span className="analytics-no-telemetry__sub">Audit log endpoint not available from current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : activities === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">DATA NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : activities.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO SYSTEM ACTIVITY RECORDED IN CURRENT SCOPE.</span>
         </div>
       ) : (
         <div className="system-activity-stream">

@@ -125,6 +125,56 @@ export class ApiDocumentAdapter implements IDocumentService {
    * Returns [] if authenticated and elevated but genuinely no documents exist.
    */
   async getDocuments(): Promise<Document[]> {
+    // ── PRIMARY: single aggregated endpoint (avoids N+1 sequential calls) ──
+    try {
+      const raw = await apiClient.get<any>('/documents/my');
+      const docs: any[] = raw?.documents ?? [];
+
+      return docs.map((d: any): Document => {
+        const filename: string = d.filename || d.document_id || 'Document';
+        const versionNum: number = d.version?.version_number ?? 1;
+        const versionId: string  = d.version?.version_id ?? d.current_version_id ?? '';
+        const integrityValid: boolean | undefined = d.integrity?.valid;
+
+        return {
+          id:              d.document_id,
+          caseId:          d.case_id,
+          name:            filename,
+          type:            mapDocType(d.document_type),
+          status:          mapDocStatus(d.ai?.status, integrityValid),
+          version:         versionId ? `v${versionNum}` : 'v1',
+          versionId:       versionId,
+          language:        'UNKNOWN',
+          pages: d.ai?.pages ? (Array.isArray(d.ai.pages) ? d.ai.pages.length : d.ai.pages) : 1,
+          size:            'N/A',
+          uploadedBy:      d.uploader_id ?? 'UNKNOWN',
+          department:      'N/A',
+          createdAt:       d.version?.timestamp ?? new Date().toISOString(),
+          updatedAt:       d.version?.timestamp ?? new Date().toISOString(),
+          ocrConfidence:   d.ai?.confidence ?? undefined,
+          extractionMethod: d.ai?.provider  ?? undefined,
+          confidentiality: 'RESTRICTED',
+        };
+      });
+    } catch (err: any) {
+      // 403 = elevation required
+      if (err instanceof ApiError && (err.status === 403 || err.status === 401)) {
+        throw new ElevationRequiredError();
+      }
+      // 404 = /documents/my not available (old backend) → fall back to N+1
+      if (err instanceof ApiError && err.status === 404) {
+        console.warn('[DocumentRegistry] /documents/my not available, falling back to per-case fetch');
+        return this._getDocumentsFallback();
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * Fallback: per-case document fetch (N+1 pattern).
+   * Used only when /documents/my is not available on the backend.
+   */
+  private async _getDocumentsFallback(): Promise<Document[]> {
     // 1. Get authorized case list (no OTP required)
     let myCases: any[] = [];
     try {
@@ -206,11 +256,25 @@ export class ApiDocumentAdapter implements IDocumentService {
     }
   }
 
-  async uploadDocument(file: File, caseId: string, documentType = 'other'): Promise<Document> {
+  async uploadDocument(file: File, caseId: string, documentType = 'other', documentId?: string): Promise<Document> {
     const formData = new FormData();
     formData.append('case_id', caseId);
-    formData.append('document_type', documentType.toLowerCase());
+
+    let backendDocType = 'other';
+    switch (documentType.toUpperCase()) {
+      case 'EVIDENCE': backendDocType = 'evidence'; break;
+      case 'LEGAL_DOCUMENT': backendDocType = 'court_order'; break;
+      case 'MEDIA': backendDocType = 'cctv'; break;
+      case 'REPORT': backendDocType = 'forensic_report'; break;
+      case 'FIR': backendDocType = 'fir'; break;
+      default: backendDocType = 'other'; break;
+    }
+    formData.append('document_type', backendDocType);
+
     formData.append('file', file);
+    if (documentId) {
+      formData.append('document_id', documentId);
+    }
 
     const data = await apiClient.post<any>('/documents/upload', formData);
 
@@ -257,5 +321,24 @@ export class ApiDocumentAdapter implements IDocumentService {
     return apiClient.get<Blob>(`/external/documents/file/${encodeURIComponent(versionId)}`, {
       responseType: 'blob'
     });
+  }
+
+  async acceptExtraction(versionId: string): Promise<void> {
+    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/accept`, {});
+  }
+
+  async editExtraction(versionId: string, text: string): Promise<void> {
+    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/edit`, {
+      extracted_text: text
+    });
+  }
+
+  async reprocessDocument(versionId: string): Promise<void> {
+    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/reprocess`, {});
+  }
+
+  async getDocumentActivity(documentId: string): Promise<any[]> {
+    const data = await apiClient.get<any>(`/documents/activity/${encodeURIComponent(documentId)}`);
+    return data?.activity || [];
   }
 }

@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 interface Props {
-  data: DocumentProcessingPoint[];
+  data: DocumentProcessingPoint[] | null | undefined;
 }
 
 export default function DocumentProcessingChart({ data }: Props) {
@@ -22,10 +22,17 @@ export default function DocumentProcessingChart({ data }: Props) {
         <span>DOCUMENT PIPELINE</span>
       </div>
 
-      {data.length === 0 ? (
+      {data === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO PIPELINE TELEMETRY</span>
-          <span className="analytics-no-telemetry__sub">Processing aggregate not exposed by current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : data === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">DATA NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         <div style={{ width: '100%', height: '240px' }}>
@@ -64,9 +71,8 @@ export default function DocumentProcessingChart({ data }: Props) {
                 iconType="circle"
                 iconSize={6}
               />
-              <Area type="monotone" dataKey="uploaded" stackId="1" stroke="#444" fill="url(#colorUpload)" name="Uploaded" />
-              <Area type="monotone" dataKey="ocrCompleted" stackId="1" stroke="#a0e0ff" fill="#a0e0ff" fillOpacity={0.1} name="OCR Done" />
-              <Area type="monotone" dataKey="indexed" stackId="1" stroke="#00f0ff" fill="url(#colorIndex)" name="Indexed" />
+              <Area type="monotone" dataKey="pending" stackId="1" stroke="#444" fill="url(#colorUpload)" name="Pending/Processing" />
+              <Area type="monotone" dataKey="processed" stackId="1" stroke="#00f0ff" fill="url(#colorIndex)" name="Completed" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

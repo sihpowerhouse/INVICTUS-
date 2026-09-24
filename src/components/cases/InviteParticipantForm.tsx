@@ -3,6 +3,7 @@ import { caseService } from '../../services/caseService';
 import { memberService } from '../../services/memberService';
 import type { DocumentPermission, DocumentAccess } from '../../types/access';
 import { Shield, FileText } from 'lucide-react';
+import InvictusSelect from '../ui/InvictusSelect';
 
 interface InviteParticipantFormProps {
   caseId: string;
@@ -93,21 +94,11 @@ export default function InviteParticipantForm({ caseId, onCancel, onSubmit }: In
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>ROLE</label>
-            <select 
+            <InvictusSelect
               value={role}
-              onChange={e => setRole(e.target.value)}
-              style={{
-                background: 'var(--bg-base)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-primary)',
-                padding: '8px 12px',
-                fontFamily: 'var(--font-mono)'
-              }}
-            >
-              {availableRoles.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
+              onChange={val => setRole(val)}
+              options={availableRoles.map(r => ({ value: r, label: r }))}
+            />
           </div>
         </div>
 
@@ -139,21 +130,15 @@ export default function InviteParticipantForm({ caseId, onCancel, onSubmit }: In
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{doc.id}</div>
                     </div>
                   </div>
-                  <select 
+                  <InvictusSelect
                     value={selectedAccess[doc.id] || 'NO ACCESS'}
-                    onChange={e => handleAccessChange(doc.id, e.target.value as any)}
-                    style={{
-                      background: 'var(--bg-panel)',
-                      border: '1px solid var(--border)',
-                      color: selectedAccess[doc.id] && selectedAccess[doc.id] !== 'NO ACCESS' ? 'var(--accent)' : 'var(--text-muted)',
-                      padding: '4px 8px',
-                      fontSize: '11px',
-                      fontFamily: 'var(--font-mono)'
-                    }}
-                  >
-                    <option value="NO ACCESS">NO ACCESS</option>
-                    <option value="READ ONLY">READ ONLY</option>
-                  </select>
+                    onChange={val => handleAccessChange(doc.id, val as any)}
+                    options={[
+                      { value: 'NO ACCESS', label: 'NO ACCESS' },
+                      { value: 'READ ONLY', label: 'READ ONLY' }
+                    ]}
+                    style={{ width: '140px' }}
+                  />
                 </div>
               ))
             )}

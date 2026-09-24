@@ -56,11 +56,11 @@ export default function OperationalStrip() {
         </div>
         <div className="strip-metrics">
           <div className="strip-metric">
-            <span className="strip-metric-title">OPEN CASES</span>
+            <span className="strip-metric-title">SYSTEM OPEN CASES</span>
             <span className="strip-metric-value">{metrics?.openCases || 0}</span>
           </div>
           <div className="strip-metric">
-            <span className="strip-metric-title">DOCS PENDING AI</span>
+            <span className="strip-metric-title">SYSTEM DOCS PENDING AI</span>
             <span className="strip-metric-value pending">{metrics?.docsPendingAI || 0}</span>
           </div>
         </div>
@@ -87,3 +87,4 @@ export default function OperationalStrip() {
     </div>
   );
 }
+

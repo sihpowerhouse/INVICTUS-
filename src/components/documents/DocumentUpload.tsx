@@ -3,14 +3,18 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { type ProcessingState } from '../../services/processingService';
 import { documentUploadService } from '../../services/documentUploadService';
 import { securityService } from '../../services/securityService';
+import { caseService } from '../../services/caseService';
 import type { Document } from '../../types/document';
-import OTPModal from '../common/OTPModal';
+import type { Case } from '../../types/case';
+import InvictusSelect from '../ui/InvictusSelect';
 import './DocumentUpload.css';
 
 interface DocumentUploadProps {
-  caseId: string;
+  caseId?: string;
   onClose: () => void;
   onComplete: (newDoc?: Document) => void;
+  documentId?: string;  // If set: UPLOAD NEW VERSION of this document
+  documentType?: string; // Pre-select document type for new version
 }
 
 const STAGES = [
@@ -26,15 +30,30 @@ const STAGES = [
   'READY'
 ];
 
-type UploadPhase = 'select' | 'integrity_check' | 'otp' | 'processing';
+type UploadPhase = 'select' | 'auth_required' | 'otp' | 'processing';
 
-export default function DocumentUpload({ caseId, onClose, onComplete }: DocumentUploadProps) {
+export default function DocumentUpload({ caseId, onClose, onComplete, documentId, documentType: initialDocType }: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('select');
   const [processingState, setProcessingState] = useState<ProcessingState | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [newDocument, setNewDocument] = useState<Document | null>(null);
+
+  const [selectedCaseId, setSelectedCaseId] = useState<string>(caseId || '');
+  const [selectedType, setSelectedType] = useState<string>(initialDocType || 'EVIDENCE');
+  const [availableCases, setAvailableCases] = useState<Case[]>([]);
+
+  // Inlined OTP state
+  const [otpCode, setOtpCode] = useState('');
+  const [otpStatus, setOtpStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
+  const [otpErrorMessage, setOtpErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (!caseId) {
+      caseService.getCases().then(setAvailableCases);
+    }
+  }, [caseId]);
 
   // When processing finishes, wait a moment then complete
   useEffect(() => {
@@ -49,16 +68,21 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      setUploadPhase('integrity_check');
-      
-      try {
-        await securityService.requestOtp('UPLOAD_FILE', caseId);
-        setUploadPhase('otp');
-      } catch (err: any) {
-        alert(err.message || 'Failed to request OTP');
-        setFile(null);
-        setUploadPhase('select');
-      }
+      setUploadPhase('auth_required');
+    }
+  };
+
+  const handleRequestAuthorization = async () => {
+    try {
+      const activeCaseId = caseId || selectedCaseId;
+      if (!activeCaseId) throw new Error("Please select a case before proceeding.");
+      await securityService.requestOtp('UPLOAD_FILE', activeCaseId);
+      setUploadPhase('otp');
+      setOtpCode('');
+      setOtpStatus('idle');
+      setOtpErrorMessage('');
+    } catch (err: any) {
+      alert(err.message || 'Unable to send verification code.');
     }
   };
 
@@ -70,38 +94,61 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
 
   const [processingError, setProcessingError] = useState<string | null>(null);
 
-  const handleOTPVerify = async (code: string) => {
+  const handleOTPVerify = async () => {
+    if (otpCode.length !== 6) {
+      setOtpStatus('error');
+      setOtpErrorMessage('PLEASE ENTER A 6-DIGIT CODE');
+      return;
+    }
+
+    setOtpStatus('loading');
     try {
-      await securityService.verifyOtp('UPLOAD_FILE', code, caseId);
-      // Start the upload processing
-      setUploadPhase('processing');
-      setProcessingError(null);
+      const activeCaseId = caseId || selectedCaseId;
+      await securityService.verifyOtp('UPLOAD_FILE', otpCode, activeCaseId);
+      setOtpStatus('success');
       
-      documentUploadService.processUpload(file!, caseId, (state) => {
-        if (mountedRef.current) setProcessingState(state);
-      }).then(doc => {
-        if (mountedRef.current) setNewDocument(doc);
-      }).catch((err: any) => {
-        if (mountedRef.current) {
-          setProcessingError(err?.message || 'Document processing failed.');
-          setUploadPhase('select');
-        }
-      });
-      return true;
+      // Give the user a moment to see AUTHORIZATION VERIFIED
+      setTimeout(() => {
+        setUploadPhase('processing');
+        setProcessingError(null);
+        
+        documentUploadService.processUpload(file!, activeCaseId, (state) => {
+          if (mountedRef.current) setProcessingState(state);
+        }, documentId, selectedType).then(doc => {
+          if (mountedRef.current) setNewDocument(doc);
+        }).catch((err: any) => {
+          if (mountedRef.current) {
+            setProcessingError(err?.message || 'Document processing failed.');
+            setUploadPhase('select');
+          }
+        });
+      }, 1000);
+
     } catch (e: any) {
-      // Don't swallow the error here, so OTPModal handles displaying the error
-      throw e; 
+      setOtpStatus('error');
+      setOtpErrorMessage(e.message || 'Invalid verification code.');
     }
   };
 
-
   const handleOTPResend = async () => {
-    await securityService.requestOtp('UPLOAD_FILE', caseId);
+    try {
+      const activeCaseId = caseId || selectedCaseId;
+      await securityService.requestOtp('UPLOAD_FILE', activeCaseId);
+      setOtpStatus('idle');
+      setOtpCode('');
+      setOtpErrorMessage('');
+    } catch (e: any) {
+      setOtpStatus('error');
+      setOtpErrorMessage(e.message || 'Unable to send verification code.');
+    }
   };
 
   const handleOTPCancel = () => {
     setFile(null);
     setUploadPhase('select');
+    setOtpCode('');
+    setOtpStatus('idle');
+    setOtpErrorMessage('');
   };
 
   const modalVariants = {
@@ -144,7 +191,6 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
             <motion.div 
               key="dropzone"
               className="doc-dropzone" 
-              onClick={() => fileInputRef.current?.click()}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -155,8 +201,53 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
                   ⚠ {processingError}
                 </div>
               )}
-              <div className="doc-dropzone-text">CLICK OR DRAG DOCUMENT HERE</div>
-              <div className="doc-dropzone-subtext">SUPPORTED: PDF, JPG, PNG, DOCX, AUDIO, VIDEO</div>
+
+              <div style={{ width: '100%', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {!caseId && (
+                  <div>
+                    <label style={{ fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block', letterSpacing: '0.1em' }}>SELECT CASE</label>
+                    <InvictusSelect
+                      value={selectedCaseId} 
+                      onChange={val => setSelectedCaseId(val)}
+                      options={[
+                        { value: '', label: 'Choose a case...', disabled: true },
+                        ...availableCases.map(c => ({ value: c.id, label: c.title }))
+                      ]}
+                      placeholder="Choose a case..."
+                    />
+                  </div>
+                )}
+                
+                <div>
+                  <label style={{ fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '4px', display: 'block', letterSpacing: '0.1em' }}>DOCUMENT TYPE</label>
+                  <InvictusSelect
+                    value={selectedType} 
+                    onChange={val => setSelectedType(val)}
+                    disabled={!!documentId}
+                    options={[
+                      { value: 'EVIDENCE', label: 'EVIDENCE' },
+                      { value: 'LEGAL_DOCUMENT', label: 'LEGAL DOCUMENT' },
+                      { value: 'MEDIA', label: 'MEDIA' },
+                      { value: 'REPORT', label: 'REPORT' }
+                    ]}
+                  />
+                </div>
+              </div>
+
+              <div 
+                onClick={() => {
+                  if (!caseId && !selectedCaseId) {
+                    alert("Please select a case first.");
+                    return;
+                  }
+                  fileInputRef.current?.click();
+                }}
+                style={{ cursor: 'pointer', padding: '24px', border: '1px dashed var(--border)', borderRadius: '4px', textAlign: 'center' }}
+              >
+                <div className="doc-dropzone-text">CLICK OR DRAG DOCUMENT HERE</div>
+                <div className="doc-dropzone-subtext">SUPPORTED: PDF, JPG, PNG, DOCX, AUDIO, VIDEO</div>
+              </div>
+
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -168,9 +259,9 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
           )}
 
 
-          {uploadPhase === 'integrity_check' && (
+          {uploadPhase === 'auth_required' && (
             <motion.div 
-              key="integrity"
+              key="auth_required"
               className="doc-upload-progress"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -180,11 +271,21 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
               <div className="upload-file-card">
                 <div className="upload-file-info">
                   <span className="upload-file-name">{file?.name}</span>
-                  <span className="upload-file-size">PERFORMING INTEGRITY CHECK...</span>
+                  <span className="upload-file-size">
+                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB
+                  </span>
                 </div>
               </div>
-              <div className="progress-stages" style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                <div className="loading-spinner" style={{ width: '24px', height: '24px', border: '2px solid var(--accent)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+              <div style={{ padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ color: 'var(--accent)', fontSize: '13px', letterSpacing: '0.1em', marginBottom: '12px', fontWeight: 600 }}>
+                  AUTHORIZATION REQUIRED
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                  A verification code will be sent to your registered email.
+                </div>
+                <button className="btn-primary" onClick={handleRequestAuthorization}>
+                  AUTHORIZE UPLOAD
+                </button>
               </div>
             </motion.div>
           )}
@@ -201,9 +302,75 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
                 <div className="upload-file-info">
                   <span className="upload-file-name">{file?.name}</span>
                   <span className="upload-file-size">
-                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • AWAITING AUTHORIZATION
+                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB
                   </span>
                 </div>
+              </div>
+              <div style={{ padding: '24px 20px', textAlign: 'center' }}>
+                <div style={{ color: 'var(--accent)', fontSize: '13px', letterSpacing: '0.1em', marginBottom: '12px', fontWeight: 600 }}>
+                  {otpStatus === 'success' ? 'AUTHORIZATION VERIFIED' : 'VERIFICATION REQUIRED'}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                  {otpStatus === 'success' ? 'Uploading securely...' : 'Enter the 6-digit code sent to your registered email.'}
+                </div>
+                
+                {otpStatus !== 'success' && (
+                  <>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="000000"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                      disabled={otpStatus === 'loading'}
+                      style={{
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        border: `1px solid ${otpStatus === 'error' ? '#ff5555' : 'var(--border)'}`,
+                        color: otpStatus === 'error' ? '#ff5555' : 'var(--text-primary)',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '24px',
+                        letterSpacing: '0.5em',
+                        textAlign: 'center',
+                        padding: '12px',
+                        width: '200px',
+                        outline: 'none',
+                        marginBottom: '8px'
+                      }}
+                    />
+                    {otpStatus === 'error' && (
+                      <div style={{ color: '#ff5555', fontSize: '11px', marginBottom: '16px' }}>
+                        {otpErrorMessage}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: otpStatus === 'error' ? '0' : '16px' }}>
+                      <button 
+                        className="btn-secondary" 
+                        onClick={handleOTPCancel}
+                        disabled={otpStatus === 'loading'}
+                      >
+                        CANCEL
+                      </button>
+                      <button 
+                        className="btn-primary" 
+                        onClick={handleOTPVerify}
+                        disabled={otpStatus === 'loading' || otpCode.length !== 6}
+                      >
+                        {otpStatus === 'loading' ? 'VERIFYING...' : 'VERIFY OTP'}
+                      </button>
+                    </div>
+                    {otpStatus === 'error' && (
+                      <div style={{ marginTop: '16px' }}>
+                        <button 
+                          className="btn-secondary" 
+                          onClick={handleOTPResend}
+                          style={{ fontSize: '10px', padding: '4px 8px' }}
+                        >
+                          RESEND CODE
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -253,15 +420,7 @@ export default function DocumentUpload({ caseId, onClose, onComplete }: Document
 
         </AnimatePresence>
       </motion.div>
-      
-      <OTPModal 
-        isOpen={uploadPhase === 'otp'}
-        onVerify={handleOTPVerify}
-        onCancel={handleOTPCancel}
-        onResend={handleOTPResend}
-        title="UPLOAD AUTHORIZATION"
-        message="A 6-digit authorization code was sent to your official device to verify this document ingestion."
-      />
+
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }

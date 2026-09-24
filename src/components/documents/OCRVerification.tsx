@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import './OCRVerification.css';
 import { apiClient } from '../../services/api/apiClient';
+import { documentService } from '../../services/documentService';
 
 interface OCRVerificationProps {
   versionId: string;
@@ -22,43 +23,76 @@ interface AiStatusResponse {
   error?: string;
 }
 
-export default function OCRVerification({ versionId, documentType, documentStatus, hideHeader }: OCRVerificationProps) {
+export default function OCRVerification({ versionId, documentType, hideHeader }: OCRVerificationProps) {
   const shouldReduceMotion = useReducedMotion();
   const [statusData, setStatusData] = useState<AiStatusResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState('');
+
+  const fetchStatus = async () => {
+    if (!versionId) {
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      const data = await apiClient.get<AiStatusResponse>(`/documents/ai-status/${encodeURIComponent(versionId)}`);
+      setStatusData(data);
+      setFetchError(null);
+    } catch (err: any) {
+      setFetchError(err.message || 'Failed to fetch AI status');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
+    
     setIsLoading(true);
-    setFetchError(null);
-
-    const fetchStatus = async () => {
-      if (!versionId) {
-        setIsLoading(false);
-        return;
-      }
-      
-      try {
-        const data = await apiClient.get<AiStatusResponse>(`/documents/ai-status/${encodeURIComponent(versionId)}`);
-        if (mounted) {
-          setStatusData(data);
-          setIsLoading(false);
-        }
-      } catch (err: any) {
-        if (mounted) {
-          setFetchError(err.message || 'Failed to fetch AI status');
-          setIsLoading(false);
-        }
-      }
-    };
-
     fetchStatus();
-
     return () => {
-      mounted = false;
+      
     };
   }, [versionId]);
+
+  const handleAccept = async () => {
+    try {
+      setIsLoading(true);
+      await documentService.acceptExtraction(versionId);
+      // Optional: Show toast
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReprocess = async () => {
+    try {
+      setIsLoading(true);
+      await documentService.reprocessDocument(versionId);
+      await fetchStatus();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditSave = async () => {
+    try {
+      setIsLoading(true);
+      await documentService.editExtraction(versionId, editText);
+      setIsEditing(false);
+      await fetchStatus();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const confidence = statusData?.confidence ?? 0;
   const isLowConfidence = confidence < 85 && confidence > 0;
@@ -109,10 +143,6 @@ export default function OCRVerification({ versionId, documentType, documentStatu
         </div>
       </motion.div>
 
-      {documentStatus === 'VERIFIED' && (
-        <button className="ocr-action-btn secondary">EDIT TEXT</button>
-      )}
-
       {statusData?.error && (
         <motion.div className="ocr-warning-box" variants={itemVariants}>
           <h4 className="ocr-warning-title" style={{ color: 'var(--accent)' }}>EXTRACTION FAILED</h4>
@@ -143,8 +173,15 @@ export default function OCRVerification({ versionId, documentType, documentStatu
            `PROCESSING... ${statusData?.progress_percent || 0}%` :
            'EXTRACTED TEXT'}
         </div>
-        {isLoading ? (
+        {isLoading && !isEditing ? (
           <div style={{ padding: '20px', color: 'var(--text-dim)' }}>Fetching AI status...</div>
+        ) : isEditing ? (
+          <textarea
+             className="ocr-edit-textarea"
+             value={editText}
+             onChange={(e) => setEditText(e.target.value)}
+             style={{ width: '100%', minHeight: '150px', background: 'transparent', color: 'var(--text-color)', border: '1px solid var(--border)', padding: '10px' }}
+          />
         ) : (
           <div style={{ whiteSpace: 'pre-wrap', padding: '10px 0' }}>
             {displayText || (statusData?.error ? 'Processing failed.' : 'No text extracted.')}
@@ -153,9 +190,18 @@ export default function OCRVerification({ versionId, documentType, documentStatu
       </motion.div>
 
       <motion.div className="ocr-actions" variants={itemVariants}>
-        <button className="btn-ocr btn-ocr-accept" disabled={isLoading || statusData?.status !== 'completed'}>ACCEPT EXTRACTION</button>
-        <button className="btn-ocr btn-ocr-edit" disabled={isLoading}>EDIT TEXT</button>
-        <button className="btn-ocr btn-ocr-reprocess" disabled={isLoading}>REPROCESS</button>
+        {!isEditing ? (
+          <>
+            <button className="btn-ocr btn-ocr-accept" onClick={handleAccept} disabled={isLoading || statusData?.status !== 'completed'}>ACCEPT EXTRACTION</button>
+            <button className="btn-ocr btn-ocr-edit" onClick={() => { setEditText(displayText); setIsEditing(true); }} disabled={isLoading || statusData?.status !== 'completed'}>EDIT TEXT</button>
+            <button className="btn-ocr btn-ocr-reprocess" onClick={handleReprocess} disabled={isLoading}>REPROCESS</button>
+          </>
+        ) : (
+          <>
+            <button className="btn-ocr btn-ocr-accept" onClick={handleEditSave} disabled={isLoading}>SAVE EDITS</button>
+            <button className="btn-ocr btn-ocr-reprocess" onClick={() => setIsEditing(false)} disabled={isLoading}>CANCEL</button>
+          </>
+        )}
       </motion.div>
     </motion.div>
   );

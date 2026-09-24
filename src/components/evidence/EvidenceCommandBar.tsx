@@ -1,6 +1,6 @@
 import './EvidenceCommandBar.css';
 import type { EvidenceType, EvidenceStatus, CustodyState } from '../../types/evidence';
-import Dropdown from '../common/Dropdown';
+import InvictusSelect from '../ui/InvictusSelect';
 
 export interface EvidenceFiltersState {
   searchQuery: string;
@@ -39,7 +39,7 @@ export default function EvidenceCommandBar({
       </div>
 
       <div className="evd-command-bar__filters">
-        <Dropdown
+        <InvictusSelect
           value={filters.type}
           onChange={val => onChange({ ...filters, type: val as EvidenceType | 'ALL' })}
           options={[
@@ -56,7 +56,7 @@ export default function EvidenceCommandBar({
           className="evd-filter-select"
         />
 
-        <Dropdown
+        <InvictusSelect
           value={filters.status}
           onChange={val => onChange({ ...filters, status: val as EvidenceStatus | 'ALL' })}
           options={[
@@ -72,7 +72,7 @@ export default function EvidenceCommandBar({
           className="evd-filter-select"
         />
 
-        <Dropdown
+        <InvictusSelect
           value={filters.custodyState}
           onChange={val => onChange({ ...filters, custodyState: val as CustodyState | 'ALL' })}
           options={[

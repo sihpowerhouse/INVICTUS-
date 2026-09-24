@@ -1,4 +1,5 @@
 import { MOCK_MEDIA } from '../mock/media';
+import { USE_MOCK_DATA } from './api/apiClient';
 import type { Media } from '../types/media';
 
 /**
@@ -8,7 +9,7 @@ class MediaService {
   async getMedia(): Promise<Media[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve([...MOCK_MEDIA]);
+        resolve(USE_MOCK_DATA ? [...MOCK_MEDIA] : []);
       }, 300);
     });
   }
@@ -16,10 +17,11 @@ class MediaService {
   async getMediaById(id: string): Promise<Media | undefined> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(MOCK_MEDIA.find((m) => m.id === id));
+        resolve(USE_MOCK_DATA ? MOCK_MEDIA.find((m) => m.id === id) : undefined);
       }, 250);
     });
   }
 }
 
 export const mediaService = new MediaService();
+

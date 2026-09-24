@@ -2,7 +2,7 @@ import './Analytics.css';
 import type { DepartmentWorkload as DeptWorkloadType } from '../../types/analytics';
 
 interface Props {
-  data: DeptWorkloadType[];
+  data: DeptWorkloadType[] | null | undefined;
 }
 
 export default function DepartmentWorkload({ data }: Props) {
@@ -12,10 +12,17 @@ export default function DepartmentWorkload({ data }: Props) {
         <span>DEPARTMENT WORKLOAD</span>
       </div>
 
-      {data.length === 0 ? (
+      {data === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO DEPARTMENT TELEMETRY</span>
-          <span className="analytics-no-telemetry__sub">Organisational visibility not exposed by current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : data === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">DATA NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         // This branch only renders when real data is available (mock mode or future API)

@@ -8,12 +8,14 @@ import CaseSavedViews from '../components/cases/CaseSavedViews';
 import CaseResultSummary from '../components/cases/CaseResultSummary';
 import CaseGroup from '../components/cases/CaseGroup';
 import CaseListItem from '../components/cases/CaseListItem';
+import { useAuth } from '../hooks/useAuth';
 
 interface CasesPageProps {
   isEmbedded?: boolean;
 }
 
 export default function CasesPage({ isEmbedded = false }: CasesPageProps = {}) {
+  const { user } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCaseId, setExpandedCaseId] = useState<string | null>(null);
@@ -144,7 +146,9 @@ export default function CasesPage({ isEmbedded = false }: CasesPageProps = {}) {
           </div>
           <div className="cases-page__actions">
             <button className="btn-secondary">IMPORT</button>
-            <button className="btn-primary" onClick={() => window.location.href = '/cases/new'}>+ NEW RECORD</button>
+            {user?.departmentType === 'police' && (
+              <button className="btn-primary" onClick={() => window.location.href = '/cases/new'}>+ NEW RECORD</button>
+            )}
           </div>
         </motion.div>
       )}

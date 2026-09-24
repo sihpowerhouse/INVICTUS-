@@ -2,8 +2,8 @@ import type { IDocumentService } from './document/DocumentServiceInterface';
 import { MockDocumentAdapter } from './document/mockDocumentAdapter';
 import { ApiDocumentAdapter } from './document/apiDocumentAdapter';
 
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+import { USE_MOCK_DATA } from './api/apiClient';
 
-export const documentService: IDocumentService = useMockData 
+export const documentService: IDocumentService = USE_MOCK_DATA 
   ? new MockDocumentAdapter() 
   : new ApiDocumentAdapter();

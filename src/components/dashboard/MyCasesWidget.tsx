@@ -14,7 +14,7 @@ export default function MyCasesWidget() {
     caseService.getCases().then(data => {
       if (mounted) {
         // Max 2 cases for the compact right panel to maintain fixed viewport console
-        const activeCases = data.filter(c => c.status === 'ACTIVE').slice(0, 2);
+        const activeCases = data.filter(c => ['ACTIVE', 'NEW', 'REVIEW', 'ON_HOLD'].includes(c.status)).slice(0, 2);
         setCases(activeCases);
         setIsLoading(false);
       }
@@ -42,7 +42,7 @@ export default function MyCasesWidget() {
             ))}
           </div>
         ) : cases.length === 0 ? (
-          <div className="my-cases-widget__empty">NO ACTIVE CASES</div>
+          <div className="my-cases-widget__empty">NO CASES</div>
         ) : (
           <div className="my-cases-list">
             {cases.map(c => (

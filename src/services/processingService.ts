@@ -4,8 +4,8 @@ import { ApiProcessingAdapter } from './processing/apiProcessingAdapter';
 
 export type { ProcessingState };
 
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+import { USE_MOCK_DATA } from './api/apiClient';
 
-export const processingService: IProcessingService = useMockData 
+export const processingService: IProcessingService = USE_MOCK_DATA 
   ? new MockProcessingAdapter() 
   : new ApiProcessingAdapter();

@@ -2,8 +2,8 @@ import type { IInvitationService } from './invitation/InvitationServiceInterface
 import { MockInvitationAdapter } from './invitation/mockInvitationAdapter';
 import { ApiInvitationAdapter } from './invitation/apiInvitationAdapter';
 
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+import { USE_MOCK_DATA } from './api/apiClient';
 
-export const invitationService: IInvitationService = useMockData 
+export const invitationService: IInvitationService = USE_MOCK_DATA 
   ? new MockInvitationAdapter() 
   : new ApiInvitationAdapter();

@@ -67,7 +67,7 @@ function mapBackendResponseToCase(
     firNumber: res.fir_id,
     title: `${payload.incidentType} at ${payload.location}`,
     status: 'NEW' as CaseStatus,
-    priority: 'HIGH' as CasePriority,
+    priority: (payload.priority as CasePriority) || 'HIGH',
     attention: 'ACTION_REQUIRED',
     isNew: true,
     officer: currentUser?.displayName ?? 'UNASSIGNED',
@@ -117,6 +117,7 @@ export class ApiFirAdapter implements IFirService {
         incident_date: payload.incidentDate,
         location: payload.location,
         description: payload.description,
+        priority: payload.priority || 'HIGH',
         client_request_id: clientRequestId,
       });
     } catch (err) {
@@ -206,7 +207,7 @@ export class ApiFirAdapter implements IFirService {
           firNumber: recovery.fir_id,
           title: `${payload.incidentType} at ${payload.location}`,
           status: 'NEW' as CaseStatus,
-          priority: 'HIGH' as CasePriority,
+          priority: (payload.priority as CasePriority) || 'HIGH',
           attention: 'ACTION_REQUIRED',
           isNew: true,
           officer: currentUser?.displayName ?? 'UNASSIGNED',

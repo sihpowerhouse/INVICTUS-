@@ -1,9 +1,13 @@
+import { useState, useEffect } from 'react';
 import DepartmentCommandRing from '../components/departments/DepartmentCommandRing';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import OperationalStrip from '../components/dashboard/OperationalStrip';
 import DashboardActions from '../components/dashboard/DashboardActions';
 import MyCasesWidget from '../components/dashboard/MyCasesWidget';
 import { departments } from '../mock/departments';
+import { USE_MOCK_DATA } from '../services/api/apiClient';
+import { dashboardService } from '../services/dashboardService';
+import type { DepartmentStatus } from '../types/department';
 import './DashboardPage.css';
 
 /**
@@ -16,13 +20,28 @@ import './DashboardPage.css';
  *   - RIGHT: Compact Operations Panel
  */
 function DashboardPage() {
+  const [metrics, setMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    if (!USE_MOCK_DATA) {
+      dashboardService.getOperationalMetrics().then(setMetrics).catch(console.error);
+    }
+  }, []);
+
+  const dynamicDepartments = USE_MOCK_DATA ? departments : departments.map(d => {
+    if (d.id === 'police' && metrics) {
+      return { ...d, activeWorkload: metrics.openCases || 0, status: 'OPERATIONAL' as DepartmentStatus };
+    }
+    return { ...d, activeWorkload: 0, status: 'OPERATIONAL' as DepartmentStatus };
+  });
+
   return (
     <div className="dashboard-page">
       <DashboardHeader />
       
       <div className="dashboard-workspace">
         <div className="dashboard-workspace__center">
-          <DepartmentCommandRing departments={departments} />
+          <DepartmentCommandRing departments={dynamicDepartments} />
         </div>
         
         <div className="dashboard-workspace__right">
@@ -36,3 +55,5 @@ function DashboardPage() {
 }
 
 export default DashboardPage;
+
+

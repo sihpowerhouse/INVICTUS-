@@ -6,10 +6,12 @@ class DocumentUploadService {
   async processUpload(
     file: File,
     caseId: string,
-    onProgress: (state: ProcessingState) => void
+    onProgress: (state: ProcessingState) => void,
+    documentId?: string,
+    documentType?: string
   ): Promise<Document> {
     // 1. Upload first (so we get the versionId to poll)
-    const newDoc = await documentService.uploadDocument(file, caseId);
+    const newDoc = await documentService.uploadDocument(file, caseId, documentType, documentId);
     
     // 2. Poll processing status using the returned version string
     await processingService.startProcessingJob(newDoc.versionId, onProgress);

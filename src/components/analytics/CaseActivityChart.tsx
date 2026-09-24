@@ -12,11 +12,10 @@ import type { CaseActivityPoint } from '../../types/analytics';
 import './Analytics.css';
 
 interface Props {
-  data: CaseActivityPoint[];
+  data: CaseActivityPoint[] | null | undefined;
 }
 
 export default function CaseActivityChart({ data }: Props) {
-  const isUnavailable = data.length === 0;
 
   return (
     <div className="analytics-card" style={{ gridColumn: '1 / -1', minHeight: '300px' }}>
@@ -25,10 +24,17 @@ export default function CaseActivityChart({ data }: Props) {
         <span>LAST 30 DAYS</span>
       </div>
 
-      {isUnavailable ? (
+      {data === undefined ? (
         <div className="analytics-no-telemetry">
-          <span className="analytics-no-telemetry__title">NO TELEMETRY</span>
-          <span className="analytics-no-telemetry__sub">Time-series source not available from current backend</span>
+          <span className="analytics-no-telemetry__title">DATA SOURCE UNAVAILABLE</span>
+        </div>
+      ) : data === null ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">DATA NOT EXPOSED BY CURRENT BACKEND</span>
+        </div>
+      ) : data.length === 0 ? (
+        <div className="analytics-no-telemetry">
+          <span className="analytics-no-telemetry__title">NO AUTHORIZED DATA AVAILABLE</span>
         </div>
       ) : (
         <div style={{ width: '100%', height: '250px' }}>
@@ -69,7 +75,7 @@ export default function CaseActivityChart({ data }: Props) {
               />
               <Line
                 type="monotone"
-                dataKey="created"
+                dataKey="new"
                 stroke="#555"
                 strokeWidth={2}
                 dot={{ r: 3, fill: '#111', stroke: '#555' }}

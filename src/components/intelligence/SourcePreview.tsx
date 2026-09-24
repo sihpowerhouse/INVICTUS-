@@ -111,9 +111,6 @@ export default function SourcePreview({ result }: SourcePreviewProps) {
         <button className="intel-btn-outline" onClick={handleOpenSource} style={{ width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)', marginBottom: '8px' }}>
           [ OPEN {result.sourceType} DETAIL ]
         </button>
-        <button className="intel-btn-outline" onClick={() => navigate(`/integrity?targetId=${targetId}`)} style={{ width: '100%' }}>
-          [ VERIFY SOURCE INTEGRITY ]
-        </button>
       </div>
     </div>
   );

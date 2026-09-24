@@ -37,7 +37,7 @@ export default function DocumentActivityTimeline({ versions, selectedVersionId, 
         label: index === 0 ? 'DOCUMENT UPLOADED' : 'VERSION CREATED',
         versionId: v.version_id,
         versionLabel: vLabel,
-        actor: 'SYSTEM USER' // Using placeholder since user mapping isn't available
+        actor: v.uploader_id || v.uploaded_by || 'SYSTEM'
       });
 
       // OCR events

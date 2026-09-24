@@ -81,10 +81,18 @@ export default function AnalyticsPage() {
     return () => { mounted = false; };
   }, []);
 
-  if (loading || !summary) {
+  if (loading) {
     return (
       <div className="analytics-page">
         <div className="documents-page__loading">INITIALIZING OPERATIONAL INTELLIGENCE...</div>
+      </div>
+    );
+  }
+
+  if (summary === undefined || summary === null) {
+    return (
+      <div className="analytics-page">
+        <div className="documents-page__loading" style={{color: '#ff3b30'}}>DATA SOURCE UNAVAILABLE</div>
       </div>
     );
   }
@@ -102,6 +110,10 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </header>
+
+      <div style={{ fontSize: '10px', fontFamily: 'monospace', color: 'var(--text-dim)', letterSpacing: '0.15em', margin: '0 0 8px 0' }}>
+        SCOPE: SYSTEM-WIDE / ADMINISTRATIVE — ALL AUTHORIZED CASES IN THE DATABASE
+      </div>
 
       <AnalyticsSummary summary={summary} />
 
