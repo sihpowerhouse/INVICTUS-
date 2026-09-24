@@ -1,3 +1,6 @@
+/**
+ * REPLACES: src/services/analytics/AnalyticsServiceInterface.ts
+ */
 import type {
   CaseActivityPoint,
   CaseStatusCount,
@@ -6,7 +9,8 @@ import type {
   EvidenceMovementPoint,
   PendingAction,
   SystemActivity,
-  AnalyticsSummary
+  AnalyticsSummary,
+  DepartmentAnalyticsSnapshot
 } from '../../types/analytics';
 
 export interface IAnalyticsService {
@@ -18,4 +22,5 @@ export interface IAnalyticsService {
   getPendingActions(): Promise<PendingAction[]>;
   getSystemActivity(): Promise<SystemActivity[]>;
   getAnalyticsSummary(): Promise<AnalyticsSummary>;
+  getDepartmentSnapshot(rangeDays: number | 'all'): Promise<DepartmentAnalyticsSnapshot | undefined>;
 }
