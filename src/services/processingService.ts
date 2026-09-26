@@ -1,8 +1,8 @@
-import type { IProcessingService, ProcessingState } from './processing/ProcessingServiceInterface';
+import type { IProcessingService, ProcessingState, ProcessingJobHandle } from './processing/ProcessingServiceInterface';
 import { MockProcessingAdapter } from './processing/mockProcessingAdapter';
 import { ApiProcessingAdapter } from './processing/apiProcessingAdapter';
 
-export type { ProcessingState };
+export type { ProcessingState, ProcessingJobHandle };
 
 import { USE_MOCK_DATA } from './api/apiClient';
 

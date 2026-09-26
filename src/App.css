@@ -5,7 +5,7 @@
 /* App layout moved to AppShell.css */
 
 .page-tag {
-  color: #18c8ff;
+  color: var(--accent);
   font-family: monospace;
   font-size: 11px;
   letter-spacing: 0.15em;
@@ -18,8 +18,8 @@
   display: flex;
   flex-direction: column;
   padding: 24px 16px 16px;
-  background: rgba(10, 13, 19, 0.96);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-subtle);
   backdrop-filter: blur(18px);
 }
 
@@ -35,10 +35,10 @@
   height: 34px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(24, 200, 255, 0.4);
+  border: 1px solid var(--border-accent);
   border-radius: 10px;
-  background: rgba(24, 200, 255, 0.08);
-  color: #18c8ff;
+  background: var(--accent-dim);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -50,7 +50,7 @@
 
 .brand-subtitle {
   margin-top: 3px;
-  color: #687386;
+  color: var(--text-muted);
   font-size: 8px;
   letter-spacing: 0.14em;
 }
@@ -82,7 +82,7 @@
 
 .nav-section-title {
   padding: 0 10px 8px;
-  color: #5f697a;
+  color: var(--text-muted);
   font-family: monospace;
   font-size: 9px;
   letter-spacing: 0.16em;
@@ -98,7 +98,7 @@
   border: 1px solid transparent;
   border-radius: 9px;
   background: transparent;
-  color: #8d98aa;
+  color: var(--text-secondary);
   font-size: 13px;
   text-align: left;
   text-decoration: none;
@@ -116,37 +116,37 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(24, 200, 255, 0.09);
-  border: 1px solid rgba(24, 200, 255, 0.18);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
   border-radius: 9px;
   z-index: 0;
 }
 
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.04);
-  color: #f4f7fb;
+  color: var(--text-primary);
 }
 
 .nav-item.active {
-  color: #f4f7fb;
+  color: var(--text-primary);
   background: transparent;
   border-color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .nav-item.active {
-    background: rgba(24, 200, 255, 0.09);
-    border-color: rgba(24, 200, 255, 0.18);
+    background: var(--accent-dim);
+    border-color: var(--border-accent);
   }
 }
 
 .nav-item.active svg {
-  color: #18c8ff;
+  color: var(--accent);
 }
 
 .sidebar-bottom {
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .security-status {
@@ -155,9 +155,9 @@
   align-items: center;
   margin: 10px 4px 0;
   padding: 12px;
-  border: 1px solid rgba(53, 212, 154, 0.14);
+  border: 1px solid var(--border-accent);
   border-radius: 10px;
-  background: rgba(53, 212, 154, 0.05);
+  background: var(--accent-dim);
 }
 
 .status-dot {
@@ -165,12 +165,12 @@
   height: 7px;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: #35d49a;
-  box-shadow: 0 0 12px rgba(53, 212, 154, 0.65);
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .status-title {
-  color: #35d49a;
+  color: var(--accent);
   font-family: monospace;
   font-size: 9px;
   letter-spacing: 0.08em;
@@ -178,6 +178,6 @@
 
 .status-text {
   margin-top: 3px;
-  color: #6f7b8d;
+  color: var(--text-secondary);
   font-size: 9px;
 }

@@ -57,5 +57,5 @@
 
 .status-dot.active {
   background-color: var(--accent);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 8px var(--accent-glow);
 }

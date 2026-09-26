@@ -16,4 +16,5 @@ export interface IDocumentService {
   editExtraction(versionId: string, text: string): Promise<void>;
   reprocessDocument(versionId: string): Promise<void>;
   getDocumentActivity(documentId: string): Promise<any[]>;
+  updateAiPermission(documentId: string, enabled: boolean): Promise<Document>;
 }

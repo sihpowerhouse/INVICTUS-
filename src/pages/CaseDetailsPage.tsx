@@ -143,15 +143,27 @@ export default function CaseDetailsPage() {
       <AnimatePresence>
         {isUploadOpen && (
           <DocumentUpload 
-            caseId={caseId || ''}
+            caseId={caseData?.id || caseId || ''}
             documentType={uploadType}
             onClose={() => setIsUploadOpen(false)}
+            onUploadSuccess={(doc) => {
+              const currentCaseId = caseData?.id || caseId;
+              if (doc && doc.caseId === currentCaseId && currentCaseId) {
+                // Update UI immediately
+                caseService.getCaseById(currentCaseId).then(data => {
+                  if (data) setCaseData(data);
+                });
+              }
+            }}
             onComplete={() => {
               setIsUploadOpen(false);
               // Simple refresh by re-fetching
-              caseService.getCaseById(caseId || '').then(data => {
-                if (data) setCaseData(data);
-              });
+              const currentCaseId = caseData?.id || caseId;
+              if (currentCaseId) {
+                caseService.getCaseById(currentCaseId).then(data => {
+                  if (data) setCaseData(data);
+                });
+              }
             }}
           />
         )}

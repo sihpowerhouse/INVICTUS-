@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import DepartmentCommandRing from '../components/departments/DepartmentCommandRing';
-import DashboardHeader from '../components/dashboard/DashboardHeader';
 import OperationalStrip from '../components/dashboard/OperationalStrip';
 import DashboardActions from '../components/dashboard/DashboardActions';
 import MyCasesWidget from '../components/dashboard/MyCasesWidget';
@@ -37,8 +36,6 @@ function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      <DashboardHeader />
-      
       <div className="dashboard-workspace">
         <div className="dashboard-workspace__center">
           <DepartmentCommandRing departments={dynamicDepartments} />

@@ -30,8 +30,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--success);
-  box-shadow: 0 0 8px rgba(53, 212, 154, 0.4);
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .system-status__dropdown {
@@ -85,7 +85,7 @@
 }
 
 .system-status__item-val {
-  color: var(--success);
+  color: var(--accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

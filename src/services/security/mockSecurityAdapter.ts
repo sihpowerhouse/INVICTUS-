@@ -53,6 +53,11 @@ export class MockSecurityAdapter implements ISecurityService {
     return [...mockAuditEvents];
   }
 
+  async getMyAuditEvents(): Promise<AuditEvent[]> {
+    await new Promise(resolve => setTimeout(resolve, 400));
+    return [];
+  }
+
   async getAccessRequests(): Promise<AccessRequest[]> {
     await new Promise(resolve => setTimeout(resolve, 400));
     return [...mockAccessRequests];

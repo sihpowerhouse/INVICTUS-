@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { type ProcessingState } from '../../services/processingService';
+import { type ProcessingState, type ProcessingJobHandle } from '../../services/processingService';
 import { documentUploadService } from '../../services/documentUploadService';
 import { securityService } from '../../services/securityService';
 import { caseService } from '../../services/caseService';
@@ -13,6 +13,7 @@ interface DocumentUploadProps {
   caseId?: string;
   onClose: () => void;
   onComplete: (newDoc?: Document) => void;
+  onUploadSuccess?: (doc: Document) => void;
   documentId?: string;  // If set: UPLOAD NEW VERSION of this document
   documentType?: string; // Pre-select document type for new version
 }
@@ -32,7 +33,7 @@ const STAGES = [
 
 type UploadPhase = 'select' | 'auth_required' | 'otp' | 'processing';
 
-export default function DocumentUpload({ caseId, onClose, onComplete, documentId, documentType: initialDocType }: DocumentUploadProps) {
+export default function DocumentUpload({ caseId, onClose, onComplete, onUploadSuccess, documentId, documentType: initialDocType }: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadPhase, setUploadPhase] = useState<UploadPhase>('select');
   const [processingState, setProcessingState] = useState<ProcessingState | null>(null);
@@ -49,21 +50,36 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
   const [otpStatus, setOtpStatus] = useState<'idle' | 'loading' | 'error' | 'success'>('idle');
   const [otpErrorMessage, setOtpErrorMessage] = useState('');
 
+  const [isPollingDone, setIsPollingDone] = useState(false);
+  const jobHandleRef = useRef<ProcessingJobHandle | null>(null);
+
   useEffect(() => {
     if (!caseId) {
       caseService.getCases().then(setAvailableCases);
     }
   }, [caseId]);
 
-  // When processing finishes, wait a moment then complete
   useEffect(() => {
-    if (uploadPhase === 'processing' && processingState?.stage === 'READY' && newDocument) {
-      const timer = setTimeout(() => {
-        onComplete(newDocument);
-      }, 800);
-      return () => clearTimeout(timer);
+    mountedRef.current = true;
+    return () => { 
+      mountedRef.current = false;
+      if (jobHandleRef.current) {
+        jobHandleRef.current.cancel();
+      }
+    };
+  }, []);
+
+  // When processing finishes, wait a moment then complete IF READY or DISABLED
+  useEffect(() => {
+    if (uploadPhase === 'processing' && isPollingDone && newDocument) {
+      if (processingState?.stage === 'READY' || newDocument.aiEnabled === false) {
+        const timer = setTimeout(() => {
+          onComplete(newDocument);
+        }, 800);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [uploadPhase, processingState, onComplete, newDocument]);
+  }, [uploadPhase, processingState, isPollingDone, onComplete, newDocument]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -87,10 +103,6 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
   };
 
   const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => { mountedRef.current = false; };
-  }, []);
 
   const [processingError, setProcessingError] = useState<string | null>(null);
 
@@ -111,11 +123,42 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
       setTimeout(() => {
         setUploadPhase('processing');
         setProcessingError(null);
+        setIsPollingDone(false);
         
-        documentUploadService.processUpload(file!, activeCaseId, (state) => {
-          if (mountedRef.current) setProcessingState(state);
-        }, documentId, selectedType).then(doc => {
-          if (mountedRef.current) setNewDocument(doc);
+        const { uploadPromise, getJobHandle } = documentUploadService.startUpload(
+          file!, 
+          activeCaseId, 
+          (state) => {
+            if (mountedRef.current) setProcessingState(state);
+          }, 
+          documentId, 
+          selectedType
+        );
+
+        uploadPromise.then(doc => {
+          if (mountedRef.current) {
+            setNewDocument(doc);
+            if (onUploadSuccess) {
+              onUploadSuccess(doc);
+            }
+            const handle = getJobHandle();
+            if (handle) {
+              if (jobHandleRef.current) {
+                jobHandleRef.current.cancel();
+              }
+              jobHandleRef.current = handle;
+              handle.promise.then(() => {
+                if (mountedRef.current) setIsPollingDone(true);
+              }).catch((err: any) => {
+                if (mountedRef.current) {
+                  setProcessingError(err?.message || 'Document processing failed.');
+                  setUploadPhase('select');
+                }
+              });
+            } else {
+              setIsPollingDone(true);
+            }
+          }
         }).catch((err: any) => {
           if (mountedRef.current) {
             setProcessingError(err?.message || 'Document processing failed.');
@@ -183,7 +226,7 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
       >
         <div className="doc-upload-header">
           <h3 className="doc-upload-title">SECURE DOCUMENT INGESTION</h3>
-          <button className="btn-close" onClick={onClose} aria-label="Close upload" disabled={uploadPhase !== 'select' && uploadPhase !== 'otp'}>&times;</button>
+          <button className="btn-close" onClick={onClose} aria-label="Close upload" disabled={uploadPhase === 'auth_required'}>&times;</button>
         </div>
 
         <AnimatePresence mode="wait">
@@ -387,7 +430,9 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
                 <div className="upload-file-info">
                   <span className="upload-file-name">{file?.name}</span>
                   <span className="upload-file-size">
-                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • PROCESSING...
+                    {file ? (file.size / 1024 / 1024).toFixed(2) : 0} MB • 
+                    {newDocument && newDocument.aiEnabled === false && isPollingDone ? ' AI PROCESSING DISABLED' : 
+                     isPollingDone && processingState?.stage !== 'READY' ? ' AI PROCESSING STILL PENDING' : ' PROCESSING...'}
                   </span>
                 </div>
               </div>
@@ -415,6 +460,22 @@ export default function DocumentUpload({ caseId, onClose, onComplete, documentId
                   );
                 })}
               </div>
+              
+              {isPollingDone && processingState?.stage !== 'READY' && newDocument?.aiEnabled !== false && (
+                <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                  <button className="btn-secondary" onClick={onClose}>
+                    CONTINUE IN BACKGROUND
+                  </button>
+                </div>
+              )}
+              {isPollingDone && newDocument?.aiEnabled === false && (
+                <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                  <div style={{ color: 'var(--success)', fontSize: '13px', fontWeight: 600, marginBottom: '12px' }}>DOCUMENT SECURED</div>
+                  <button className="btn-primary" onClick={() => onComplete(newDocument)}>
+                    CLOSE
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
 

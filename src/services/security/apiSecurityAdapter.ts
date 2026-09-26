@@ -87,6 +87,27 @@ export class ApiSecurityAdapter implements ISecurityService {
     }
   }
 
+  async getMyAuditEvents(): Promise<AuditEvent[]> {
+    try {
+      const data = (await apiClient.get<any>('/audit/my'));
+      if (!data || !data.logs) return [];
+      return data.logs.map((log: any): AuditEvent => ({
+        id:          log.event_id || String(Math.random()),
+        timestamp:   log.created_at || new Date().toISOString(),
+        actor:       log.actor_id || 'ME',
+        department:  log.details?.department || 'N/A',
+        action:      (log.action as AuditAction) || 'VIEWED',
+        target:      log.target_id || log.details?.filename || 'SYSTEM',
+        targetType:  log.details?.target_type || 'DOCUMENT',
+        result:      log.details?.result || 'SUCCESS',
+        caseId:      log.details?.case_id || log.target_id,
+      }));
+    } catch (err) {
+      console.warn('[AuditAdapter] Could not load my audit events:', err);
+      throw err;
+    }
+  }
+
   async getAccessRequests(): Promise<AccessRequest[]> {
     return [];
   }

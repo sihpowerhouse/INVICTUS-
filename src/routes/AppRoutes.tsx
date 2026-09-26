@@ -23,7 +23,6 @@ const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
 
 
 
-const AuditPage = lazy(() => import('../pages/AuditPage'));
 const AccessRequestsPage = lazy(() => import('../pages/AccessRequestsPage'));
 
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
@@ -92,9 +91,8 @@ function AppRoutes() {
                 <Route path="/media/:mediaId" element={<MediaDetailsPage />} />
 
 
-                {/* Security */}
-
-                <Route path="/audit" element={<AuditPage />} />
+                {/* Security — audit hidden from UI, /audit redirects to dashboard */}
+                <Route path="/audit" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/access-requests" element={<AccessRequestsPage />} />
 
                 {/* Settings & Analytics */}

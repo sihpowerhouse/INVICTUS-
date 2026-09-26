@@ -14,8 +14,17 @@ export default function TopNav() {
     <header className="top-nav">
       {/* Left: Branding */}
       <div className="top-nav__brand">
-        <Link to="/" className="top-nav__brand-title">INVICTUS</Link>
-        <span className="top-nav__brand-subtitle">NATIONAL EVIDENCE INTELLIGENCE</span>
+        <Link to="/" className="top-nav__brand-link" aria-label="INVICTUS Home">
+          <img
+            src="/emblem.png"
+            alt="INVICTUS Four-Lion Emblem"
+            className="top-nav__emblem"
+          />
+          <div className="top-nav__brand-text">
+            <span className="top-nav__brand-title">INVICTUS</span>
+            <span className="top-nav__brand-subtitle">NATIONAL EVIDENCE INTELLIGENCE</span>
+          </div>
+        </Link>
       </div>
 
       {/* Center: Command Search */}

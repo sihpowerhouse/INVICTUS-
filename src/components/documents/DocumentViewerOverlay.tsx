@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
-import { X } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import type { Document } from '../../types/document';
 import type { DocumentPermission } from '../../types/access';
 import { documentService } from '../../services/documentService';
@@ -56,6 +56,16 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
     if (!document) return '';
     const v = document.versions?.find(ver => ver.id === vId);
     return v ? `v${v.version_number}` : '';
+  };
+
+  const handleToggleAi = async (enabled: boolean) => {
+    if (!document) return;
+    try {
+      const updatedDoc = await documentService.updateAiPermission(document.id, enabled);
+      setDocument(updatedDoc);
+    } catch (err) {
+      console.error('Failed to update AI permission', err);
+    }
   };
 
   const overlayVariants = {
@@ -143,6 +153,13 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
                 <button className={`doc-viewer-tab ${activeTab === 'METADATA' ? 'active' : ''}`} onClick={() => setActiveTab('METADATA')}>METADATA</button>
                 <button className={`doc-viewer-tab ${activeTab === 'TIMELINE' ? 'active' : ''}`} onClick={() => setActiveTab('TIMELINE')}>TIMELINE</button>
               </div>
+              
+              {!document.aiEnabled && (
+                <div style={{ marginTop: '12px', padding: '8px 12px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--border)', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
+                  <AlertCircle size={14} />
+                  <span style={{ fontSize: '11px', letterSpacing: '0.1em' }}>CONFIDENTIAL - AI PROCESSING DISABLED</span>
+                </div>
+              )}
             </div>
 
             <motion.div variants={contentVariants} style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
@@ -193,19 +210,21 @@ export default function DocumentViewerOverlay({ documentId, onClose, permission 
               selectedVersionId={selectedVersionId}
               onSelectVersion={setSelectedVersionId}
             />
-            <DocumentActivityTimeline
-              versions={document.versions || []}
-              selectedVersionId={selectedVersionId}
-              onVersionSelect={setSelectedVersionId}
-            />
             <DocumentIntelligencePanel 
               documentId={document.id}
               versionId={selectedVersionId} 
-              documentType={document.type} 
+              documentType={document.type}
+              aiEnabled={document.aiEnabled}
+              onToggleAi={handleToggleAi}
               onCitationClick={(vId, pId) => {
                 setSelectedVersionId(vId);
                 if (pId) setSelectedPage(pId);
               }}
+            />
+            <DocumentActivityTimeline
+              versions={document.versions || []}
+              selectedVersionId={selectedVersionId}
+              onVersionSelect={setSelectedVersionId}
             />
             <OCRVerification 
               versionId={selectedVersionId} 

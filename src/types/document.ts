@@ -35,6 +35,7 @@ export interface Document {
   updatedAt: string; // ISO string
   
   // Intelligence metadata
+  aiEnabled?: boolean;
   ocrConfidence?: number;
   extractionMethod?: string;
   confidentiality?: 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET';

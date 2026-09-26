@@ -80,7 +80,13 @@ export default function DocumentsPage() {
             });
         } else {
           console.error('[DocumentRegistry] Failed to load documents:', err);
-          setLoadError(err?.message || 'Failed to load documents.');
+          // Build a diagnostic message: include HTTP status if available
+          const status = err?.status ?? 0;
+          const reason = err?.message || 'Network error — backend may be offline';
+          const detail = status > 0
+            ? `STATUS: ${status} — ${reason}`
+            : `NETWORK ERROR — ${reason}`;
+          setLoadError(`GET /documents/my\n${detail}`);
           setDocuments([]);
           setIsLoading(false);
         }
@@ -228,14 +234,27 @@ export default function DocumentsPage() {
     }
 
     if (loadError) {
+      const lines = loadError.split('\n');
+      const endpoint = lines.length > 1 ? lines[0] : null;
+      const reason   = lines.length > 1 ? lines[1] : lines[0];
       return (
         <motion.div
           className="documents-page__loading"
           variants={itemVariants}
           style={{ color: 'var(--error, #ff4d4f)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}
         >
-          <div>⚠ {loadError}</div>
-          <button className="btn-secondary" onClick={refreshDocuments}>RELOAD</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
+            <div style={{ fontSize: '12px', letterSpacing: '0.2em', fontWeight: 700 }}>DOCUMENT REGISTRY UNAVAILABLE</div>
+            {endpoint && (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.1em', fontFamily: 'monospace' }}>
+                API REQUEST FAILED — {endpoint}
+              </div>
+            )}
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', letterSpacing: '0.1em', fontFamily: 'monospace' }}>
+              {reason}
+            </div>
+          </div>
+          <button className="btn-secondary" onClick={refreshDocuments} style={{ letterSpacing: '0.15em' }}>[ RETRY ]</button>
         </motion.div>
       );
     }

@@ -1,18 +1,19 @@
 .login-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: #050609;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  width: 100%;
+  background-color: #050505;
   color: var(--text-primary);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 16px;
 }
 
-/* Atmospheric Interactive Background */
+/* Atmospheric Interactive Background — fixed so it covers viewport regardless of scroll */
 .login-page__atmosphere {
-  position: absolute;
+  position: fixed;
   top: -20%;
   left: -20%;
   width: 140%;
@@ -34,7 +35,7 @@
   left: 30%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
 }
 
 .login-page__glow--blue {
@@ -42,7 +43,7 @@
   right: 20%;
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(0, 100, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
 }
 
 .login-page__glow--violet {
@@ -50,12 +51,12 @@
   left: 40%;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(120, 0, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
 }
 
 /* Decorational Overlays */
 .login-page__grid-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 2;
   pointer-events: none;
@@ -67,16 +68,16 @@
 }
 
 .login-page__noise-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 3;
   pointer-events: none;
   background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
 }
 
-/* Meta details */
+/* Meta details — fixed so they stay at viewport corners */
 .login-page__meta {
-  position: absolute;
+  position: fixed;
   z-index: 5;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -89,82 +90,122 @@
 .login-page__meta--bottom-left { bottom: 32px; left: 40px; }
 .login-page__meta--bottom-right { bottom: 32px; right: 40px; }
 
+/* Main Content Wrapper */
+.login-composition {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 560px);
+  /* max-width removed */
+  margin-inline: auto;
+}
+
 /* Login Card Container */
 .login-page__container {
   position: relative;
-  z-index: 10;
+  z-index: 3;
   width: 100%;
-  max-width: 440px;
-  padding: 48px;
+  max-width: clamp(320px, 26vw, 400px);
+  height: auto;
+  margin-top: 12px;
+  padding: 20px 24px;
   background: linear-gradient(145deg, rgba(12, 16, 22, 0.6), rgba(5, 7, 10, 0.8));
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 
     0 24px 64px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 16px;
 }
 
 /* Interactive Spotlight inside card */
 .login-page__card-spotlight {
   position: absolute;
   inset: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   z-index: -1;
   pointer-events: none;
 }
 
+/* Card Header */
+.login-page__card-header {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.login-page__card-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.12em;
+}
+
+.login-page__card-subtitle {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  margin-top: 5px;
+}
+
 /* Branding */
 .login-page__brand {
+  position: relative;
+  z-index: 2;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  margin-top: 7px;
 }
 
 .login-page__title {
-  font-size: 28px;
+  font-size: clamp(24px, 2vw, 32px);
   font-weight: 300;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.16em;
   color: #fff;
-  margin-right: -0.3em; /* offset for tracking */
+  margin-right: -0.16em; /* offset for tracking */
 }
 
 .login-page__subtitle {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-secondary);
-  letter-spacing: 0.15em;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
 }
 
 .login-page__status-line {
   font-family: var(--font-mono);
-  font-size: 9px;
-  color: rgba(0, 240, 255, 0.6);
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.2em;
-  padding: 4px 12px;
-  background: rgba(0, 240, 255, 0.05);
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 100px;
-  margin-top: 12px;
+  margin-top: 5px;
 }
 
 /* Form */
 .login-page__form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 11px;
 }
 
 .login-page__field {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .login-page__field label {
@@ -172,26 +213,31 @@
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 8px;
+  font-weight: 600;
   color: var(--text-secondary);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
 }
 
 .login-page__warning {
-  color: #ffaa00;
-  font-size: 9px;
-  background: rgba(255, 170, 0, 0.1);
-  padding: 2px 6px;
+  color: #ffffff;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 3px 8px;
   border-radius: 4px;
 }
 
 .login-page__error {
-  background: rgba(255, 60, 60, 0.1);
-  border: 1px solid rgba(255, 60, 60, 0.2);
-  color: #ff5555;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 9px;
   letter-spacing: 0.05em;
   text-align: center;
   border-radius: 6px;
@@ -207,11 +253,12 @@
   width: 100%;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 14px 16px;
+  border-radius: 7px;
+  padding: 0 16px;
+  height: 38px;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 12px;
   outline: none;
   transition: all 0.3s ease;
   z-index: 2;
@@ -229,7 +276,7 @@
 }
 
 .login-page__input-wrapper input:focus {
-  border-color: rgba(0, 240, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
   background: rgba(0, 10, 20, 0.6);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -242,26 +289,28 @@
 .login-page__actions {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-top: 8px;
+  gap: 11px;
+  margin-top: 2px;
 }
 
 .login-page__submit {
   position: relative;
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(180deg, rgba(30, 35, 45, 1) 0%, rgba(15, 20, 25, 1) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 40px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
   border-radius: 6px;
-  color: #fff;
+  color: #000000;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.2em;
   cursor: pointer;
   overflow: hidden;
   transition: all 0.2s ease;
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
     0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -280,7 +329,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(0, 240, 255, 0.2),
+    rgba(255, 255, 255, 0.2),
     transparent
   );
   transform: skewX(-20deg);
@@ -289,13 +338,17 @@
 }
 
 .login-page__submit:hover:not(:disabled) {
-  border-color: rgba(0, 240, 255, 0.3);
+  background: #000000;
+  border-color: #ffffff;
+  color: #ffffff;
+  transform: translateY(-1px);
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 4px 20px rgba(0, 240, 255, 0.15);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 6px 20px rgba(255, 255, 255, 0.15);
 }
 
 .login-page__submit:hover:not(:disabled) .login-page__submit-text {
+  color: #ffffff;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
@@ -328,7 +381,7 @@
 }
 .login-page__divider span {
   position: relative;
-  background: #090b10;
+  background: #000000;
   padding: 0 12px;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -344,11 +397,39 @@
   letter-spacing: 0.2em;
 }
 
+/* System Status */
+.login-page__system-status {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.login-page__status-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.login-page__status-value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.15em;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
 /* Responsiveness */
 @media (max-width: 600px) {
   .login-page__container {
     margin: 20px;
     padding: 32px 24px;
+    max-width: 100%;
+    min-height: auto;
   }
   
   .login-page__meta {
@@ -360,5 +441,205 @@
   .login-page__atmosphere,
   .login-page__container {
     transform: none !important;
+  }
+}
+
+
+
+/* ─────────────────────────────────────────────────────────────
+   4-LION EMBLEM STAGE
+   The SVG rings are centered absolutely over the emblem.
+   The emblem art sits on top via z-index.
+   ───────────────────────────────────────────────────────────── */
+
+.inv-emblem-stage {
+  --emblem-size: clamp(180px, 14vw, 220px);
+  position: relative;
+  width: var(--emblem-size);
+  height: var(--emblem-size);
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.inv-emblem-rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.inv-emblem-art {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.inv-emblem-art img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SVG RING CIRCLES
+   All three circles share cx="300" cy="300" — their center
+   never moves. The base circle is static. The segment circle
+   animates its stroke-dashoffset to show rotation.
+   ───────────────────────────────────────────────────────────── */
+
+.inv-ring-base {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 1px;
+}
+
+.inv-ring-seg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.65);
+  stroke-width: 1.2px;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.20));
+}
+
+/* Ring 1 — r=222, circumference ≈ 1395px */
+.inv-ring-seg-1 {
+  stroke-dasharray: 30 1370;
+  stroke-dashoffset: 0;
+  animation: invRingDash1 24s linear infinite;
+}
+
+/* Ring 2 — r=258, circumference ≈ 1621px */
+.inv-ring-seg-2 {
+  stroke-dasharray: 35 1590;
+  stroke-dashoffset: 0;
+  animation: invRingDash2 34s linear infinite;
+}
+
+/* Ring 3 — r=294, circumference ≈ 1847px */
+.inv-ring-seg-3 {
+  stroke-dasharray: 40 1810;
+  stroke-dashoffset: 0;
+  animation: invRingDash3 46s linear infinite;
+}
+
+/* ── Keyframes: only stroke-dashoffset changes, nothing translates ── */
+@keyframes invRingDash1 {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -1395; } /* Clockwise */
+}
+
+@keyframes invRingDash2 {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 1621; }  /* Counter-clockwise */
+}
+
+@keyframes invRingDash3 {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -1847; } /* Clockwise */
+}
+
+/* ── Reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .inv-ring-seg-1, .inv-ring-seg-2, .inv-ring-seg-3 {
+    animation: none;
+  }
+}
+
+/* ── Responsive: tight height constraints to naturally shrink on short screens ── */
+@media (max-height: 820px) {
+  .login-page__container {
+    margin-top: 14px;
+    padding: 24px 30px;
+    gap: 16px;
+  }
+  .login-page__brand {
+    margin-top: 8px;
+  }
+  .login-page__title {
+    font-size: 34px;
+  }
+  .login-page__subtitle {
+    font-size: 12px;
+  }
+  .login-page__form {
+    gap: 14px;
+  }
+  .login-page__actions {
+    gap: 14px;
+  }
+  .inv-emblem-stage {
+    --emblem-size: 195px;
+  }
+}
+
+@media (max-height: 760px) {
+  .login-page__container {
+    margin-top: 10px;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+  .login-page__brand {
+    margin-top: 4px;
+  }
+  .login-page__form {
+    gap: 12px;
+  }
+  .login-page__actions {
+    gap: 12px;
+  }
+  .login-page__title {
+    font-size: 28px;
+  }
+  .login-page__subtitle {
+    font-size: 11px;
+  }
+  .inv-emblem-stage {
+    --emblem-size: 170px;
+  }
+}
+
+@media (max-height: 700px) {
+  .login-page__container {
+    margin-top: 8px;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .inv-emblem-stage {
+    --emblem-size: 140px;
+  }
+  .login-page__title {
+    font-size: 24px;
+  }
+  .login-page__subtitle {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page__title {
+    font-size: 32px;
+  }
+  .login-page__subtitle {
+    font-size: 12px;
+  }
+  .login-page__container {
+    margin-top: 16px;
+  }
+  .inv-emblem-stage {
+    --emblem-size: 200px;
   }
 }

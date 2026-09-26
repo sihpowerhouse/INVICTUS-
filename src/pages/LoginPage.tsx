@@ -30,7 +30,7 @@ export default function LoginPage() {
   // Card spotlight mapped to percentage coordinates
   const spotlightX = useTransform(springX, [0, 1], ['0%', '100%']);
   const spotlightY = useTransform(springY, [0, 1], ['0%', '100%']);
-  const spotlightBackground = useMotionTemplate`radial-gradient(circle at ${spotlightX} ${spotlightY}, rgba(0, 240, 255, 0.04) 0%, transparent 60%)`;
+  const spotlightBackground = useMotionTemplate`radial-gradient(circle at ${spotlightX} ${spotlightY}, rgba(255, 255, 255, 0.04) 0%, transparent 60%)`;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,29 +93,102 @@ export default function LoginPage() {
       <div className="login-page__grid-overlay" />
       <div className="login-page__noise-overlay" />
 
-      {/* Meta context details */}
-      <div className="login-page__meta login-page__meta--top-left">INVICTUS // SECURE ACCESS</div>
-      <div className="login-page__meta login-page__meta--top-right">NODE: AUTH-01</div>
-      <div className="login-page__meta login-page__meta--bottom-left">STATUS: READY</div>
-      <div className="login-page__meta login-page__meta--bottom-right">SECURE CHANNEL</div>
 
-      {/* Login Card */}
-      <motion.div 
-        className="login-page__container"
-        style={{ x: cardX, y: cardY }}
-      >
-        <motion.div 
-          className="login-page__card-spotlight"
-          style={{ background: spotlightBackground }}
-        />
+
+
+
+      {/* Main Content Layout */}
+      <div className="login-composition">
+        {/* 4-Lion Emblem Background Layer */}
+        <div className="inv-emblem-stage">
+          {/*
+            The SVG contains three animated rings.
+            A <mask> is applied to the ring group using the same emblem.png.
+            feColorMatrix converts every opaque emblem pixel to pure black →
+            those black mask pixels block the ring strokes from rendering there.
+            White background in the mask → rings visible everywhere else.
+            The emblem PNG's own alpha channel controls the occlusion precisely.
+          */}
+          <svg
+            className="inv-emblem-rings"
+            viewBox="0 0 600 600"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              {/* Convert all opaque emblem pixels to pure black, transparent → nothing */}
+              <filter id="invBlacken" colorInterpolationFilters="sRGB">
+                <feColorMatrix
+                  type="matrix"
+                  values="0 0 0 0 0
+                          0 0 0 0 0
+                          0 0 0 0 0
+                          0 0 0 40 0"
+                />
+              </filter>
+
+              {/*
+                Luminance mask:
+                  white rect = elements visible by default everywhere
+                  emblem image (blackened) = cuts hole exactly where emblem is opaque
+              */}
+              <mask id="invEmblemCutout">
+                <rect width="600" height="600" fill="white" />
+                <image
+                  href="/emblem.png"
+                  x="10"
+                  y="10"
+                  width="580"
+                  height="580"
+                  preserveAspectRatio="xMidYMid meet"
+                  filter="url(#invBlacken)"
+                />
+              </mask>
+            </defs>
+
+            {/* All three rings share the same mask — they disappear under the emblem silhouette */}
+            <g mask="url(#invEmblemCutout)">
+              {/* Ring 1 - 74% */}
+              <circle className="inv-ring-base" cx="300" cy="300" r="222" />
+              <circle className="inv-ring-seg inv-ring-seg-1" cx="300" cy="300" r="222" />
+              
+              {/* Ring 2 - 86% */}
+              <circle className="inv-ring-base" cx="300" cy="300" r="258" />
+              <circle className="inv-ring-seg inv-ring-seg-2" cx="300" cy="300" r="258" />
+              
+              {/* Ring 3 - 98% */}
+              <circle className="inv-ring-base" cx="300" cy="300" r="294" />
+              <circle className="inv-ring-seg inv-ring-seg-3" cx="300" cy="300" r="294" />
+            </g>
+          </svg>
+
+          <div className="inv-emblem-art">
+            <img src="/emblem.png" alt="" />
+          </div>
+        </div>
 
         <div className="login-page__brand">
           <div className="login-page__title">INVICTUS</div>
-          <div className="login-page__subtitle">SECURE EVIDENCE INTELLIGENCE</div>
+          <div className="login-page__subtitle">SECURE DIGITAL EVIDENCE INTELLIGENCE</div>
           <div className="login-page__status-line">AUTHORIZED ACCESS ONLY</div>
         </div>
 
-        <form className="login-page__form" onSubmit={handleSubmit}>
+        {/* Login Card */}
+        <motion.div 
+          className="login-page__container"
+          style={{ x: cardX, y: cardY }}
+        >
+          <motion.div 
+            className="login-page__card-spotlight"
+            style={{ background: spotlightBackground }}
+          />
+
+          <div className="login-page__card-header">
+            <h2 className="login-page__card-title">OFFICIAL ACCESS</h2>
+            <div className="login-page__card-subtitle">SECURE AUTHENTICATION CHANNEL</div>
+          </div>
+
+          <form className="login-page__form" onSubmit={handleSubmit}>
           {error && <div className="login-page__error">{error}</div>}
           
           <div className="login-page__field">
@@ -126,7 +199,7 @@ export default function LoginPage() {
                 type="text" 
                 value={employeeId}
                 onChange={e => setEmployeeId(e.target.value)}
-                placeholder="e.g. SEC-PS-HEAD-001"
+                placeholder=""
                 autoComplete="off"
               />
               <div className="login-page__input-glow" />
@@ -167,9 +240,15 @@ export default function LoginPage() {
             <div className="login-page__secure-access-label">
               SECURE ACCESS
             </div>
+
+            <div className="login-page__system-status">
+              <div className="login-page__status-title">SYSTEM STATUS</div>
+              <div className="login-page__status-value">● AUTHENTICATION NODE READY</div>
+            </div>
           </div>
         </form>
       </motion.div>
+      </div>
     </div>
   );
 }

@@ -92,6 +92,7 @@ async function fetchCaseDocuments(caseId: string): Promise<CaseDocResult> {
         ocrConfidence:   d.ai?.confidence ?? undefined,
         extractionMethod: d.ai?.provider  ?? undefined,
         confidentiality: 'RESTRICTED',
+        aiEnabled:       d.ai_enabled ?? false,
       };
     });
 
@@ -154,6 +155,7 @@ export class ApiDocumentAdapter implements IDocumentService {
           ocrConfidence:   d.ai?.confidence ?? undefined,
           extractionMethod: d.ai?.provider  ?? undefined,
           confidentiality: 'RESTRICTED',
+          aiEnabled:       d.ai_enabled ?? false,
         };
       });
     } catch (err: any) {
@@ -246,6 +248,7 @@ export class ApiDocumentAdapter implements IDocumentService {
           createdAt: latestVersion ? latestVersion.timestamp : data.document.created_at,
           updatedAt: latestVersion ? latestVersion.timestamp : data.document.created_at,
           confidentiality: 'RESTRICTED',
+          aiEnabled: data.document.ai_enabled ?? false,
           versions: versions
         };
       }
@@ -293,7 +296,8 @@ export class ApiDocumentAdapter implements IDocumentService {
       department: 'N/A',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      confidentiality: 'RESTRICTED'
+      confidentiality: 'RESTRICTED',
+      aiEnabled: data.ai_enabled ?? false
     };
   }
 
@@ -324,21 +328,31 @@ export class ApiDocumentAdapter implements IDocumentService {
   }
 
   async acceptExtraction(versionId: string): Promise<void> {
-    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/accept`, {});
+    await apiClient.post(`/documents/versions/${encodeURIComponent(versionId)}/extraction/accept`, {});
   }
 
   async editExtraction(versionId: string, text: string): Promise<void> {
-    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/edit`, {
+    await apiClient.post(`/documents/versions/${encodeURIComponent(versionId)}/extraction/edit`, {
       extracted_text: text
     });
   }
 
   async reprocessDocument(versionId: string): Promise<void> {
-    await apiClient.post(`/documents/extract/${encodeURIComponent(versionId)}/reprocess`, {});
+    await apiClient.post(`/documents/versions/${encodeURIComponent(versionId)}/reprocess`, {});
   }
 
   async getDocumentActivity(documentId: string): Promise<any[]> {
     const data = await apiClient.get<any>(`/documents/activity/${encodeURIComponent(documentId)}`);
     return data?.activity || [];
+  }
+
+  async updateAiPermission(documentId: string, enabled: boolean): Promise<Document> {
+    await apiClient.post<any>(`/documents/${encodeURIComponent(documentId)}/ai-permission`, {
+      ai_enabled: enabled
+    });
+    // Re-fetch the document to get the updated state
+    const doc = await this.getDocumentById(documentId);
+    if (!doc) throw new Error('Document not found after updating AI permission');
+    return doc;
   }
 }

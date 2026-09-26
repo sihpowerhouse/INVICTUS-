@@ -132,8 +132,10 @@ export default function DocumentListItem({ document: doc, itemVariants }: Docume
                 <span className="doc-preview-value">{doc.pages}</span>
               </div>
               <div className="doc-preview-section">
-                <span className="doc-preview-label">UPLOADED BY</span>
-                <span className="doc-preview-value">{doc.uploadedBy}</span>
+                <span className="doc-preview-label">AI INTELLIGENCE</span>
+                <span className="doc-preview-value" style={{ color: doc.aiEnabled ? 'var(--accent)' : 'var(--text-muted)' }}>
+                  {doc.aiEnabled ? 'ENABLED' : 'DISABLED BY USER'}
+                </span>
               </div>
             </div>
           </motion.div>

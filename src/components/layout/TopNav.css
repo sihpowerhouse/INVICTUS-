@@ -13,6 +13,34 @@
 
 .top-nav__brand {
   display: flex;
+  align-items: center;
+}
+
+.top-nav__brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.top-nav__emblem {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  /* Render white/light on the dark header */
+  filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(0, 240, 255, 0.25));
+  opacity: 0.92;
+  transition: opacity 0.2s ease;
+}
+
+.top-nav__brand-link:hover .top-nav__emblem {
+  opacity: 1;
+  filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(0, 240, 255, 0.45));
+}
+
+.top-nav__brand-text {
+  display: flex;
   flex-direction: column;
 }
 
@@ -23,7 +51,6 @@
   color: var(--text-primary);
   letter-spacing: 0.15em;
   line-height: 1.1;
-  text-decoration: none;
 }
 
 .top-nav__brand-subtitle {

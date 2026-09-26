@@ -14,6 +14,7 @@ export interface ISecurityService {
   getIntegritySummary(): Promise<IntegritySummary>;
   getDocumentIntegrity(id: string): Promise<DocumentIntegrity | null>;
   getAuditEvents(): Promise<AuditEvent[]>;
+  getMyAuditEvents(): Promise<AuditEvent[]>;
   getAccessRequests(): Promise<AccessRequest[]>;
   getSecurityEvents(): Promise<SecurityEvent[]>;
   updateAccessRequestStatus(id: string, status: AccessRequestStatus): Promise<void>;

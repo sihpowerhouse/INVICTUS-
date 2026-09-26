@@ -113,4 +113,23 @@ export class MockDocumentAdapter implements IDocumentService {
   async reprocessDocument(_versionId: string): Promise<void> {}
 
   async getDocumentActivity(_documentId: string): Promise<any[]> { return []; }
+
+  async updateAiPermission(documentId: string, enabled: boolean): Promise<Document> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const docIndex = MOCK_DOCUMENTS.findIndex(d => d.id === documentId);
+        if (docIndex !== -1) {
+          // Mutate the mock in place so the UI reflects the change
+          MOCK_DOCUMENTS[docIndex] = {
+            ...MOCK_DOCUMENTS[docIndex],
+            aiEnabled: enabled,
+            updatedAt: new Date().toISOString()
+          };
+          resolve(MOCK_DOCUMENTS[docIndex]);
+        } else {
+          reject(new Error('Document not found'));
+        }
+      }, 500);
+    });
+  }
 }

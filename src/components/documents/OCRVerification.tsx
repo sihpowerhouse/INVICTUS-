@@ -21,6 +21,7 @@ interface AiStatusResponse {
   pages?: number;
   progress_percent?: number;
   error?: string;
+  is_verified?: boolean;
 }
 
 export default function OCRVerification({ versionId, documentType, hideHeader }: OCRVerificationProps) {
@@ -30,6 +31,7 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
 
   const fetchStatus = async () => {
     if (!versionId) {
@@ -57,11 +59,18 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
     };
   }, [versionId]);
 
+  useEffect(() => {
+    if (statusData?.is_verified) {
+      setIsVerified(true);
+    }
+  }, [statusData]);
+
   const handleAccept = async () => {
     try {
       setIsLoading(true);
       await documentService.acceptExtraction(versionId);
-      // Optional: Show toast
+      setIsVerified(true);
+      await fetchStatus();
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,6 +82,7 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
     try {
       setIsLoading(true);
       await documentService.reprocessDocument(versionId);
+      setIsVerified(false);
       await fetchStatus();
     } catch (err) {
       console.error(err);
@@ -86,6 +96,7 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
       setIsLoading(true);
       await documentService.editExtraction(versionId, editText);
       setIsEditing(false);
+      setIsVerified(true);
       await fetchStatus();
     } catch (err) {
       console.error(err);
@@ -152,7 +163,7 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
 
       {isLowConfidence && !statusData?.error && (
         <motion.div className="ocr-warning-box" variants={itemVariants}>
-          <h4 className="ocr-warning-title">WARNING: LOW CONFIDENCE</h4>
+          <h4 className="ocr-warning-title">LOW CONFIDENCE: MANUAL VERIFICATION REQUIRED</h4>
           <p className="ocr-warning-text">
             Text extraction confidence is below 85%. Manual verification is required before advancing document status.
           </p>
@@ -192,9 +203,38 @@ export default function OCRVerification({ versionId, documentType, hideHeader }:
       <motion.div className="ocr-actions" variants={itemVariants}>
         {!isEditing ? (
           <>
-            <button className="btn-ocr btn-ocr-accept" onClick={handleAccept} disabled={isLoading || statusData?.status !== 'completed'}>ACCEPT EXTRACTION</button>
-            <button className="btn-ocr btn-ocr-edit" onClick={() => { setEditText(displayText); setIsEditing(true); }} disabled={isLoading || statusData?.status !== 'completed'}>EDIT TEXT</button>
-            <button className="btn-ocr btn-ocr-reprocess" onClick={handleReprocess} disabled={isLoading}>REPROCESS</button>
+            {(isLowConfidence && !isVerified) ? (
+              <button 
+                className="btn-ocr btn-ocr-accept" 
+                onClick={() => setIsVerified(true)} 
+                disabled={isLoading || statusData?.status !== 'completed'}
+              >
+                I HAVE VERIFIED THIS TEXT
+              </button>
+            ) : (
+              <button 
+                className="btn-ocr btn-ocr-accept" 
+                onClick={handleAccept} 
+                disabled={isLoading || statusData?.status !== 'completed' || isVerified}
+              >
+                {isVerified ? 'VERIFIED' : 'ACCEPT EXTRACTION'}
+              </button>
+            )}
+            
+            <button 
+              className="btn-ocr btn-ocr-edit" 
+              onClick={() => { setEditText(displayText); setIsEditing(true); }} 
+              disabled={isLoading || statusData?.status !== 'completed'}
+            >
+              EDIT TEXT
+            </button>
+            <button 
+              className="btn-ocr btn-ocr-reprocess" 
+              onClick={handleReprocess} 
+              disabled={isLoading}
+            >
+              REPROCESS
+            </button>
           </>
         ) : (
           <>

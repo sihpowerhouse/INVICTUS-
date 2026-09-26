@@ -74,6 +74,7 @@ export default function DepartmentCommandRing({ departments }: DepartmentCommand
         
         {departments.map((dept, index) => {
           const angle = -90 + (index * (360 / departments.length));
+          
           const isHovered = hoveredId === dept.id;
           const isDimmed = hoveredId !== null && !isHovered;
           
@@ -110,6 +111,7 @@ export default function DepartmentCommandRing({ departments }: DepartmentCommand
       {/* Orbital Nodes */}
       {departments.map((dept, index) => {
         const angle = -90 + (index * (360 / departments.length));
+        
         const offsetX = Math.cos((angle * Math.PI) / 180) * radius;
         const offsetY = Math.sin((angle * Math.PI) / 180) * radius;
         

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Sidebar from './Sidebar';
+import MainNav from '../components/layout/MainNav';
 import TopNav from '../components/layout/TopNav';
 import { useAuth } from '../hooks/useAuth';
 import SessionTimeoutWarning from '../components/auth/SessionTimeoutWarning';
@@ -12,7 +12,7 @@ interface AppShellProps {
 
 /**
  * AppShell — Master layout composer.
- * Wraps the Sidebar, TopNav, and main routed content.
+ * Wraps the TopNav and main routed content.
  */
 export default function AppShell({ children }: AppShellProps) {
   const { isAuthenticated } = useAuth();
@@ -24,9 +24,9 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <div className="app-shell">
       <SessionTimeoutWarning />
-      <Sidebar />
       <div className="app-shell__main">
         <TopNav />
+        <MainNav />
         <main className="app-shell__content">
           {children}
         </main>
