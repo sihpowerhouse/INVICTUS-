@@ -52,3 +52,25 @@ export interface AnalyticsSummary {
   evidenceItems: number | string;
   pendingActions: number | string;
 }
+
+export interface DepartmentAnalyticsSnapshot {
+  openCases: number;
+  closedCases: number;
+  otherCases: number;
+  totalDocuments: number;
+  verifiedDocuments: number;
+  documentsWithIssues: number;
+  participants: number;
+  aiCompleted: number;
+  aiProcessing: number;
+  aiFailed: number;
+  documentTypeBreakdown: { type: string; count: number }[];
+  casesInSelectedRange: number;
+  recentCases: {
+    id: string;
+    firId: string;
+    status: string;
+    createdAt: string;
+    accessLevel: string;
+  }[];
+}
