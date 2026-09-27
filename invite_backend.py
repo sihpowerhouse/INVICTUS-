@@ -1,4 +1,7 @@
 
+
+
+
 """
 SIH Secure DMS - secure document management backend
 
@@ -454,6 +457,7 @@ def login(req: dict):
 
     try:
         supabase.table("sessions").insert({
+            "session_id": str(uuid.uuid4()),
             "user_id": user["user_id"],
             "token_hash": token_hash,
             "expires_at": iso(now() + timedelta(hours=SESSION_LIFETIME_HOURS)),
