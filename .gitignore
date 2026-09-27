@@ -1,4 +1,29 @@
+cd "C:\Users\Yash\OneDrive\Desktop\SIHHHH\SIH-mvsr"
 
+@'
+# Environment / secrets
 .env
 .env.*
 !.env.example
+
+# Private keys
+private_keys/
+*.key
+*.pem
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+'@ | Set-Content .gitignore
