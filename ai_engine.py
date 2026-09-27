@@ -18,6 +18,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from PIL import Image
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "https://ollama.com").rstrip("/")
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "").strip()
@@ -141,6 +144,9 @@ def _ollama_vision(image_bytes: bytes, page_no: int) -> str:
 def _ollama_text(prompt: str, timeout: int = CHAT_TIMEOUT) -> str:
     if not OLLAMA_API_KEY:
         raise RuntimeError("OLLAMA_API_KEY is not configured.")
+    
+    print(f"\nOLLAMA REQUEST\nmodel={OLLAMA_MODEL}")
+    
     result = _post_json(
         f"{OLLAMA_URL}/api/chat",
         {

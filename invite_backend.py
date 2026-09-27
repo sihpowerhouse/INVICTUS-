@@ -1707,7 +1707,7 @@ def my_documents(authorization: str | None = Header(default=None)):
         dr = db_call(
             lambda: (
                 supabase.table("documents")
-                .select("document_id,case_id,document_type,file_type,uploader_id,current_version_id")
+                .select("document_id,case_id,document_type,file_type,uploader_id,current_version_id,ai_enabled")
                 .in_("case_id", list(case_allowed.keys()))
                 .order("case_id", desc=False).execute()
             ),
@@ -1821,7 +1821,7 @@ def case_documents(case_id: str, authorization: str | None = Header(default=None
         r = db_call(
             lambda: (
                 supabase.table("documents")
-                .select("document_id,case_id,document_type,file_type,uploader_id,current_version_id")
+                .select("document_id,case_id,document_type,file_type,uploader_id,current_version_id,ai_enabled")
                 .eq("case_id", case_id).order("document_type", desc=False).execute()
             ),
             operation_name="case_documents_list",
@@ -1848,7 +1848,7 @@ def case_documents(case_id: str, authorization: str | None = Header(default=None
                 ar = db_call(
                     lambda vid=vid: (
                         supabase.table("case_ai_documents")
-                        .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds")
+                        .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds,is_verified,verified_by,verified_at")
                         .eq("version_id", vid).limit(1).execute()
                     ),
                     operation_name="case_documents_ai",
@@ -1883,7 +1883,7 @@ def document_versions(document_id: str, authorization: str | None = Header(defau
     dr = db_call(
         lambda: (
             supabase.table("documents")
-            .select("document_id,case_id,document_type")
+            .select("document_id,case_id,document_type,ai_enabled")
             .eq("document_id", document_id).limit(1).execute()
         ),
         operation_name="doc_versions_lookup",
@@ -2130,18 +2130,20 @@ async def upload_document(
         # UPLOAD NEW VERSION (document_id given): version the existing document.
         existing = None
         if document_id:
-            existing = supabase.table("documents").select("document_id,current_version_id,file_type,uploader_id").eq("document_id", document_id).limit(1).execute()
+            existing = supabase.table("documents").select("document_id,current_version_id,file_type,uploader_id,ai_enabled").eq("document_id", document_id).limit(1).execute()
         if existing and existing.data:
             did = existing.data[0]["document_id"]
+            doc_ai_enabled = existing.data[0].get("ai_enabled", False)
             versions = supabase.table("document_versions").select("version_id,version_number,file_hash").eq("document_id", did).order("version_number", desc=True).limit(1).execute()
             latest = versions.data[0] if versions.data else None
             version_number = int(latest.get("version_number") or 1) + 1 if latest else 1
             previous_hash = latest.get("file_hash") if latest else None
         else:
-            dr = supabase.table("documents").insert({"case_id": case_id, "document_type": document_type, "file_type": ft, "uploader_id": u["user_id"]}).execute()
+            dr = supabase.table("documents").insert({"case_id": case_id, "document_type": document_type, "file_type": ft, "uploader_id": u["user_id"], "ai_enabled": False}).execute()
             if not dr.data:
                 raise RuntimeError("Document insert returned no row.")
             did = dr.data[0]["document_id"]
+            doc_ai_enabled = False
             version_number = 1
             previous_hash = None
 
@@ -2166,7 +2168,7 @@ async def upload_document(
             queued = _queue_ai_job(vid)
             if queued and background_tasks is not None:
                 background_tasks.add_task(_process_ai_job, vid)
-        return {"success": True, "message": f"File uploaded as Version {version_number}.", "document_id": did, "version_id": vid, "version_number": version_number, "file_hash": h, "signature": signed["signature"], "storage_path": path, "ai_queued": _case_ai_enabled(case_id)}
+        return {"success": True, "message": f"File uploaded as Version {version_number}.", "document_id": did, "version_id": vid, "version_number": version_number, "file_hash": h, "signature": signed["signature"], "storage_path": path, "ai_queued": _case_ai_enabled(case_id), "ai_enabled": doc_ai_enabled}
     except HTTPException:
         raise
     except Exception as exc:
@@ -2307,12 +2309,12 @@ def _queue_ai_job(version_id: str, force: bool = False) -> bool:
             return False
         v = vr.data[0]
         dr = (supabase.table("documents")
-              .select("document_id,case_id,document_type")
+              .select("document_id,case_id,document_type,ai_enabled")
               .eq("document_id", v["document_id"]).limit(1).execute())
         if not dr.data:
             return False
         d = dr.data[0]
-        if not _case_ai_enabled(d["case_id"]):
+        if not _case_ai_enabled(d["case_id"]) or d.get("ai_enabled") is False:
             return False
         existing = (supabase.table("case_ai_documents")
                     .select("ai_document_id,status")
@@ -2614,12 +2616,19 @@ def document_ai_status(version_id: str, authorization: str | None = Header(defau
     r = db_call(
         lambda: (
             supabase.table("case_ai_documents")
-            .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds")
+            .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds,is_verified,verified_by,verified_at")
             .eq("version_id", version_id).limit(1).execute()
         ),
         operation_name="ai_status_ai_lookup",
     )
-    return (r.data[0] if r.data else {"status": "not_started", "extracted_text": "", "pages": []})
+    if r.data:
+        res = r.data[0]
+        # In case the columns are not yet in the schema cache, provide a default
+        if "is_verified" not in res:
+            res["is_verified"] = False
+        return res
+
+    return {"status": "not_started", "extracted_text": "", "pages": [], "is_verified": False}
 
 # Backward-compatible route name so older frontend builds do not break.
 @app.get("/documents/ocr-status/{version_id}")
@@ -2634,9 +2643,9 @@ def _tokenize(text: str) -> list[str]:
 
 def _retrieve_case_context(case_id: str, question: str):
     docs = (supabase.table("documents")
-            .select("document_id,current_version_id,document_type")
+            .select("document_id,current_version_id,document_type,ai_enabled")
             .eq("case_id", case_id).execute().data or [])
-    current = {d["current_version_id"]: d for d in docs if d.get("current_version_id")}
+    current = {d["current_version_id"]: d for d in docs if d.get("current_version_id") and d.get("ai_enabled", False) is True}
     if not current:
         return []
 
@@ -2768,6 +2777,29 @@ class DocumentAIChatRequest(BaseModel):
     version_id: str
     question: str
 
+class DocumentAiPermissionRequest(BaseModel):
+    ai_enabled: bool
+
+@app.post("/documents/{document_id}/ai-permission")
+def set_document_ai_permission(document_id: str, req: DocumentAiPermissionRequest, authorization: str | None = Header(default=None)):
+    u = get_current_user(authorization)
+    dr = db_call(lambda: supabase.table("documents").select("case_id,uploader_id").eq("document_id", document_id).limit(1).execute())
+    if not dr.data:
+        raise HTTPException(404, "Document not found.")
+    
+    case_id = dr.data[0]["case_id"]
+    membership(u["user_id"], case_id)
+    
+    is_head = _is_case_head(u["user_id"], case_id)
+    is_uploader = dr.data[0].get("uploader_id") == u["user_id"]
+    
+    if not (is_head or is_uploader):
+        require_elevated(u, "changing document AI settings", "MANAGE_MEMBERS")
+        raise HTTPException(403, "Only the Case Head or the document uploader can change its AI settings.")
+        
+    db_call(lambda: supabase.table("documents").update({"ai_enabled": req.ai_enabled}).eq("document_id", document_id).execute())
+    return {"success": True, "ai_enabled": req.ai_enabled}
+
 @app.post("/documents/ai/chat")
 def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Header(default=None)):
     """Answer only from processed chunks for this specific document version."""
@@ -2782,12 +2814,16 @@ def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Hea
     document_id = req.document_id or vr.data[0]["document_id"]
     
     dr = db_call(
-        lambda: supabase.table("documents").select("case_id,document_type").eq("document_id", document_id).limit(1).execute()
+        lambda: supabase.table("documents").select("case_id,document_type,ai_enabled").eq("document_id", document_id).limit(1).execute()
     )
     if not dr.data:
         raise HTTPException(404, "Document not found.")
         
     d = dr.data[0]
+    
+    if d.get("ai_enabled") is False or not _case_ai_enabled(d["case_id"]):
+        raise HTTPException(403, "AI processing is disabled for this document.")
+
     m = membership(u["user_id"], d["case_id"])
     if d["document_type"] not in set(m.get("allowed_document_types") or []):
         raise HTTPException(403, "You are not authorized to view this document.")
@@ -2796,6 +2832,8 @@ def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Hea
     if not question:
         raise HTTPException(400, "Question cannot be empty.")
         
+    print(f"\nAI REQUEST START\ndocument_id={document_id}\nversion_id={req.version_id}")
+    
     try:
         rows = (supabase.table("case_ai_chunks")
                 .select("document_id,version_id,page_number,chunk_index,text")
@@ -2868,6 +2906,8 @@ def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Hea
         answer = result.get("text") or "The AI provider returned an empty answer."
         provider = result.get("provider") or "unknown"
         
+        print("AI REQUEST COMPLETE\nstatus=success\n")
+
         sources = [{
             "page": c.get("page_number"),
             "document_id": c.get("document_id"),
@@ -2882,9 +2922,11 @@ def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Hea
             "context_chunks": len(context),
             "latency_ms": latency_ms,
         }
-    except HTTPException:
+    except HTTPException as e:
+        print(f"AI REQUEST FAILED\nreason=http_{e.status_code}\n")
         raise
     except Exception as exc:
+        print(f"AI REQUEST FAILED\nreason=exception\n")
         raise HTTPException(500, f"Failed to generate answer: {error_text(exc)}")
 
 
@@ -3342,6 +3384,58 @@ def get_audit_logs(authorization: str | None = Header(default=None)):
         raise HTTPException(500, f"Audit logs unavailable: {error_text(exc)}")
 
 
+# ─── MY AUDIT — current user's own actions only ──────────────────────────────
+
+@app.get("/audit/my")
+def get_my_audit_logs(authorization: str | None = Header(default=None)):
+    """Return audit events where the CURRENT AUTHENTICATED USER is the actor.
+
+    Scope is enforced entirely server-side from the JWT token.
+    No client-supplied actor_id is accepted or trusted.
+    """
+    try:
+        u = get_current_user(authorization)
+        actor_id = u["user_id"]
+
+        # Pull all events where this user was the actor, newest first, limit 300.
+        res = db_call(
+            lambda: (
+                supabase.table("audit_events")
+                .select("*")
+                .eq("actor_id", actor_id)
+                .order("created_at", desc=True)
+                .limit(300)
+                .execute()
+            ),
+            operation_name="my_audit_logs",
+        )
+
+        logs = res.data or []
+
+        # Normalise field names for the frontend (actor_id → actor, etc.)
+        normalised = []
+        for log in logs:
+            normalised.append({
+                "event_id":   log.get("event_id") or log.get("id"),
+                "actor_id":   actor_id,
+                "action":     log.get("action", "UNKNOWN"),
+                "target_id":  log.get("target_id"),
+                "details":    log.get("details") or {},
+                "created_at": log.get("created_at") or log.get("timestamp"),
+            })
+
+        return {
+            "success": True,
+            "logs":    normalised,
+            "scope":   "CURRENT_USER_ONLY",
+            "actor_id": actor_id,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, f"My audit unavailable: {error_text(exc)}")
+
+
 # ================================================================== #
 # DOCUMENT ACTIVITY TIMELINE
 # ================================================================== #
@@ -3435,6 +3529,13 @@ def accept_extraction(version_id: str, authorization: str | None = Header(defaul
     if not v.data:
         raise HTTPException(404, "Version not found")
     did = v.data[0]["document_id"]
+    
+    supabase.table("case_ai_documents").update({
+        "is_verified": True,
+        "verified_by": u["user_id"],
+        "verified_at": iso(now())
+    }).eq("version_id", version_id).execute()
+    
     log_audit(u["user_id"], "EXTRACTION_ACCEPTED", did, {"version_id": version_id, "message": "Extraction accepted."})
     return {"success": True, "message": "Extraction accepted."}
 
@@ -3450,8 +3551,14 @@ def edit_extraction(version_id: str, req: EditExtractionRequest, authorization: 
     if not v.data:
         raise HTTPException(404, "Version not found")
     did = v.data[0]["document_id"]
-    # Update extracted_text in case_ai_documents (the real AI processing table).
-    supabase.table("case_ai_documents").update({"extracted_text": req.text}).eq("version_id", version_id).execute()
+    # Update extracted_text in case_ai_documents (the real AI processing table) and mark as verified.
+    supabase.table("case_ai_documents").update({
+        "extracted_text": req.text,
+        "is_verified": True,
+        "verified_by": u["user_id"],
+        "verified_at": iso(now())
+    }).eq("version_id", version_id).execute()
+    
     log_audit(u["user_id"], "EXTRACTION_EDITED", did, {"version_id": version_id, "message": "Extraction text edited."})
     return {"success": True, "message": "Extraction updated."}
 
@@ -3471,6 +3578,27 @@ def reprocess_document(version_id: str, background_tasks: BackgroundTasks, autho
     log_audit(u["user_id"], "DOCUMENT_REPROCESSED", did, {"version_id": version_id, "message": "Document reprocessed manually."})
     return {"success": True, "message": "Reprocessing started."}
 
+class DocumentAIPermissionRequest(BaseModel):
+    ai_enabled: bool
+
+@app.post("/documents/{document_id}/ai-permission")
+def set_document_ai_permission(document_id: str, req: DocumentAIPermissionRequest, authorization: str | None = Header(default=None)):
+    u = get_current_user(authorization)
+    dr = db_call(lambda: supabase.table("documents").select("case_id").eq("document_id", document_id).limit(1).execute())
+    if not dr.data:
+        raise HTTPException(404, "Document not found")
+    d = dr.data[0]
+    
+    m = membership(u["user_id"], d["case_id"])
+    if not m:
+        raise HTTPException(403, "Not authorized to modify this document.")
+
+    res = db_call(lambda: supabase.table("documents").update({"ai_enabled": req.ai_enabled}).eq("document_id", document_id).execute())
+    
+    action = "DOCUMENT_AI_ENABLED" if req.ai_enabled else "DOCUMENT_AI_DISABLED"
+    log_audit(u["user_id"], action, document_id, {"case_id": d["case_id"], "ai_enabled": req.ai_enabled})
+
+    return {"success": True, "ai_enabled": req.ai_enabled}
 
 if __name__ == "__main__":
     import uvicorn
