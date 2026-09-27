@@ -1,0 +1,16 @@
+.case-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.case-list-empty {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+}

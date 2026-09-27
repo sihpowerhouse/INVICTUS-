@@ -1,0 +1,102 @@
+.media-details-page {
+  padding: 32px 48px;
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.media-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.media-details__title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.media-details__title {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.media-details__badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.media-details__badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.media-details__badge--case {
+  background: rgba(0, 240, 255, 0.05);
+  color: var(--accent);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.media-details__badge--case:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.media-details__badge--status-unprocessed { color: var(--text-muted); }
+.media-details__badge--status-processing  { color: var(--accent); }
+.media-details__badge--status-ready       { color: var(--success); }
+.media-details__badge--status-flagged     { color: var(--danger); }
+.media-details__badge--status-archived    { color: var(--text-muted); text-decoration: line-through; }
+
+.media-details__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 32px;
+  align-items: start;
+}
+
+.media-details__main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.media-details__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.media-not-found {
+  padding: 64px;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .media-details__content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .media-details-page {
+    padding: 24px;
+  }
+}

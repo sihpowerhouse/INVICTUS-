@@ -1,0 +1,88 @@
+.case-members {
+  margin-bottom: 24px;
+}
+
+.member-invite-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border: 1px solid var(--border);
+}
+
+.member-invite-form input,
+.member-invite-form select {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  flex: 1;
+}
+
+.member-invite-form select {
+  flex: 0.7;
+}
+
+.member-invite-form .btn-small {
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface);
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.member-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.member-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.member-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.status-approved {
+  color: var(--accent);
+}
+
+.status-invited, .status-pending {
+  color: #ffaa00;
+}
+
+.status-denied {
+  color: #ff5555;
+}
