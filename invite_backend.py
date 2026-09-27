@@ -45,16 +45,22 @@ from ai_engine import answer_question
 load_dotenv(override=True)
 
 app = FastAPI(title="SIH Secure DMS")
+
+# Explicit allowlist — do NOT use allow_origins=["*"] because credentials are sent.
 ALLOWED_ORIGINS = [
-    "https://allaince.netlify.app",
+    # Production frontend (Vercel)
     "https://invictus-frontend-six.vercel.app",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
+    # Legacy / other frontends
+    "https://allaince.netlify.app",
+    # Local development
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
