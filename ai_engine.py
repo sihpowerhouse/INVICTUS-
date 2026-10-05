@@ -20,11 +20,11 @@ from typing import Any, Callable
 from PIL import Image
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "https://ollama.com").rstrip("/")
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "").strip()
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma4:cloud")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma4:31b")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 REQUEST_TIMEOUT = int(os.getenv("AI_REQUEST_TIMEOUT", "90"))
@@ -172,9 +172,9 @@ def _gemini_generate(prompt: str, data: bytes | None = None, mime_type: str | No
         parts.append({"inline_data": {"mime_type": mime_type, "data": base64.b64encode(data).decode("ascii")}})
     payload = {"contents": [{"parts": parts}]}
     result = _post_json(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}",
+        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
         payload,
-        {},
+        {"x-goog-api-key": GEMINI_API_KEY},
         timeout=timeout,
     )
     candidates = result.get("candidates") or []

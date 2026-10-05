@@ -45,7 +45,7 @@ from document_crypto import (
 from merkle import calculate_merkle_root
 from ai_engine import answer_question
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 app = FastAPI(title="SIH Secure DMS")
 
@@ -63,6 +63,11 @@ ALLOWED_ORIGINS = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
 ]
+
+# Add FRONTEND_URL from environment
+_env_frontend = os.getenv("FRONTEND_URL")
+if _env_frontend and _env_frontend not in ALLOWED_ORIGINS:
+    ALLOWED_ORIGINS.append(_env_frontend)
 
 app.add_middleware(
     CORSMiddleware,
@@ -1861,7 +1866,7 @@ def case_documents(case_id: str, authorization: str | None = Header(default=None
                 ar = db_call(
                     lambda vid=vid: (
                         supabase.table("case_ai_documents")
-                        .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds,is_verified,verified_by,verified_at")
+                        .select("*")
                         .eq("version_id", vid).limit(1).execute()
                     ),
                     operation_name="case_documents_ai",
@@ -2152,11 +2157,12 @@ async def upload_document(
             version_number = int(latest.get("version_number") or 1) + 1 if latest else 1
             previous_hash = latest.get("file_hash") if latest else None
         else:
-            dr = supabase.table("documents").insert({"case_id": case_id, "document_type": document_type, "file_type": ft, "uploader_id": u["user_id"], "ai_enabled": False}).execute()
+            case_ai = _case_ai_enabled(case_id)
+            dr = supabase.table("documents").insert({"case_id": case_id, "document_type": document_type, "file_type": ft, "uploader_id": u["user_id"], "ai_enabled": case_ai}).execute()
             if not dr.data:
                 raise RuntimeError("Document insert returned no row.")
             did = dr.data[0]["document_id"]
-            doc_ai_enabled = False
+            doc_ai_enabled = case_ai
             version_number = 1
             previous_hash = None
 
@@ -2629,7 +2635,7 @@ def document_ai_status(version_id: str, authorization: str | None = Header(defau
     r = db_call(
         lambda: (
             supabase.table("case_ai_documents")
-            .select("status,provider,model,fallback_used,extracted_text,pages,confidence,error,created_at,queued_at,started_at,completed_at,stage,progress_percent,estimated_seconds,is_verified,verified_by,verified_at")
+            .select("*")
             .eq("version_id", version_id).limit(1).execute()
         ),
         operation_name="ai_status_ai_lookup",
@@ -2790,28 +2796,6 @@ class DocumentAIChatRequest(BaseModel):
     version_id: str
     question: str
 
-class DocumentAiPermissionRequest(BaseModel):
-    ai_enabled: bool
-
-@app.post("/documents/{document_id}/ai-permission")
-def set_document_ai_permission(document_id: str, req: DocumentAiPermissionRequest, authorization: str | None = Header(default=None)):
-    u = get_current_user(authorization)
-    dr = db_call(lambda: supabase.table("documents").select("case_id,uploader_id").eq("document_id", document_id).limit(1).execute())
-    if not dr.data:
-        raise HTTPException(404, "Document not found.")
-    
-    case_id = dr.data[0]["case_id"]
-    membership(u["user_id"], case_id)
-    
-    is_head = _is_case_head(u["user_id"], case_id)
-    is_uploader = dr.data[0].get("uploader_id") == u["user_id"]
-    
-    if not (is_head or is_uploader):
-        require_elevated(u, "changing document AI settings", "MANAGE_MEMBERS")
-        raise HTTPException(403, "Only the Case Head or the document uploader can change its AI settings.")
-        
-    db_call(lambda: supabase.table("documents").update({"ai_enabled": req.ai_enabled}).eq("document_id", document_id).execute())
-    return {"success": True, "ai_enabled": req.ai_enabled}
 
 @app.post("/documents/ai/chat")
 def document_ai_chat(req: DocumentAIChatRequest, authorization: str | None = Header(default=None)):
@@ -3544,9 +3528,7 @@ def accept_extraction(version_id: str, authorization: str | None = Header(defaul
     did = v.data[0]["document_id"]
     
     supabase.table("case_ai_documents").update({
-        "is_verified": True,
-        "verified_by": u["user_id"],
-        "verified_at": iso(now())
+        # "is_verified": True, # Columns don't exist in DB yet
     }).eq("version_id", version_id).execute()
     
     log_audit(u["user_id"], "EXTRACTION_ACCEPTED", did, {"version_id": version_id, "message": "Extraction accepted."})
@@ -3567,9 +3549,6 @@ def edit_extraction(version_id: str, req: EditExtractionRequest, authorization: 
     # Update extracted_text in case_ai_documents (the real AI processing table) and mark as verified.
     supabase.table("case_ai_documents").update({
         "extracted_text": req.text,
-        "is_verified": True,
-        "verified_by": u["user_id"],
-        "verified_at": iso(now())
     }).eq("version_id", version_id).execute()
     
     log_audit(u["user_id"], "EXTRACTION_EDITED", did, {"version_id": version_id, "message": "Extraction text edited."})
@@ -3595,21 +3574,32 @@ class DocumentAIPermissionRequest(BaseModel):
     ai_enabled: bool
 
 @app.post("/documents/{document_id}/ai-permission")
-def set_document_ai_permission(document_id: str, req: DocumentAIPermissionRequest, authorization: str | None = Header(default=None)):
+def set_document_ai_permission(document_id: str, req: DocumentAIPermissionRequest, background_tasks: BackgroundTasks, authorization: str | None = Header(default=None)):
     u = get_current_user(authorization)
-    dr = db_call(lambda: supabase.table("documents").select("case_id").eq("document_id", document_id).limit(1).execute())
+    dr = db_call(lambda: supabase.table("documents").select("case_id,current_version_id,uploader_id").eq("document_id", document_id).limit(1).execute())
     if not dr.data:
         raise HTTPException(404, "Document not found")
     d = dr.data[0]
     
-    m = membership(u["user_id"], d["case_id"])
-    if not m:
-        raise HTTPException(403, "Not authorized to modify this document.")
+    case_id = d["case_id"]
+    membership(u["user_id"], case_id)
+    
+    is_head = _is_case_head(u["user_id"], case_id)
+    is_uploader = d.get("uploader_id") == u["user_id"]
+    
+    if not (is_head or is_uploader):
+        require_elevated(u, "changing document AI settings", "MANAGE_MEMBERS")
+        raise HTTPException(403, "Only the Case Head or the document uploader can change its AI settings.")
 
-    res = db_call(lambda: supabase.table("documents").update({"ai_enabled": req.ai_enabled}).eq("document_id", document_id).execute())
+    db_call(lambda: supabase.table("documents").update({"ai_enabled": req.ai_enabled}).eq("document_id", document_id).execute())
     
     action = "DOCUMENT_AI_ENABLED" if req.ai_enabled else "DOCUMENT_AI_DISABLED"
-    log_audit(u["user_id"], action, document_id, {"case_id": d["case_id"], "ai_enabled": req.ai_enabled})
+    log_audit(u["user_id"], action, document_id, {"case_id": case_id, "ai_enabled": req.ai_enabled})
+
+    if req.ai_enabled and d.get("current_version_id"):
+        queued = _queue_ai_job(d["current_version_id"])
+        if queued:
+            background_tasks.add_task(_process_ai_job, d["current_version_id"])
 
     return {"success": True, "ai_enabled": req.ai_enabled}
 

@@ -13,3 +13,5 @@ pillow
 pymupdf
 python-docx
 python-pptx
+
+httpx

@@ -1,0 +1,5 @@
+CASE ID: TEST-001
+PERSON: John Example
+DATE: 03 October 2026
+STATUS: Investigation open
+LOCATION: Test City
