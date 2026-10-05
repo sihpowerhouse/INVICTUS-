@@ -169,9 +169,21 @@ export default function CaseAITab({ caseId, onOpenDocument }: CaseAITabProps) {
       <div className="case-ai-tab__right">
         {/* HEADER */}
         <div className="case-ai-chat-header">
-          <div className="chat-header-item">
+          <div className="chat-header-item" style={{ display: 'flex', alignItems: 'center' }}>
             <span className="chat-header-label">STATUS:</span>
             <span className="chat-header-value">{aiInfo?.status || 'DISABLED'}</span>
+            <button 
+              className="btn-secondary" 
+              style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '10px' }}
+              onClick={async () => {
+                if (aiInfo) {
+                  const newInfo = await aiService.toggleAI(caseId, aiInfo.status !== 'ENABLED');
+                  setAiInfo(newInfo);
+                }
+              }}
+            >
+              {aiInfo?.status === 'ENABLED' ? 'DISABLE' : 'ENABLE'}
+            </button>
           </div>
           <div className="chat-header-item">
             <span className="chat-header-label">CASE:</span>

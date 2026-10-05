@@ -171,6 +171,12 @@ export default function DocumentIntelligencePanel({ documentId, versionId, aiEna
               </button>
             )}
 
+            {aiState !== 'DISABLED' && onToggleAi && (
+              <button type="button" className="btn-secondary" onClick={() => onToggleAi(false)}>
+                DISABLE AI
+              </button>
+            )}
+
             {aiState === 'FAILED' && (
               <button type="button" className="btn-secondary" onClick={handleRetryAi}>
                 RETRY AI

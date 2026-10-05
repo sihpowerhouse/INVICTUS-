@@ -21,17 +21,18 @@ export class ApiCaseAdapter implements ICaseService {
       
       // 2. Fetch documents
       try {
-        const docsData = await apiClient.get<any[]>(`/case/documents?case_id=${encodeURIComponent(found.case_id)}`);
-        caseData.documents = (docsData || []).map(doc => ({
+        const raw = await apiClient.get<any>(`/case/documents?case_id=${encodeURIComponent(found.case_id)}`);
+        const docs = raw?.documents || [];
+        caseData.documents = docs.map((doc: any) => ({
           id: doc.document_id,
           name: doc.filename || doc.document_id || 'Unknown Document',
           type: doc.document_type || 'UNKNOWN',
           version: doc.current_version_id ? 'v1' : 'v1',
           versionId: doc.current_version_id || '',
-          status: 'VERIFIED' // Default for now
+          status: doc.ai?.status === 'completed' ? 'VERIFIED' : 'UPLOADED'
         }));
-        caseData.documentsCount = caseData.documents.length;
-        caseData.evidenceCount = caseData.documents.filter(d => ['EVIDENCE', 'EVIDENCE_RECORD', 'FORENSIC_REPORT', 'PHYSICAL_EVIDENCE'].includes((d.type || '').toUpperCase())).length;
+        caseData.documentsCount = caseData.documents?.length || 0;
+        caseData.evidenceCount = (caseData.documents || []).filter((d: any) => ['EVIDENCE', 'EVIDENCE_RECORD', 'FORENSIC_REPORT', 'PHYSICAL_EVIDENCE'].includes((d.type || '').toUpperCase())).length;
       } catch (docErr) {
         console.error('Failed to fetch case documents', docErr);
         caseData.documents = [];
