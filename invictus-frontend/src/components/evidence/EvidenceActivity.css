@@ -1,0 +1,80 @@
+.evd-activity {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+}
+
+.evd-activity__header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.evd-activity__title {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.evd-activity__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.evd-activity__item {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.evd-activity__item:last-child {
+  border-bottom: none;
+}
+
+.evd-activity__time {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 90px;
+}
+
+.evd-activity__type-badge {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.evd-activity__type-badge--registered     { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+.evd-activity__type-badge--viewed         { background: rgba(255,255,255,0.03); color: var(--text-muted); }
+.evd-activity__type-badge--transferred    { background: rgba(0,240,255,0.07); color: var(--accent); }
+.evd-activity__type-badge--verified       { background: rgba(53,212,154,0.07); color: var(--success); }
+.evd-activity__type-badge--updated        { background: rgba(255,171,0,0.07); color: var(--warning); }
+.evd-activity__type-badge--report_attached { background: rgba(0,240,255,0.07); color: var(--accent); }
+.evd-activity__type-badge--flagged        { background: rgba(255,60,60,0.08); color: var(--danger); }
+
+.evd-activity__actor {
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.evd-activity__note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}

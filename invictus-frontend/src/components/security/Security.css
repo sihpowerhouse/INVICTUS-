@@ -1,0 +1,140 @@
+/* Security & Integrity Global Styles */
+
+.security-panel {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.security-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.security-panel__title {
+  font-family: monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.security-value-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.security-label {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.security-value {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.security-value--highlight {
+  color: var(--text-primary);
+}
+
+.security-value--accent {
+  color: var(--accent);
+}
+
+/* Status Colors */
+.status--verified {
+  color: #00e676; /* Green */
+}
+
+.status--amber {
+  color: #ffb020; /* Amber */
+}
+
+.status--red {
+  color: #ff3b30; /* Red */
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.status-badge--verified {
+  background: rgba(0, 230, 118, 0.1);
+  color: #00e676;
+  border: 1px solid rgba(0, 230, 118, 0.2);
+}
+
+.status-badge--amber {
+  background: rgba(255, 176, 32, 0.1);
+  color: #ffb020;
+  border: 1px solid rgba(255, 176, 32, 0.2);
+}
+
+.status-badge--red {
+  background: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.status-badge--unknown {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Base button for security actions */
+.security-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 12px;
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.security-btn:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.security-btn--danger {
+  border-color: #ff3b30;
+  color: #ff3b30;
+}
+
+.security-btn--danger:hover {
+  background: rgba(255, 59, 48, 0.1);
+}
+
+.security-btn--success {
+  border-color: #00e676;
+  color: #00e676;
+}
+
+.security-btn--success:hover {
+  background: rgba(0, 230, 118, 0.1);
+}

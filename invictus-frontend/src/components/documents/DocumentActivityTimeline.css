@@ -1,0 +1,125 @@
+.doc-activity-timeline {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doc-activity-header h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.doc-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.doc-activity-list::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 14px;
+  width: 1px;
+  background: var(--border-color);
+  z-index: 0;
+}
+
+.doc-activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.doc-activity-item:hover {
+  background: var(--bg-hover);
+}
+
+.doc-activity-item.is-selected {
+  background: var(--bg-active);
+  border-color: var(--accent);
+}
+
+.doc-activity-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 2px solid var(--bg-secondary);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.doc-activity-item.type-uploaded .doc-activity-icon,
+.doc-activity-item.type-version_created .doc-activity-icon {
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.doc-activity-item.type-ocr_completed .doc-activity-icon {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.doc-activity-item.type-ocr_failed .doc-activity-icon,
+.doc-activity-item.type-version_superseded .doc-activity-icon {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.doc-activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doc-activity-timestamp {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+
+.doc-activity-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.doc-activity-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.doc-activity-version {
+  font-weight: 600;
+}

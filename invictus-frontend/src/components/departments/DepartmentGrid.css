@@ -1,0 +1,50 @@
+/* ── Department Grid ─────────────────────────────── */
+
+.dept-grid__header {
+  margin-bottom: 28px;
+}
+
+.dept-grid__tag {
+  color: var(--accent);
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.dept-grid__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.dept-grid__subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Grid layout ─────────────────────────────── */
+
+.dept-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── Responsive ──────────────────────────────── */
+
+@media (max-width: 1280px) {
+  .dept-grid__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dept-grid__grid {
+    grid-template-columns: 1fr;
+  }
+}

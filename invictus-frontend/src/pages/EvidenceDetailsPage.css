@@ -1,0 +1,130 @@
+.evd-details-page {
+  padding: 32px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.evd-details-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.evd-details-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.evd-details-title {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.evd-details-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.evd-details-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.evd-details-badge--case {
+  background: rgba(0, 240, 255, 0.05);
+  color: var(--accent);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.evd-details-badge--case:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.evd-details-meta-strip {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.evd-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.evd-meta-label {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.evd-meta-value {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.evd-details-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+}
+
+.evd-details-left {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.evd-details-right {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.evd-not-found {
+  padding: 64px;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .evd-details-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .evd-details-page {
+    padding: 24px;
+  }
+  .evd-details-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

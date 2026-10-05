@@ -1,0 +1,117 @@
+.invictus-select-container {
+  position: relative;
+  display: inline-block;
+  font-family: monospace;
+  width: 100%;
+}
+
+.invictus-select-label {
+  display: block;
+  margin: 0 0 6px 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted, #8b949e);
+}
+
+.invictus-select-trigger {
+  width: 100%;
+  background: var(--bg-surface, #121315);
+  border: 1px solid var(--border-subtle, #30363d);
+  color: var(--text-primary, #e6edf3);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 140px;
+  transition: border-color var(--transition-fast, 0.15s), background var(--transition-fast, 0.15s);
+  border-radius: 0; /* No rounded consumer UI */
+}
+
+.invictus-select-trigger:hover:not(.disabled) {
+  background: var(--bg-hover, #1a1c1f);
+}
+
+.invictus-select-trigger:focus-visible,
+.invictus-select-trigger.open {
+  border-color: var(--accent, #00f0ff);
+  background: rgba(0, 240, 255, 0.03);
+}
+
+.invictus-select-trigger.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.invictus-select-popover {
+  background: var(--bg-surface, #0d1117);
+  border: 1px solid var(--accent-subtle, #00606b);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  overflow-y: auto;
+  font-family: monospace;
+  
+  /* Scrollbar for dark theme */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 240, 255, 0.3) transparent;
+}
+
+.invictus-select-popover::-webkit-scrollbar {
+  width: 6px;
+}
+.invictus-select-popover::-webkit-scrollbar-track {
+  background: transparent;
+}
+.invictus-select-popover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 240, 255, 0.3);
+}
+
+.invictus-select-option {
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text-secondary, #b1bac4);
+  cursor: pointer;
+  transition: background var(--transition-fast, 0.15s), color var(--transition-fast, 0.15s);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.invictus-select-option:last-child {
+  border-bottom: none;
+}
+
+.invictus-select-option:hover,
+.invictus-select-option:focus-visible,
+.invictus-select-option.focused {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary, #ffffff);
+  outline: none;
+}
+
+.invictus-select-option[aria-selected="true"] {
+  color: var(--accent, #00f0ff);
+  background: rgba(0, 240, 255, 0.05);
+  font-weight: 600;
+  border-left: 2px solid var(--accent, #00f0ff);
+  padding-left: 10px; /* Compensate for border */
+}
+
+.invictus-select-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.invictus-select-empty {
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text-muted, #8b949e);
+  text-align: center;
+  font-style: italic;
+}
