@@ -13,6 +13,8 @@ import CaseMembersList from '../components/cases/CaseMembersList';
 import DocumentUpload from '../components/documents/DocumentUpload';
 import CaseAITab from '../components/cases/CaseAITab';
 import DocumentViewerOverlay from '../components/documents/DocumentViewerOverlay';
+import { securityService } from '../services/securityService';
+import OTPModal from '../components/common/OTPModal';
 import { AnimatePresence } from 'framer-motion';
 
 export default function CaseDetailsPage() {
@@ -24,6 +26,7 @@ export default function CaseDetailsPage() {
   const [uploadType, setUploadType] = useState<string>('EVIDENCE');
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'FILES' | 'MEMBERS' | 'TIMELINE' | 'CASE AI'>('FILES');
+  const [isOTPOpen, setIsOTPOpen] = useState(false);
 
   useEffect(() => {
     if (!caseId) return;
@@ -33,6 +36,11 @@ export default function CaseDetailsPage() {
       if (mounted) {
         setCaseData(data);
         setIsLoading(false);
+        if ((data as any)?.documentsNeedsElevation) {
+          securityService.requestOtp('VIEW_FILES').then(() => {
+            setIsOTPOpen(true);
+          }).catch(console.error);
+        }
       }
     });
 
@@ -51,6 +59,17 @@ export default function CaseDetailsPage() {
       setUploadType(typeMap[action] || 'EVIDENCE');
       setIsUploadOpen(true);
     }
+  };
+
+  const handleVerifyOTP = async (code: string) => {
+    await securityService.verifyOtp('VIEW_FILES', code);
+    setIsOTPOpen(false);
+    if (!caseId) return true;
+    setIsLoading(true);
+    const data = await caseService.getCaseById(caseId);
+    setCaseData(data);
+    setIsLoading(false);
+    return true;
   };
 
   if (isLoading) {
@@ -176,6 +195,13 @@ export default function CaseDetailsPage() {
           />
         )}
       </AnimatePresence>
+      <OTPModal
+        isOpen={isOTPOpen}
+        onVerify={handleVerifyOTP}
+        onCancel={() => setIsOTPOpen(false)}
+        title="SECURE CASE ACCESS"
+        message="A verification code was sent to your official email to view these case files."
+      />
     </div>
   );
 }

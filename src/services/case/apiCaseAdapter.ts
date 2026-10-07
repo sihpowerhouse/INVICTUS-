@@ -33,11 +33,14 @@ export class ApiCaseAdapter implements ICaseService {
         }));
         caseData.documentsCount = caseData.documents?.length || 0;
         caseData.evidenceCount = (caseData.documents || []).filter((d: any) => ['EVIDENCE', 'EVIDENCE_RECORD', 'FORENSIC_REPORT', 'PHYSICAL_EVIDENCE'].includes((d.type || '').toUpperCase())).length;
-      } catch (docErr) {
+      } catch (docErr: any) {
         console.error('Failed to fetch case documents', docErr);
         caseData.documents = [];
         caseData.documentsCount = 0;
         caseData.evidenceCount = 0;
+        if (docErr?.status === 403 || docErr?.status === 401) {
+          (caseData as any).documentsNeedsElevation = true;
+        }
       }
       
       return caseData;
