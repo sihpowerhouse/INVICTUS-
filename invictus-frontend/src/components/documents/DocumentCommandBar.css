@@ -1,0 +1,45 @@
+.document-command-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.command-search-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.doc-filter-input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color var(--transition-fast);
+  width: 100%;
+}
+
+.doc-filter-input:focus {
+  border-color: var(--accent);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.doc-filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+.command-bar-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}

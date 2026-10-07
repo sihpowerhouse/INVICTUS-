@@ -1,0 +1,132 @@
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+.dashboard-actions__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard-actions__label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.dashboard-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.dashboard-search:focus-within {
+  border-color: var(--accent);
+}
+
+.dashboard-search__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  outline: none;
+}
+
+.dashboard-search__input::placeholder {
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.dashboard-search__btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.45rem 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.dashboard-search__btn:hover,
+.dashboard-search:focus-within .dashboard-search__btn {
+  color: var(--accent);
+}
+
+.dashboard-search__glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.dashboard-search:focus-within .dashboard-search__glow {
+  transform: scaleX(1);
+}
+
+.dashboard-action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: bold;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dashboard-action-btn:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.dashboard-action-btn__sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 240, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.dashboard-action-btn:hover .dashboard-action-btn__sweep {
+  left: 200%;
+}

@@ -1,0 +1,117 @@
+.version-history {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  padding: 24px;
+}
+
+.vh-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.vh-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.vh-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.vh-item {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  min-height: 64px;
+}
+
+.vh-marker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16px;
+  margin-top: 4px;
+}
+
+.vh-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-text-dim);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.vh-line {
+  flex: 1;
+  width: 1px;
+  background-color: var(--color-border);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.vh-item.active .vh-marker {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+.vh-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 24px;
+}
+
+.vh-version-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vh-version {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.vh-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-dim);
+  letter-spacing: 0.05em;
+}
+
+.vh-item.active .vh-status {
+  background-color: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
+}
+
+.vh-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vh-meta-user {
+  color: var(--color-text);
+}
+
+.vh-meta-sep {
+  opacity: 0.5;
+}
+

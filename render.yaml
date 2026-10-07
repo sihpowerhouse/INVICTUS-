@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: alliance
+    env: python
+    buildCommand: pip install -r requirements_sih_case_ai.txt
+    startCommand: uvicorn invite_backend:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.9
+      - key: OLLAMA_MODEL
+        value: gemma4:31b
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: AI_REQUEST_TIMEOUT
+        value: "90"
+      - key: AI_CHAT_TIMEOUT
+        value: "45"
+      - key: AI_PDF_DPI
+        value: "120"
+      - key: AI_CHUNK_SIZE
+        value: "3500"
+      - key: AI_TOP_K
+        value: "10"

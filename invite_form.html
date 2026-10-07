@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invite a Team Member</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; }
+  h1 { font-size: 1.3rem; }
+  p.sub { color: #666; font-size: 0.9rem; margin-top: -6px; }
+  input { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+  .result-item { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .result-item .info b { display: block; }
+  .result-item .info span { font-size: 0.85rem; color: #666; }
+  button { padding: 8px 14px; border: none; border-radius: 6px; background: #2563eb; color: white; cursor: pointer; font-size: 0.9rem; }
+  button:hover { background: #1d4ed8; }
+  button:disabled { background: #93b4f0; cursor: not-allowed; }
+  #status, #login-status { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 0.9rem; display: none; }
+  #status.success, #login-status.success { background: #ecfdf5; color: #065f46; display: block; }
+  #status.error, #login-status.error { background: #fef2f2; color: #991b1b; display: block; }
+  #logged-in-bar { background: #eff6ff; color: #1e40af; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; display: none; font-size: 0.9rem; }
+  #invite-section { display: none; }
+</style>
+</head>
+<body>
+
+<div id="logged-in-bar"></div>
+
+<div id="login-section">
+  <h1>Log In</h1>
+  <p class="sub">Only logged-in heads can invite team members.</p>
+  <input id="login-employee-id" placeholder="Your Employee ID (e.g. HYD-PS4-DEMO1)" />
+  <input id="login-password" type="password" placeholder="Password" />
+  <button onclick="login()" style="margin-top:14px;">Log In</button>
+  <div id="login-status"></div>
+</div>
+
+<div id="invite-section">
+  <h1>Invite a Team Member</h1>
+  <p class="sub">You can only search and invite employees in your own department.</p>
+  <input id="search-box" placeholder="Type a name or employee ID…" />
+  <div id="results"></div>
+  <div id="status"></div>
+</div>
+
+<script>
+const API = "https://alliance-cqnf.onrender.com";
+let sessionToken = null;
+let debounceTimer;
+
+async function login() {
+  const employee_id = document.getElementById("login-employee-id").value;
+  const password = document.getElementById("login-password").value;
+  const statusDiv = document.getElementById("login-status");
+
+  try {
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ employee_id, password }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      sessionToken = data.token;
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("invite-section").style.display = "block";
+      const bar = document.getElementById("logged-in-bar");
+      bar.style.display = "block";
+      bar.textContent = `Logged in as ${employee_id} — session valid for ${data.expires_in_hours} hours.`;
+    } else {
+      statusDiv.className = "error";
+      statusDiv.textContent = data.detail;
+    }
+  } catch (err) {
+    statusDiv.className = "error";
+    statusDiv.textContent = `Could not reach the server: ${err.message}`;
+  }
+}
+
+document.getElementById("search-box").addEventListener("input", (e) => {
+  clearTimeout(debounceTimer);
+  const q = e.target.value.trim();
+  if (q.length < 2) {
+    document.getElementById("results").innerHTML = "";
+    return;
+  }
+  debounceTimer = setTimeout(() => runSearch(q), 300);
+});
+
+async function runSearch(q) {
+  const resultsDiv = document.getElementById("results");
+  try {
+    const res = await fetch(`${API}/employees/search?q=${encodeURIComponent(q)}`, {
+      headers: { "Authorization": `Bearer ${sessionToken}` },
+    });
+    const employees = await res.json();
+
+    if (!res.ok) {
+      resultsDiv.innerHTML = `<p style="color:#991b1b;">${employees.detail || "Search failed"}</p>`;
+      return;
+    }
+    if (employees.length === 0) {
+      resultsDiv.innerHTML = `<p style="color:#888; font-size:0.9rem; margin-top:10px;">No matches in your department.</p>`;
+      return;
+    }
+
+    resultsDiv.innerHTML = employees.map(emp => `
+      <div class="result-item">
+        <div class="info">
+          <b>${emp.full_name}</b>
+          <span>${emp.employee_id} · ${emp.rank || ""} · ${emp.departments ? emp.departments.name : ""}</span>
+        </div>
+        <button onclick="sendInvite('${emp.employee_id}', this)">Invite</button>
+      </div>
+    `).join("");
+  } catch (err) {
+    resultsDiv.innerHTML = `<p style="color:#991b1b;">Could not reach the server: ${err.message}</p>`;
+  }
+}
+
+async function sendInvite(employeeId, btnEl) {
+  btnEl.disabled = true;
+  btnEl.textContent = "Sending…";
+  const statusDiv = document.getElementById("status");
+
+  try {
+    const res = await fetch(`${API}/invite`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${sessionToken}`,
+      },
+      body: JSON.stringify({ employee_id: employeeId }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      statusDiv.className = "success";
+      statusDiv.textContent = data.message;
+      btnEl.closest(".result-item").remove();
+    } else {
+      statusDiv.className = "error";
+      statusDiv.textContent = data.detail;
+      btnEl.disabled = false;
+      btnEl.textContent = "Invite";
+    }
+  } catch (err) {
+    statusDiv.className = "error";
+    statusDiv.textContent = `Could not reach the server: ${err.message}`;
+    btnEl.disabled = false;
+    btnEl.textContent = "Invite";
+  }
+}
+</script>
+
+</body>
+</html> 

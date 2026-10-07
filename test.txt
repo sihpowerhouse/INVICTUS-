@@ -1,0 +1,91 @@
+[
+  {
+    "ai_document_id": "b182cdc3-c532-4605-bb13-de39b25bc4c3",
+    "case_id": "c3ccfef7-937d-4d65-9fac-a74fef58a506",
+    "document_id": "6b1b426f-28d4-412a-8953-fe7ec8696e94",
+    "version_id": "97610ced-30a3-4bdd-bf0f-3526f814ff17",
+    "document_type": "other",
+    "status": "completed",
+    "provider": "native",
+    "model": "PyMuPDF",
+    "fallback_used": false,
+    "extracted_text": "--- Page 1 ---\nClassical AI in Action\nTwo case studies in explicit, rule-based problem solving\nSpell-Check & Autocomplete  \u2022  The Water Jug Problem\nPRESENTED BY\nT. Yashwant\n(2451-25-748-304)\nP. Karthik\n(2451-25-748-304)\n\n--- Page 2 ---\nCASE STUDY 1 OF 2 \u2014 SPELL-CHECK & AUTOCOMPLETE\nWhat Is Classical AI?\nAlso called \"Good Old-Fashioned AI\" (GOFAI) \u2014 it predates modern machine learning.\nClassical AI\nMachine Learning\nExplicit, hand-written rules\nPatterns learned from data\nDeterministic \u2014 same input, same output\nProbabilistic \u2014 output can vary\nNo training data required\nNeeds large training datasets\nFully traceable / explainable\nOften a \"black box\"\nSpell-check, in its classic form, sits firmly in the Classical AI column.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n2\n\n--- Page 3 ---\nWhere Spell-Check Shows Up\nGoal: catch a mistyped word and suggest the closest correct one \u2014 instantly, every time.\nWord Processors\nMessaging Apps\nSearch Bars\nCode Editors\nCLI Terminals\nEverywhere you look, every single day \u2014 it happens so often, we've stopped noticing it's AI at all.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n3\n\n--- Page 4 ---\nThe Core Idea \u2014 Edit Distance\nDefinition (Levenshtein Distance)\nED(s1, s2) = minimum number of single-character edits\nneeded to turn s1 into s2\nAllowed Operators\nInsert(i):      add a character at position i\nDelete(i):      remove the character at position i\nSubstitute(i):  replace the character at position i     (each operator costs 1)\nDecision Rule\nSuggest word D if  ED(typed, D) <= threshold     (commonly threshold = 2)\nWorked Example\nED(\"helo\", \"hello\") = 1     (insert 'l')\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n4\n\n--- Page 5 ---\nExample Walkthrough\n\u2022\nTyped word: \"helo\"\n\u2022\nClosest dictionary match: \"hello\"\n\u2022\nOperation used: insert 'l' after position 3.\n\u2022\nEdit Distance = 1, which is within the threshold of 2 \u2014 so it gets \nsuggested.\nTyped\nhelo\n\u2192\ninsert 'l'\nCorrected\nhello\nEdit Distance = 1\nwithin the threshold of 2, so it's suggested\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n5\n\n--- Page 6 ---\nThe Rules (Symbolic Layer)\nRule\nDescription\nAllowed edits\nOnly insertion, deletion, substitution (each = cost 1).\nKnowledge base\nA fixed dictionary of correctly spelled words.\nDistance threshold\nSuggest a word only if distance <= 2 (configurable).\nTie-breaking\nPrefer the most frequently used word among equal distances.\nEvery rule here is hand-defined by a human \u2014 nothing is learned from data.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n6\n\n--- Page 7 ---\nHow It Works \u2014 Step by Step\n1\nUser types a word.\n2\nThe word is checked against a fixed dictionary.\n3\nEdit distance is computed to nearby candidates.\n4\nCandidates are ranked by distance.\n5\nThe closest match is suggested.\nNo training, no neural network \u2014 a clean, well-defined calculation, repeated very fast.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n7\n\n--- Page 8 ---\nAutocomplete \u2014 The Companion Feature\nSame rule-based family as spell-check, aimed at predicting rather than correcting.\n\u2022\nPredicts the most likely next word or completion as you type, before you finish typing it.\n\u2022\nBuilt on a fixed prefix tree (trie) or frequency table of known words and phrases \u2014 no neural network required.\n\u2022\nCandidates are ranked by prior frequency count, then trimmed to the top few matches for speed.\n\u2022\nDeterministic, just like spell-check: the same typed prefix always returns the same ranked suggestions.\n\u2022\nOften layered directly on top of the spell-checker's dictionary, so the two features share one knowledge base.\nTogether, spell-check and autocomplete cover both halves of everyday typing assistance.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n8\n\n--- Page 9 ---\nWhy This Is Classical AI\n\u2022\nExplicit rules: insert / delete / substitute, defined by a programmer, not \ndiscovered.\n\u2022\nDeterministic: the same typo always produces the same suggestion.\n\u2022\nNo training data: the dictionary is fixed knowledge, not a learned model.\n\u2022\nTraceable: you can point to the exact rule that fired for any suggestion.\nStill Running Today\nTerminals\ngit & bash suggest fixes on a typo\nSearch engines\n\"Did you mean\u2026\" when ML is unsure\nLegacy & offline systems\nNo internet, no model \u2014 rules still work\nLow-resource languages\nToo little data to train ML \u2014 rules fill the gap\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n9\n\n--- Page 10 ---\nClassical AI: Two Case Studies, One Idea\nAspect\nSpell-Check\nWater Jug Problem\nProblem type\nString matching\nState-space search\n\"State\" / input\nTyped word vs. dictionary\nJug water levels (a, b, c)\nOperators\nInsert / Delete / Substitute\nFill / Empty / Pour\nCost measure\nEdit distance\nPath cost (# of actions)\nAlgorithm\nDistance calculation + ranking\nBreadth-First Search\nDeterminism\nSame typo, same suggestion\nSame instance, same shortest path\nBoth are Classical AI: explicit rules, deterministic behavior, zero training data, full traceability.\nThank you \u2014 questions?\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n10\n\n--- Page 11 ---\nWELCOME \u0422\u041e\nAI ZAMA",
+    "pages": [
+      {
+        "page": 1,
+        "text": "Classical AI in Action\nTwo case studies in explicit, rule-based problem solving\nSpell-Check & Autocomplete  \u2022  The Water Jug Problem\nPRESENTED BY\nT. Yashwant\n(2451-25-748-304)\nP. Karthik\n(2451-25-748-304)",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 2,
+        "text": "CASE STUDY 1 OF 2 \u2014 SPELL-CHECK & AUTOCOMPLETE\nWhat Is Classical AI?\nAlso called \"Good Old-Fashioned AI\" (GOFAI) \u2014 it predates modern machine learning.\nClassical AI\nMachine Learning\nExplicit, hand-written rules\nPatterns learned from data\nDeterministic \u2014 same input, same output\nProbabilistic \u2014 output can vary\nNo training data required\nNeeds large training datasets\nFully traceable / explainable\nOften a \"black box\"\nSpell-check, in its classic form, sits firmly in the Classical AI column.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n2",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 3,
+        "text": "Where Spell-Check Shows Up\nGoal: catch a mistyped word and suggest the closest correct one \u2014 instantly, every time.\nWord Processors\nMessaging Apps\nSearch Bars\nCode Editors\nCLI Terminals\nEverywhere you look, every single day \u2014 it happens so often, we've stopped noticing it's AI at all.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n3",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 4,
+        "text": "The Core Idea \u2014 Edit Distance\nDefinition (Levenshtein Distance)\nED(s1, s2) = minimum number of single-character edits\nneeded to turn s1 into s2\nAllowed Operators\nInsert(i):      add a character at position i\nDelete(i):      remove the character at position i\nSubstitute(i):  replace the character at position i     (each operator costs 1)\nDecision Rule\nSuggest word D if  ED(typed, D) <= threshold     (commonly threshold = 2)\nWorked Example\nED(\"helo\", \"hello\") = 1     (insert 'l')\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n4",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 5,
+        "text": "Example Walkthrough\n\u2022\nTyped word: \"helo\"\n\u2022\nClosest dictionary match: \"hello\"\n\u2022\nOperation used: insert 'l' after position 3.\n\u2022\nEdit Distance = 1, which is within the threshold of 2 \u2014 so it gets \nsuggested.\nTyped\nhelo\n\u2192\ninsert 'l'\nCorrected\nhello\nEdit Distance = 1\nwithin the threshold of 2, so it's suggested\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n5",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 6,
+        "text": "The Rules (Symbolic Layer)\nRule\nDescription\nAllowed edits\nOnly insertion, deletion, substitution (each = cost 1).\nKnowledge base\nA fixed dictionary of correctly spelled words.\nDistance threshold\nSuggest a word only if distance <= 2 (configurable).\nTie-breaking\nPrefer the most frequently used word among equal distances.\nEvery rule here is hand-defined by a human \u2014 nothing is learned from data.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n6",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 7,
+        "text": "How It Works \u2014 Step by Step\n1\nUser types a word.\n2\nThe word is checked against a fixed dictionary.\n3\nEdit distance is computed to nearby candidates.\n4\nCandidates are ranked by distance.\n5\nThe closest match is suggested.\nNo training, no neural network \u2014 a clean, well-defined calculation, repeated very fast.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n7",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 8,
+        "text": "Autocomplete \u2014 The Companion Feature\nSame rule-based family as spell-check, aimed at predicting rather than correcting.\n\u2022\nPredicts the most likely next word or completion as you type, before you finish typing it.\n\u2022\nBuilt on a fixed prefix tree (trie) or frequency table of known words and phrases \u2014 no neural network required.\n\u2022\nCandidates are ranked by prior frequency count, then trimmed to the top few matches for speed.\n\u2022\nDeterministic, just like spell-check: the same typed prefix always returns the same ranked suggestions.\n\u2022\nOften layered directly on top of the spell-checker's dictionary, so the two features share one knowledge base.\nTogether, spell-check and autocomplete cover both halves of everyday typing assistance.\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n8",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 9,
+        "text": "Why This Is Classical AI\n\u2022\nExplicit rules: insert / delete / substitute, defined by a programmer, not \ndiscovered.\n\u2022\nDeterministic: the same typo always produces the same suggestion.\n\u2022\nNo training data: the dictionary is fixed knowledge, not a learned model.\n\u2022\nTraceable: you can point to the exact rule that fired for any suggestion.\nStill Running Today\nTerminals\ngit & bash suggest fixes on a typo\nSearch engines\n\"Did you mean\u2026\" when ML is unsure\nLegacy & offline systems\nNo internet, no model \u2014 rules still work\nLow-resource languages\nToo little data to train ML \u2014 rules fill the gap\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n9",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 10,
+        "text": "Classical AI: Two Case Studies, One Idea\nAspect\nSpell-Check\nWater Jug Problem\nProblem type\nString matching\nState-space search\n\"State\" / input\nTyped word vs. dictionary\nJug water levels (a, b, c)\nOperators\nInsert / Delete / Substitute\nFill / Empty / Pour\nCost measure\nEdit distance\nPath cost (# of actions)\nAlgorithm\nDistance calculation + ranking\nBreadth-First Search\nDeterminism\nSame typo, same suggestion\nSame instance, same shortest path\nBoth are Classical AI: explicit rules, deterministic behavior, zero training data, full traceability.\nThank you \u2014 questions?\nT. Yashwant  (2451-25-748-304)   \u2022   P. Karthik  (2451-25-748-304)\n10",
+        "source": "native",
+        "confidence": 1.0
+      },
+      {
+        "page": 11,
+        "text": "WELCOME \u0422\u041e\nAI ZAMA",
+        "source": "native",
+        "confidence": 1.0
+      }
+    ],
+    "confidence": 1.0,
+    "error": null,
+    "created_at": "2026-09-17T17:44:05.44277+00:00",
+    "completed_at": "2026-09-17T17:44:06.372523+00:00",
+    "queued_at": "2026-09-17T17:44:03.835685+00:00",
+    "started_at": "2026-09-17T17:44:03.982835+00:00",
+    "stage": "completed",
+    "progress_percent": 100,
+    "estimated_seconds": 5
+  }
+]

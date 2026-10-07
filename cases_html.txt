@@ -1,0 +1,3482 @@
+<!DOCTYPE html><html lang="en" class="text-size-standard"><head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>invictus-frontend</title>
+  <style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/index.css">:root {
+  /* ── Typography ─────────────────────────────── */
+  font-family: Inter, Arial, sans-serif;
+  color: #f4f7fb;
+  background: #090b10;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* ── Design tokens ──────────────────────────── */
+  --bg-primary: #090b10;
+  --bg-surface: #0d1017;
+  --bg-elevated: #111620;
+  --bg-card: rgba(14, 18, 27, 0.85);
+  --bg-card-hover: rgba(20, 26, 38, 0.92);
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-accent: rgba(24, 200, 255, 0.18);
+
+  --text-primary: #f4f7fb;
+  --text-secondary: #8d98aa;
+  --text-muted: #5f697a;
+
+  --accent: #18c8ff;
+  --accent-dim: rgba(24, 200, 255, 0.08);
+  --accent-glow: rgba(24, 200, 255, 0.15);
+
+  --success: #35d49a;
+  --success-dim: rgba(53, 212, 154, 0.08);
+  --warning: #f5a623;
+  --warning-dim: rgba(245, 166, 35, 0.08);
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 280ms ease;
+}
+
+/* ── Accessibility Themes ───────────────────────── */
+html.theme-high-contrast {
+  --bg-primary: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-card: #000000;
+  --bg-card-hover: #111111;
+  
+  --border-subtle: #ffffff;
+  --border-accent: #18c8ff;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #eeeeee;
+  --text-muted: #dddddd;
+  
+  --accent: #00ffff;
+  --accent-dim: transparent;
+  --accent-glow: transparent;
+  
+  --success: #00ff00;
+  --warning: #ffaa00;
+  --danger: #ff0000;
+}
+
+html.text-size-standard {
+  font-size: 14px;
+}
+html.text-size-large {
+  font-size: 16px;
+}
+html.text-size-extra-large {
+  font-size: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  background: #090b10;
+}</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/departments/DepartmentCommandRing.css">/* ── Radial Command Ring Container ─────────────────────────────── */
+
+.command-ring {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: transparent;
+  background-image: 
+    radial-gradient(circle at center, rgba(0, 240, 255, 0.06) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-position: center center;
+}
+
+/* ── SVG Layer for Lines & Orbits ──────────────────────────────── */
+
+.command-ring__svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Primary and secondary orbital rings */
+.command-ring__orbit {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1px;
+}
+
+.command-ring__orbit--secondary {
+  stroke: rgba(255, 255, 255, 0.03);
+  stroke-width: 1px;
+  stroke-dasharray: 2 8;
+}
+
+/* Connection lines */
+.command-ring__line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1px;
+  opacity: 0.1;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.command-ring__line--active {
+  opacity: 0.6;
+  stroke-width: 1.5px;
+  /* Very subtle glow, not excessive neon */
+  filter: drop-shadow(0 0 2px rgba(0, 240, 255, 0.3));
+}
+
+.command-ring__line--dimmed {
+  opacity: 0.02;
+}
+
+/* ── Central Intelligence Core ─────────────────────────────────── */
+
+.command-core {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(8, 11, 16, 0.96);
+  backdrop-filter: blur(14px);
+  text-align: center;
+  box-shadow: 
+    inset 0 0 35px rgba(0, 240, 255, 0.2),
+    0 0 30px rgba(0, 240, 255, 0.15);
+  border: 1.5px solid rgba(0, 240, 255, 0.45);
+}
+
+/* Rotating SVG reticle overlay */
+.command-core__reticle {
+  position: absolute;
+  inset: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  pointer-events: none;
+  animation: slowSpin 60s linear infinite;
+  opacity: 0.8;
+}
+
+.command-core__reticle circle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5px;
+}
+
+.command-core__reticle-inner {
+  /* Restrained breathing animation */
+  animation: coreBreathe 4s ease-in-out infinite alternate;
+}
+
+/* Faint inner pulse */
+.command-core::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: inset 0 0 60px rgba(0, 240, 255, 0.15);
+  animation: corePulse 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes slowSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes corePulse {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+@keyframes coreBreathe {
+  0% { opacity: 0.5; stroke-width: 1.5px; }
+  100% { opacity: 1; stroke-width: 2.5px; filter: drop-shadow(0 0 4px var(--accent)); }
+}
+
+.command-core__title {
+  font-family: monospace;
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+  margin: 0 0 4px;
+  text-shadow: 0 0 16px rgba(0, 240, 255, 0.9), 0 0 30px rgba(0, 240, 255, 0.45);
+}
+
+.command-core__subtitle {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: #00f0ff;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.7);
+}
+
+.command-core__prompt {
+  font-family: monospace;
+  font-size: 8.5px;
+  color: var(--text-secondary);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 12px;
+  opacity: 0.75;
+}
+
+/* ── Orbital Department Nodes ──────────────────────────────────── */
+
+.command-node {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(5, 6, 8, 0.6);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  color: var(--text-muted);
+  border: none;
+  transition: all 0.2s ease;
+  
+  /* Technical bracket styling */
+  box-shadow: 
+    inset 1px 0 0 rgba(255, 255, 255, 0.1),
+    inset -1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.command-node::before,
+.command-node::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.2s ease;
+}
+
+.command-node::before { top: 0; left: 0; box-shadow: calc(100% - 4px) 0 0 rgba(255, 255, 255, 0.2); width: 100%; background: transparent; border-left: 4px solid rgba(255, 255, 255, 0.2); border-right: 4px solid rgba(255, 255, 255, 0.2); }
+.command-node::after { bottom: 0; left: 0; box-shadow: calc(100% - 4px) 0 0 rgba(255, 255, 255, 0.2); width: 100%; background: transparent; border-left: 4px solid rgba(255, 255, 255, 0.2); border-right: 4px solid rgba(255, 255, 255, 0.2); }
+
+.command-node:hover,
+.command-node:focus-visible {
+  outline: none;
+  color: var(--text-primary);
+  background: rgba(10, 12, 16, 0.9);
+}
+
+.command-node--active {
+  color: var(--text-primary);
+  transform: translate(-50%, -50%) scale(1.02);
+  box-shadow: 
+    inset 1px 0 0 var(--accent),
+    inset -1px 0 0 var(--accent),
+    0 0 15px rgba(0, 240, 255, 0.05);
+  z-index: 4;
+}
+
+.command-node--active::before,
+.command-node--active::after {
+  border-color: var(--accent);
+}
+
+.command-node--dimmed {
+  opacity: 0.25;
+}
+
+/* Icon is secondary, small */
+.command-node__icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.command-node--active .command-node__icon {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.command-node__label {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Contextual Detail Panel (Hover state info) ────────────────── */
+
+/* It is now a compact technical block, NOT a large card */
+.command-panel {
+  position: absolute;
+  z-index: 5;
+  top: 32px;
+  left: 32px;
+  width: 260px;
+  pointer-events: none;
+  animation: technicalFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes technicalFadeIn {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.command-panel__title {
+  margin: 0 0 16px;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.command-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.command-panel__stat {
+  display: flex;
+  justify-content: space-between;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.command-panel__stat-val {
+  color: var(--text-primary);
+}
+
+.command-panel__stat-val--accent {
+  color: var(--accent);
+}
+
+.command-panel__action {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.command-panel__action::before {
+  content: '[';
+  color: rgba(0, 240, 255, 0.5);
+}
+.command-panel__action::after {
+  content: ']';
+  color: rgba(0, 240, 255, 0.5);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .command-core__reticle { animation: none; }
+  .command-core::after { animation: none; }
+  .command-node, .command-ring__line { transition: none; }
+  .command-panel { animation: none; }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/dashboard/DashboardHeader.css">.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 1.25rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.dashboard-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.dashboard-header__title {
+  color: var(--accent);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.dashboard-header__name {
+  color: var(--text-primary);
+}
+
+.dashboard-header__separator {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-header__type {
+  color: var(--warning);
+}
+
+.dashboard-header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-header__status-text {
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+}
+
+.status-dot.active {
+  background-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/dashboard/OperationalStrip.css">.operational-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+.operational-strip.skeleton-mode {
+  gap: 0.75rem;
+}
+
+.skeleton-box {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--border) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 2px;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.strip-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.strip-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.strip-label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.operational-strip__analytics-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.operational-strip__analytics-link:hover {
+  color: var(--accent);
+}
+
+.operational-strip__analytics-link:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.strip-metrics {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.strip-metric {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  flex: 1;
+}
+
+.strip-metric-title {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+  letter-spacing: 0.05em;
+}
+
+.strip-metric-value {
+  font-size: 1.1rem;
+  color: var(--accent);
+  font-weight: bold;
+  line-height: 1.1;
+}
+
+.strip-metric-value.pending {
+  color: var(--warning);
+}
+
+.strip-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.strip-event {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--border);
+  padding: 0.3rem 0.55rem;
+}
+
+.strip-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.15rem;
+}
+
+.event-actor {
+  font-size: 0.68rem;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.event-time {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+}
+
+.event-action {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.strip-empty {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/dashboard/DashboardActions.css">.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+}
+
+.dashboard-actions__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard-actions__label {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.dashboard-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.dashboard-search:focus-within {
+  border-color: var(--accent);
+}
+
+.dashboard-search__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  outline: none;
+}
+
+.dashboard-search__input::placeholder {
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.dashboard-search__btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.45rem 0.65rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.dashboard-search__btn:hover,
+.dashboard-search:focus-within .dashboard-search__btn {
+  color: var(--accent);
+}
+
+.dashboard-search__glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.dashboard-search:focus-within .dashboard-search__glow {
+  transform: scaleX(1);
+}
+
+.dashboard-action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: bold;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dashboard-action-btn:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.dashboard-action-btn__sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 240, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.dashboard-action-btn:hover .dashboard-action-btn__sweep {
+  left: 200%;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/dashboard/MyCasesWidget.css">.my-cases-widget {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+}
+
+.my-cases-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.my-cases-widget__title {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  font-weight: bold;
+}
+
+.my-cases-widget__view-all {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.my-cases-widget__view-all:hover {
+  color: #fff;
+  text-shadow: 0 0 5px var(--accent);
+}
+
+.my-cases-widget__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.my-cases-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.my-cases-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.my-cases-item__top {
+  margin-bottom: 0.15rem;
+}
+
+.my-cases-item__id {
+  font-size: 0.68rem;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.my-cases-item__title {
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-cases-item__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6rem;
+}
+
+.my-cases-item__status {
+  color: var(--warning);
+}
+
+.my-cases-item__status.case-status--active {
+  color: var(--accent);
+}
+
+.my-cases-item__time {
+  color: var(--text-muted);
+}
+
+.my-cases-widget__empty {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.68rem;
+}
+
+.my-cases-widget__skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.my-cases-widget__skeleton-row {
+  height: 48px;
+  width: 100%;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/pages/DashboardPage.css">.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-base);
+}
+
+.dashboard-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dashboard-workspace__center {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+  background: #050608;
+  overflow: hidden;
+}
+
+.dashboard-workspace__right {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--bg-panel);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.dashboard-workspace__right::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dashboard-workspace__right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-workspace__right::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.dashboard-workspace__right::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-workspace {
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+  
+  .dashboard-workspace {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+  
+  .dashboard-workspace__center {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: 440px;
+    height: 440px;
+  }
+
+  .dashboard-workspace__right {
+    height: auto;
+    overflow: visible;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/pages/LoginPage.css">.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #050609;
+  color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric Interactive Background */
+.login-page__atmosphere {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  z-index: 1;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.login-page__glow {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  mix-blend-mode: screen;
+}
+
+.login-page__glow--cyan {
+  top: 20%;
+  left: 30%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.4) 0%, transparent 70%);
+}
+
+.login-page__glow--blue {
+  top: 40%;
+  right: 20%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(0, 100, 255, 0.3) 0%, transparent 70%);
+}
+
+.login-page__glow--violet {
+  bottom: 10%;
+  left: 40%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(120, 0, 255, 0.2) 0%, transparent 70%);
+}
+
+/* Decorational Overlays */
+.login-page__grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.3;
+}
+
+.login-page__noise-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
+}
+
+/* Meta details */
+.login-page__meta {
+  position: absolute;
+  z-index: 5;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.15em;
+  pointer-events: none;
+}
+.login-page__meta--top-left { top: 32px; left: 40px; }
+.login-page__meta--top-right { top: 32px; right: 40px; }
+.login-page__meta--bottom-left { bottom: 32px; left: 40px; }
+.login-page__meta--bottom-right { bottom: 32px; right: 40px; }
+
+/* Login Card Container */
+.login-page__container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 440px;
+  padding: 48px;
+  background: linear-gradient(145deg, rgba(12, 16, 22, 0.6), rgba(5, 7, 10, 0.8));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  box-shadow: 
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Interactive Spotlight inside card */
+.login-page__card-spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Branding */
+.login-page__brand {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-page__title {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: #fff;
+  margin-right: -0.3em; /* offset for tracking */
+}
+
+.login-page__subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.15em;
+}
+
+.login-page__status-line {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(0, 240, 255, 0.6);
+  letter-spacing: 0.2em;
+  padding: 4px 12px;
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  border-radius: 100px;
+  margin-top: 12px;
+}
+
+/* Form */
+.login-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.login-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-page__field label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+.login-page__warning {
+  color: #ffaa00;
+  font-size: 9px;
+  background: rgba(255, 170, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.login-page__error {
+  background: rgba(255, 60, 60, 0.1);
+  border: 1px solid rgba(255, 60, 60, 0.2);
+  color: #ff5555;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  border-radius: 6px;
+}
+
+/* Inputs */
+.login-page__input-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.login-page__input-wrapper input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.login-page__input-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 6px;
+  background: var(--accent);
+  opacity: 0;
+  filter: blur(4px);
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.login-page__input-wrapper input:focus {
+  border-color: rgba(0, 240, 255, 0.5);
+  background: rgba(0, 10, 20, 0.6);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-page__input-wrapper input:focus + .login-page__input-glow {
+  opacity: 0.3;
+}
+
+/* Actions & Button */
+.login-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.login-page__submit {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(30, 35, 45, 1) 0%, rgba(15, 20, 25, 1) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.login-page__submit-text {
+  position: relative;
+  z-index: 2;
+  transition: text-shadow 0.2s ease;
+}
+
+.login-page__submit-sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.2),
+    transparent
+  );
+  transform: skewX(-20deg);
+  z-index: 1;
+  transition: left 0.5s ease;
+}
+
+.login-page__submit:hover:not(:disabled) {
+  border-color: rgba(0, 240, 255, 0.3);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 4px 20px rgba(0, 240, 255, 0.15);
+}
+
+.login-page__submit:hover:not(:disabled) .login-page__submit-text {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.login-page__submit:hover:not(:disabled) .login-page__submit-sweep {
+  left: 200%;
+}
+
+.login-page__submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.login-page__submit.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Divider */
+.login-page__divider {
+  position: relative;
+  text-align: center;
+}
+.login-page__divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+.login-page__divider span {
+  position: relative;
+  background: #090b10;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.1em;
+}
+
+.login-page__secure-access-label {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2em;
+}
+
+/* Responsiveness */
+@media (max-width: 600px) {
+  .login-page__container {
+    margin: 20px;
+    padding: 32px 24px;
+  }
+  
+  .login-page__meta {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .login-page__atmosphere,
+  .login-page__container {
+    transform: none !important;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/DocumentPreview.css">.doc-preview-container {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+.doc-preview-header {
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.doc-preview-title {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+.doc-preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 10px;
+  font-family: monospace;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.doc-preview-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.01),
+    rgba(255, 255, 255, 0.01) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  position: relative;
+}
+
+.doc-placeholder-page {
+  width: 80%;
+  height: 90%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  gap: 16px;
+}
+
+.placeholder-line {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.placeholder-line.short { width: 40%; }
+.placeholder-line.medium { width: 70%; }
+.placeholder-line.long { width: 100%; }
+
+.doc-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-family: monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.03);
+  letter-spacing: 0.2em;
+  pointer-events: none;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/DocumentIntelligencePanel.css">.doc-intelligence-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.doc-intelligence-panel .panel-header {
+  padding: 12px 16px;
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-intelligence-panel .panel-header h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.doc-intelligence-panel .panel-header svg {
+  color: var(--primary);
+}
+
+.doc-intelligence-panel .panel-content {
+  padding: 16px;
+}
+
+.panel-description {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.di-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.di-input {
+  flex: 1;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.di-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.di-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.di-submit {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 70px;
+}
+
+.di-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(var(--primary-rgb), 0.1);
+  border-radius: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.di-error, .di-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.di-error {
+  background: rgba(220, 38, 38, 0.1);
+  color: #ef4444;
+}
+
+.di-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+}
+
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.di-result {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.di-answer-section h5, .di-sources-section h5 {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.di-answer-section p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.di-sources-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.di-source-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.di-source-tag:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+}
+
+.di-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/MetadataPanel.css">.metadata-panel {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+}
+
+.metadata-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metadata-panel-title {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.btn-text {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: monospace;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-text:hover {
+  opacity: 0.8;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.metadata-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metadata-label {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metadata-value {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.metadata-value--badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-primary);
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/OCRVerification.css">.ocr-verification {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  padding: 24px;
+}
+
+.ocr-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ocr-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.ocr-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ocr-flow-node {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.ocr-node-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ocr-node-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.ocr-node-val.warning {
+  color: #ff9800; /* Subtle warning color */
+}
+
+.ocr-node-val.success {
+  color: #4caf50;
+}
+
+.ocr-flow-arrow {
+  color: var(--color-border);
+  font-family: monospace;
+}
+
+.ocr-warning-box {
+  background-color: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-left: 2px solid #ff9800;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.ocr-warning-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff9800;
+  letter-spacing: 0.1em;
+  margin: 0 0 8px 0;
+}
+
+.ocr-warning-text {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  margin: 0;
+}
+
+.ocr-text-view {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  line-height: 1.6;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+}
+
+.ocr-text-view-header {
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.ocr-text-highlight {
+  background-color: rgba(0, 240, 255, 0.15);
+  color: var(--color-text);
+  padding: 0 4px;
+}
+
+.ocr-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-ocr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.btn-ocr-accept {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.btn-ocr-accept:hover {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.btn-ocr-edit, .btn-ocr-reprocess {
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-ocr-edit:hover, .btn-ocr-reprocess:hover {
+  border-color: var(--color-text-dim);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/VersionHistory.css">.version-history {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  padding: 24px;
+}
+
+.vh-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.vh-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.vh-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.vh-item {
+  display: flex;
+  gap: 20px;
+  position: relative;
+  min-height: 64px;
+}
+
+.vh-marker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16px;
+  margin-top: 4px;
+}
+
+.vh-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-text-dim);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.vh-line {
+  flex: 1;
+  width: 1px;
+  background-color: var(--color-border);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.vh-item.active .vh-marker {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+.vh-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 24px;
+}
+
+.vh-version-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vh-version {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.vh-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-dim);
+  letter-spacing: 0.05em;
+}
+
+.vh-item.active .vh-status {
+  background-color: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
+}
+
+.vh-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.vh-meta-user {
+  color: var(--color-text);
+}
+
+.vh-meta-sep {
+  opacity: 0.5;
+}
+
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/DocumentActivityTimeline.css">.doc-activity-timeline {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doc-activity-header h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.doc-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.doc-activity-list::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 14px;
+  width: 1px;
+  background: var(--border-color);
+  z-index: 0;
+}
+
+.doc-activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.doc-activity-item:hover {
+  background: var(--bg-hover);
+}
+
+.doc-activity-item.is-selected {
+  background: var(--bg-active);
+  border-color: var(--accent);
+}
+
+.doc-activity-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 2px solid var(--bg-secondary);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.doc-activity-item.type-uploaded .doc-activity-icon,
+.doc-activity-item.type-version_created .doc-activity-icon {
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.doc-activity-item.type-ocr_completed .doc-activity-icon {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.doc-activity-item.type-ocr_failed .doc-activity-icon,
+.doc-activity-item.type-version_superseded .doc-activity-icon {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.doc-activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doc-activity-timestamp {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+
+.doc-activity-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.doc-activity-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.doc-activity-version {
+  font-weight: 600;
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/documents/DocumentViewerOverlay.css">.doc-viewer-overlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 24px;
+}
+
+.doc-viewer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.doc-viewer-breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.doc-viewer-tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+.doc-viewer-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 12px 0;
+  cursor: pointer;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.doc-viewer-tab:hover {
+  color: var(--text-primary);
+}
+
+.doc-viewer-tab.active {
+  color: var(--accent);
+}
+
+.doc-viewer-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+
+.doc-viewer-title-area {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.doc-viewer-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-viewer-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.doc-viewer-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.doc-viewer-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.doc-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-close-viewer {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.btn-close-viewer:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.doc-viewer-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding-bottom: 24px;
+  gap: 24px;
+}
+
+/* Watermark */
+.doc-watermark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.doc-watermark-content {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-primary);
+  opacity: 0.05;
+  transform: rotate(-45deg);
+  text-align: center;
+  line-height: 1.2;
+  white-space: pre-wrap;
+  user-select: none;
+  /* Simple replication effect using drop-shadow or multiple text-shadows */
+  text-shadow: 
+    -400px -400px 0 var(--text-primary),
+    400px 400px 0 var(--text-primary),
+    -400px 400px 0 var(--text-primary),
+    400px -400px 0 var(--text-primary),
+    -800px 0 0 var(--text-primary),
+    800px 0 0 var(--text-primary),
+    0 -800px 0 var(--text-primary),
+    0 800px 0 var(--text-primary);
+}
+
+.doc-viewer-left {
+  flex: 6; /* Approx 60% */
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.doc-viewer-right {
+  flex: 4; /* Approx 40% */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding-right: 8px; /* For scrollbar spacing */
+}
+
+/* Scrollbar styles for the right column */
+.doc-viewer-right::-webkit-scrollbar {
+  width: 4px;
+}
+.doc-viewer-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+.doc-viewer-right::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .doc-viewer-body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .doc-viewer-left {
+    min-height: 50vh;
+    flex: none;
+  }
+  .doc-viewer-right {
+    overflow-y: visible;
+    flex: none;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/pages/DocumentDetailsPage.css">.doc-details-page {
+  padding: 32px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.doc-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.doc-details-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-details-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.doc-id-mono-large {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  color: var(--color-primary);
+  letter-spacing: 0.1em;
+}
+
+.doc-details-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.doc-details-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.doc-details-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding: 16px 24px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+}
+
+.doc-meta-dim {
+  color: var(--color-text-dim);
+  font-size: 0.9em;
+}
+
+.doc-details-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.doc-details-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.doc-details-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .doc-details-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .doc-details-page {
+    padding: 24px;
+  }
+  .doc-details-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/layout/CommandSearch.css">.command-search {
+  /* This is just the trigger button styling */
+}
+
+.command-search__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.command-search__trigger:hover,
+.command-search__trigger:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+.command-search__shortcut {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+/* ── Modal Overlay ────────────────────────────────────────────── */
+
+.command-search__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 8, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  animation: searchOverlayFadeIn 0.2s ease-out;
+}
+
+@keyframes searchOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.command-search__modal {
+  width: 100%;
+  max-width: 640px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 240, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: searchModalSlideDown 0.2s ease-out;
+}
+
+@keyframes searchModalSlideDown {
+  from { opacity: 0; transform: translateY(-20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Modal Header & Input ──────────────────────────────────────── */
+
+.command-search__header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: 16px;
+}
+
+.command-search__icon {
+  color: var(--accent);
+}
+
+.command-search__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 16px;
+  outline: none;
+}
+
+.command-search__input::placeholder {
+  color: var(--text-muted);
+}
+
+.command-search__close {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.command-search__close:hover,
+.command-search__close:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  outline: none;
+}
+
+/* ── Modal Content ────────────────────────────────────────────── */
+
+.command-search__content {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.command-search__category {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 16px 8px 8px;
+}
+
+.command-search__category:first-child {
+  margin-top: 4px;
+}
+
+.command-search__item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.command-search__item:hover,
+.command-search__item:focus-visible {
+  background: rgba(0, 240, 255, 0.05);
+  outline: none;
+}
+
+.command-search__item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.command-search__item-title {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.command-search__item-meta {
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 10px;
+}
+
+.command-search__item-badge {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 6px;
+  border-radius: 100px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.command-search__empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .command-search__overlay,
+  .command-search__modal {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .command-search__trigger {
+    width: 200px;
+  }
+  .command-search__modal {
+    margin: 0 16px;
+    max-height: 80vh;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/common/SystemStatus.css">.system-status {
+  position: relative;
+}
+
+.system-status__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.system-status__trigger:hover,
+.system-status__trigger:focus-visible {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  outline: none;
+}
+
+.system-status__indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(53, 212, 154, 0.4);
+}
+
+.system-status__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  animation: dropdownFadeIn 0.15s ease-out forwards;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.system-status__header {
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.system-status__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.system-status__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.system-status__item-label {
+  letter-spacing: 0.05em;
+}
+
+.system-status__item-val {
+  color: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-status__dropdown { animation: none; }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/layout/AccessibilityMenu.css">.a11y-menu-container {
+  position: relative;
+}
+
+.a11y-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a11y-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.a11y-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.a11y-btn-group {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.a11y-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.a11y-btn.active {
+  background: var(--accent);
+  color: var(--bg-base);
+  font-weight: bold;
+}
+
+/* Toggle Switch */
+.a11y-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.a11y-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.a11y-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .4s;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+}
+
+.a11y-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-secondary);
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.a11y-toggle input:checked + .a11y-slider {
+  background-color: rgba(0, 240, 255, 0.2);
+  border-color: var(--accent);
+}
+
+.a11y-toggle input:checked + .a11y-slider:before {
+  transform: translateX(20px);
+  background-color: var(--accent);
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/layout/UserMenu.css">.user-menu {
+  position: relative;
+}
+
+.user-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.user-menu__trigger:hover,
+.user-menu__trigger:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+.user-menu__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-menu__info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.user-menu__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.user-menu__role {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.user-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  animation: dropdownFadeIn 0.15s ease-out forwards;
+}
+
+.user-menu__action {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.user-menu__action:hover,
+.user-menu__action:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.user-menu__action--danger {
+  color: var(--danger);
+  margin-top: 4px;
+  border-top: 1px solid var(--border-subtle);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.user-menu__action--danger:hover,
+.user-menu__action--danger:focus-visible {
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .user-menu__info {
+    display: none;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/layout/TopNav.css">.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 24px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.top-nav__brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-nav__brand-title {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.15em;
+  line-height: 1.1;
+  text-decoration: none;
+}
+
+.top-nav__brand-subtitle {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.top-nav__center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.top-nav__right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.top-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-right: 1px solid var(--border-subtle);
+  padding-right: 16px;
+}
+
+.top-nav__icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.top-nav__icon-btn:hover,
+.top-nav__icon-btn:focus-visible {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+@media (max-width: 1024px) {
+  .top-nav__brand-subtitle {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .top-nav__center {
+    justify-content: flex-end;
+    margin-right: auto;
+  }
+  .top-nav__actions {
+    gap: 8px;
+    padding-right: 12px;
+  }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/auth/SessionTimeoutWarning.css">.session-warning-banner {
+  position: fixed;
+  top: 76px; /* Below 60px TopNav + 16px safe gap */
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-panel);
+  border: 1px solid var(--status-warning);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  z-index: 100; /* Above Dashboard, below Modals */
+  display: flex;
+  font-family: var(--font-mono);
+  animation: slideDownFade 0.3s ease-out;
+  width: auto;
+  min-width: 420px;
+  max-width: 520px;
+}
+
+.session-warning-banner.critical {
+  border-color: var(--status-error);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+}
+
+.session-warning-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 8px 16px;
+}
+
+.session-warning-title {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.session-warning-time {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--status-warning);
+  white-space: nowrap;
+}
+
+.session-warning-banner.critical .session-warning-time {
+  color: var(--status-error);
+}
+
+.session-warning-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.session-warning-actions button {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.session-warning-actions button.btn-continue {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.session-warning-actions button.btn-continue:hover,
+.session-warning-actions button.btn-continue:focus-visible {
+  background: var(--accent);
+  color: var(--bg-base);
+  outline: none;
+}
+
+.session-warning-actions button.btn-signout:hover,
+.session-warning-actions button.btn-signout:focus-visible {
+  background: var(--text-secondary);
+  color: var(--bg-base);
+  outline: none;
+}
+
+@keyframes slideDownFade {
+  from { transform: translate(-50%, -20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@media (max-width: 1024px) {
+  /* Tablet: allow wrap to two rows */
+  .session-warning-banner {
+    min-width: 320px;
+  }
+  .session-warning-content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile: stack cleanly */
+  .session-warning-banner {
+    top: auto;
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    min-width: auto;
+    animation: slideUpFade 0.3s ease-out;
+  }
+  .session-warning-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .session-warning-title, .session-warning-time {
+    text-align: center;
+  }
+  .session-warning-actions {
+    width: 100%;
+  }
+  .session-warning-actions button {
+    flex: 1;
+  }
+}
+
+@keyframes slideUpFade {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/components/layout/InternalFAB.css">.internal-fab-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.internal-fab-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  transform-origin: bottom right;
+}
+
+.internal-fab-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.internal-fab-label {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+
+.internal-fab-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+}
+
+.internal-fab-item:hover .internal-fab-label,
+.internal-fab-item:hover .internal-fab-icon-wrapper {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.internal-fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg-base);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 240, 255, 0.3);
+  transition: all 0.3s;
+}
+
+.internal-fab-main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(0, 240, 255, 0.4);
+}
+
+.internal-fab-plus {
+  transition: transform 0.3s;
+}
+
+.internal-fab-main.open .internal-fab-plus {
+  transform: rotate(45deg);
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/layouts/AppShell.css">.app-shell {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  background-color: var(--background);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.app-shell__full {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  background-color: var(--background);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.app-shell__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-shell__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background-color: var(--background);
+}
+</style><style type="text/css" data-vite-dev-id="C:/Users/Yash/OneDrive/Desktop/SIHHHH/invictus-frontend/src/App.css">#root {
+  height: 100%;
+}
+
+/* App layout moved to AppShell.css */
+
+.page-tag {
+  color: #18c8ff;
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  margin: 0 0 8px;
+}
+
+.sidebar {
+  width: 258px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 16px;
+  background: rgba(10, 13, 19, 0.96);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 10px 30px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(24, 200, 255, 0.4);
+  border-radius: 10px;
+  background: rgba(24, 200, 255, 0.08);
+  color: #18c8ff;
+  font-weight: 700;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.brand-subtitle {
+  margin-top: 3px;
+  color: #687386;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-group {
+  margin-bottom: 24px;
+}
+
+.nav-section-title {
+  padding: 0 10px 8px;
+  color: #5f697a;
+  font-family: monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #8d98aa;
+  font-size: 13px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+  position: relative;
+}
+
+.nav-item-active-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 200, 255, 0.09);
+  border: 1px solid rgba(24, 200, 255, 0.18);
+  border-radius: 9px;
+  z-index: 0;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4f7fb;
+}
+
+.nav-item.active {
+  color: #f4f7fb;
+  background: transparent;
+  border-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item.active {
+    background: rgba(24, 200, 255, 0.09);
+    border-color: rgba(24, 200, 255, 0.18);
+  }
+}
+
+.nav-item.active svg {
+  color: #18c8ff;
+}
+
+.sidebar-bottom {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.security-status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 4px 0;
+  padding: 12px;
+  border: 1px solid rgba(53, 212, 154, 0.14);
+  border-radius: 10px;
+  background: rgba(53, 212, 154, 0.05);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #35d49a;
+  box-shadow: 0 0 12px rgba(53, 212, 154, 0.65);
+}
+
+.status-title {
+  color: #35d49a;
+  font-family: monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.status-text {
+  margin-top: 3px;
+  color: #6f7b8d;
+  font-size: 9px;
+}</style></head>
+  <body>
+    <div id="root"><main class="app-shell__full"><div class="login-page"><div class="login-page__atmosphere" style="transform: none;"><div class="login-page__glow login-page__glow--cyan"></div><div class="login-page__glow login-page__glow--blue"></div><div class="login-page__glow login-page__glow--violet"></div></div><div class="login-page__grid-overlay"></div><div class="login-page__noise-overlay"></div><div class="login-page__meta login-page__meta--top-left">INVICTUS // SECURE ACCESS</div><div class="login-page__meta login-page__meta--top-right">NODE: AUTH-01</div><div class="login-page__meta login-page__meta--bottom-left">STATUS: READY</div><div class="login-page__meta login-page__meta--bottom-right">SECURE CHANNEL</div><div class="login-page__container" style="transform: none;"><div class="login-page__card-spotlight" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.04) 0%, transparent 60%);"></div><div class="login-page__brand"><div class="login-page__title">INVICTUS</div><div class="login-page__subtitle">SECURE EVIDENCE INTELLIGENCE</div><div class="login-page__status-line">AUTHORIZED ACCESS ONLY</div></div><form class="login-page__form"><div class="login-page__field"><label for="employeeId">EMPLOYEE ID / USER ID</label><div class="login-page__input-wrapper"><input id="employeeId" placeholder="e.g. SEC-PS-HEAD-001" autocomplete="off" type="text" value=""><div class="login-page__input-glow"></div></div></div><div class="login-page__field"><label for="password">PASSWORD</label><div class="login-page__input-wrapper"><input id="password" placeholder="••••••••••••" type="password" value=""><div class="login-page__input-glow"></div></div></div><div class="login-page__actions"><button type="submit" class="login-page__submit "><span class="login-page__submit-text">AUTHENTICATE</span><div class="login-page__submit-sweep"></div></button><div class="login-page__divider"><span>OR</span></div><div class="login-page__secure-access-label">SECURE ACCESS</div></div></form></div></div></main></div>
+    <script type="module" src="/src/main.tsx"></script>
+  
+
+</body></html>

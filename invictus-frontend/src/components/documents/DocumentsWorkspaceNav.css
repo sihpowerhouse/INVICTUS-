@@ -1,0 +1,41 @@
+.workspace-nav {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 24px;
+  padding-bottom: 0;
+}
+
+.workspace-nav__item {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  padding: 12px 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  text-transform: uppercase;
+}
+
+.workspace-nav__item:hover {
+  color: var(--text-primary);
+}
+
+.workspace-nav__item.active {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.workspace-nav__item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}

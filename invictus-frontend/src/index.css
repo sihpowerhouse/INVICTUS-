@@ -1,0 +1,89 @@
+:root {
+  /* ── Typography ─────────────────────────────── */
+  font-family: Inter, Arial, sans-serif;
+  color: #ffffff;
+  background: #000000;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* ── Design tokens ──────────────────────────── */
+  --bg-primary: #000000;
+  --bg-surface: #050505;
+  --bg-elevated: #0a0a0a;
+  --bg-card: rgba(10, 10, 10, 0.85);
+  --bg-card-hover: rgba(17, 17, 17, 0.92);
+
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-accent: rgba(255, 255, 255, 0.3);
+
+  --text-primary: #ffffff;
+  --text-secondary: #d0d0d0;
+  --text-muted: #888888;
+
+  --accent: #18c8ff;
+  --accent-dim: rgba(24, 200, 255, 0.08);
+  --accent-glow: rgba(24, 200, 255, 0.15);
+
+  --success: #35d49a;
+  --success-dim: rgba(53, 212, 154, 0.08);
+  --warning: #f5a623;
+  --warning-dim: rgba(245, 166, 35, 0.08);
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 280ms ease;
+}
+
+/* ── Accessibility Themes ───────────────────────── */
+html.theme-high-contrast {
+  --bg-primary: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-card: #000000;
+  --bg-card-hover: #111111;
+  
+  --border-subtle: #ffffff;
+  --border-accent: #18c8ff;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #eeeeee;
+  --text-muted: #dddddd;
+  
+  --accent: #00ffff;
+  --accent-dim: transparent;
+  --accent-glow: transparent;
+  
+  --success: #00ff00;
+  --warning: #ffaa00;
+  --danger: #ff0000;
+}
+
+html.text-size-standard {
+  font-size: 14px;
+}
+html.text-size-large {
+  font-size: 16px;
+}
+html.text-size-extra-large {
+  font-size: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  background: #000000;
+}

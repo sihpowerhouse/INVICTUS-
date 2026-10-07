@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Secure DMS — File FIR</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:radial-gradient(circle at 10% 0%,#dce7ff,transparent 32%),linear-gradient(180deg,#f5f7fb,#eef2f8)}.wrap{max-width:940px;margin:auto;padding:24px}.top{background:linear-gradient(135deg,#0c1735,#214bb8);color:#fff;border-radius:24px;padding:24px;box-shadow:0 18px 50px #0c173526;display:flex;justify-content:space-between;align-items:center;gap:18px}.brand{display:flex;align-items:center;gap:14px}.mark{width:52px;height:52px;border-radius:16px;background:#ffffff14;border:1px solid #ffffff2e;display:grid;place-items:center;font-size:26px}.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}.top h1{margin:4px 0;font-size:25px}.metaTop{font-size:12px;opacity:.78}.back{color:#fff;text-decoration:none;border:1px solid #ffffff30;background:#ffffff10;padding:9px 12px;border-radius:11px}.card{background:#ffffffdf;border:1px solid #dfe5f2;border-radius:21px;padding:25px;margin-top:17px;box-shadow:0 14px 38px #18213b0b;backdrop-filter:blur(12px)}.intro{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:15px;background:#edf2ff;color:#334d9c;font-size:13px;line-height:1.55;margin:16px 0 22px}.seal{font-size:24px}label{display:block;margin:15px 0 6px;font-weight:750;font-size:13px}input,textarea{width:100%;padding:13px;border:1px solid #d5ddea;border-radius:12px;background:#fbfcff;font:inherit;outline:none}input:focus,textarea:focus{border-color:#3158d8;box-shadow:0 0 0 4px #eaf0ff}textarea{min-height:165px;resize:vertical}button{width:100%;border:0;border-radius:13px;padding:13px 16px;background:#214bb8;color:#fff;cursor:pointer;margin-top:19px;font:inherit;font-weight:800;box-shadow:0 9px 22px #214bb82a}button:disabled{opacity:.6;cursor:not-allowed}.status{padding:12px;border-radius:11px;margin-top:13px;white-space:pre-wrap;font-size:13px}.error{background:#fff0f1;color:#992631}.success{background:#e9f8f2;color:#09694f}.info{background:#eef3ff;color:#304c99}.note{font-size:11px;color:#7a8497;text-align:center;margin-top:18px}@media(max-width:700px){.wrap{padding:12px}.top{align-items:flex-start;flex-direction:column}.back{width:100%;text-align:center}}
+</style>
+</head>
+<body><div class="wrap"><header class="top"><div class="brand"><div class="mark">🛡️</div><div><div class="eyebrow">Police Investigation Desk</div><h1>File a New FIR</h1><div class="metaTop">Create a secure case record and official digital FIR</div></div></div><a class="back" href="homepage.html">← Command Center</a></header><div class="card">
+<div class="intro"><span class="seal">📄</span><div>The submitted form is converted into a real, searchable FIR PDF, then SHA-256 hashed, digitally signed and stored inside the new case. AI extraction can use the saved PDF for Case AI questions.</div></div>
+<form id="fir-form">
+<label>Complainant Name</label>
+<input id="complainant_name" required>
+<label>Incident Type</label>
+<input id="incident_type" placeholder="e.g. Theft, Assault, Fraud" required>
+<label>Incident Date</label>
+<input id="incident_date" type="date" required>
+<label>Location</label>
+<input id="location" required>
+<label>Description</label>
+<textarea id="description" required></textarea>
+<button id="submit-btn" type="submit">File FIR</button>
+</form>
+<div id="status"></div><div class="note">The case and FIR are preserved as immutable records after filing.</div>
+</div></div>
+<script>
+const API=(location.hostname==='localhost'||location.hostname==='127.0.0.1')?'http://127.0.0.1:8000':'https://alliance-cqnf.onrender.com';
+const token=sessionStorage.getItem('token');
+if(!token) location.href='login.html?redirect='+encodeURIComponent('file-fir.html');
+const form=document.getElementById('fir-form');
+const button=document.getElementById('submit-btn');
+const statusBox=document.getElementById('status');
+function showStatus(message,type){statusBox.className='status '+type;statusBox.textContent=message;}
+function requestId(){let id=sessionStorage.getItem('fir_create_request_id');if(!id){id=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));sessionStorage.setItem('fir_create_request_id',id);}return id;}
+function clearRequestId(){sessionStorage.removeItem('fir_create_request_id');}
+async function fetchJson(path,options={},timeoutMs=90000){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+        const response=await fetch(API+path,{...options,signal:controller.signal,headers:{...(options.headers||{}),Authorization:'Bearer '+token}});
+        const raw=await response.text();let data={};
+        try{data=raw?JSON.parse(raw):{};}catch{data={detail:raw};}
+        if(!response.ok){
+            let msg=data.detail;
+            if(Array.isArray(msg))msg=msg.map(x=>x.msg||JSON.stringify(x)).join('; ');
+            throw new Error(msg||('Request failed ('+response.status+')'));
+        }
+        return data;
+    }finally{clearTimeout(timer);}
+}
+async function recoverCreate(id){
+    for(let i=0;i<15;i++){
+        try{
+            const d=await fetchJson('/case/create/recover?client_request_id='+encodeURIComponent(id),{},15000);
+            if(d.state==='completed')return d;
+            if(d.state==='processing')showStatus('The FIR was created and is still being finalized. Checking again…','info');
+        }catch(_){ }
+        await new Promise(r=>setTimeout(r,2000));
+    }
+    return null;
+}
+form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    button.disabled=true;button.textContent='Creating official FIR…';showStatus('Submitting the FIR and securely creating the case…','info');
+    const id=requestId();
+    const body={
+        complainant_name:document.getElementById('complainant_name').value.trim(),
+        incident_type:document.getElementById('incident_type').value.trim(),
+        incident_date:document.getElementById('incident_date').value,
+        location:document.getElementById('location').value.trim(),
+        description:document.getElementById('description').value.trim(),
+        client_request_id:id
+    };
+    try{
+        const data=await fetchJson('/case/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},90000);
+        clearRequestId();
+        showStatus('FIR '+(data.fir_id||'')+' filed successfully. Opening the case…','success');
+        setTimeout(()=>location.href='case-detail.html?case_id='+encodeURIComponent(data.case_id),800);
+    }catch(error){
+        showStatus('The connection was interrupted while filing the FIR. Checking whether the FIR was created…','info');
+        const recovered=await recoverCreate(id);
+        if(recovered){
+            clearRequestId();
+            showStatus('FIR '+(recovered.fir_id||'')+' was filed successfully. The previous response was lost, but the case is safe. Opening the case…','success');
+            setTimeout(()=>location.href='case-detail.html?case_id='+encodeURIComponent(recovered.case_id),800);
+        }else{
+            showStatus('Could not confirm FIR creation. No new FIR was confirmed. Please check My Cases before submitting again.\n\nTechnical detail: '+error.message,'error');
+            button.disabled=false;button.textContent='File FIR';
+        }
+    }
+});
+</script>
+</body>
+</html>
